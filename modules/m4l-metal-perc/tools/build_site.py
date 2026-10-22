@@ -212,7 +212,10 @@ def export_ui(patch):
             if k in b:
                 el[k] = b[k]
         elements.append(el)
-    return {"width": patch["devicewidth"], "height": 169, "elements": elements}
+    sys.path.insert(0, str(MODULE))
+    from build import SOUND_RANDOM
+    return {"width": patch["devicewidth"], "height": 169, "elements": elements,
+            "soundRandom": {g: {k: list(v) for k, v in t.items()} for g, t in SOUND_RANDOM.items()}}
 
 
 def export_presets():

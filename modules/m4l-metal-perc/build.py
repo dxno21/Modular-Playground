@@ -19,6 +19,34 @@ SEQ_SHIFT = 100  # Breite, um die die SEQ-Sektion gewachsen ist (alles rechts da
 DEVICE_HEIGHT = 169
 
 
+# Sound-Randomizer: Parameter je Gruppe mit sicheren Zufallsbereichen (lo, hi, ganzzahlig).
+# Bewusst eng gefasst: kein Attack unter 0.5 ms (Klicks), wenig FM-Feedback (Rauschen); Tune und Level bleiben.
+SOUND_RANDOM = {
+    "osc": {
+        "voices": (2, 6, True), "spread": (0.4, 1.8, False), "detune": (0.0, 30.0, False), "tilt": (-0.8, 0.8, False),
+        "pw": (0.15, 0.85, False), "fm_ratio": (0.5, 4.0, False), "fm_amt": (0.1, 0.9, False), "fm_fb": (0.0, 0.3, False),
+        "ring": (0.0, 0.8, False), "sweep": (-7.0, 24.0, False), "sweep_time": (10.0, 150.0, False),
+        "mod_wave": (0, 3, True),
+    },
+    "voice": {
+        "morph": (0.0, 1.0, False), "inharm": (0.0, 1.0, False), "attack": (0.5, 12.0, False),
+        "decay": (0.12, 0.55, False), "damp": (0.1, 0.9, False), "bright": (0.2, 0.95, False),
+        "drive": (0.0, 0.85, False), "noise_mix": (0.0, 0.2, False), "accent": (0.2, 0.9, False),
+        "waveform": (0, 3, True),
+    },
+}
+
+
+def inject_sound_random(js_path):
+    """Schreibt die Tabelle zwischen die Marker in seq_random.js (eine Quelle für Max und Browser)."""
+    js = js_path.read_text()
+    a, b = "// @@SOUND_RANDOM_BEGIN", "// @@SOUND_RANDOM_END"
+    head, rest = js.split(a)
+    _, tail = rest.split(b)
+    table = json.dumps({g: {k: list(v) for k, v in t.items()} for g, t in SOUND_RANDOM.items()})
+    js_path.write_text(f"{head}{a}\nvar SOUND_RANDOM = {table};\n{b}{tail}")
+
+
 # ---------------------------------------------------------------- gen~ Code
 def build_genexpr():
     src = (HERE / "src" / "metal_perc.genexpr.in").read_text()
@@ -457,6 +485,20 @@ def build_maxpat(code):
             b["presentation_rect"][0] += SEQ_SHIFT
             b["patching_rect"][0] += SEQ_SHIFT
 
+    # ---------------- Sound-Randomizer (OSC, VOICE, beide), Positionen nach der Verschiebung
+    for var, longname, rect, msg_text, lbl, lrect in [
+        ("rand_osc", "Rand OSC", [702, 4, 14, 14], "rand_osc", "RND", [678, 5, 26, 14]),
+        ("rand_voice", "Rand Voice", [1010, 4, 14, 14], "rand_voice", "RND", [986, 5, 26, 14]),
+        ("rand_sound", "Rand Sound", [544, 146, 16, 16], "rand_sound", "SOUND", [564, 147, 40, 14]),
+    ]:
+        b = button(p, var, longname, rect)
+        m = p.msg(msg_text, 1000, 1400 + len(msg_text) * 3)
+        p.line(b, 0, m, 0)
+        p.line(m, 0, js, 0)
+        p.comment(lbl, lrect)
+    dial(p, "snd_amt", "Sound Rand Amount", "Amt", [606, 140, 24, 24], 0.0, 1.0, 0.5, small=True)
+    p.comment("AMT", [604, 128, 30, 12])
+
     # ---------------- Retrig (in der vergrößerten SEQ-Sektion)
     p.comment("RTRG RATE", [376, 106, 60, 14])
     to_gen(menu(p, "rtrg_rate", "Retrig Rate", [376, 122, 52, 16], ["x2", "x3", "x4", "x6", "x8"], 1),
@@ -489,6 +531,7 @@ def main():
     (HERE / "metal_perc.genexpr").write_text(code)
     patch = build_maxpat(code)
     (HERE / "metal_perc.maxpat").write_text(json.dumps(patch, indent=1, ensure_ascii=False))
+    inject_sound_random(HERE / "seq_random.js")
     from tools.make_amxd import make_amxd
     (HERE / "Metal Perc.amxd").write_bytes(make_amxd((HERE / "metal_perc.maxpat").read_bytes()))
     print(f"metal_perc.genexpr: {len(code.splitlines())} Zeilen")

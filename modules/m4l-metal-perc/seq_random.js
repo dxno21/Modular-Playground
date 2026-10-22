@@ -48,6 +48,50 @@ function rand_pitch() {
 	}
 }
 
+// ---------------- Sound-Randomizer
+// Tabelle wird von build.py eingesetzt (Quelle: SOUND_RANDOM in build.py)
+// @@SOUND_RANDOM_BEGIN
+var SOUND_RANDOM = {"osc": {"voices": [2, 6, true], "spread": [0.4, 1.8, false], "detune": [0.0, 30.0, false], "tilt": [-0.8, 0.8, false], "pw": [0.15, 0.85, false], "fm_ratio": [0.5, 4.0, false], "fm_amt": [0.1, 0.9, false], "fm_fb": [0.0, 0.3, false], "ring": [0.0, 0.8, false], "sweep": [-7.0, 24.0, false], "sweep_time": [10.0, 150.0, false], "mod_wave": [0, 3, true]}, "voice": {"morph": [0.0, 1.0, false], "inharm": [0.0, 1.0, false], "attack": [0.5, 12.0, false], "decay": [0.12, 0.55, false], "damp": [0.1, 0.9, false], "bright": [0.2, 0.95, false], "drive": [0.0, 0.85, false], "noise_mix": [0.0, 0.2, false], "accent": [0.2, 0.9, false], "waveform": [0, 3, true]}};
+// @@SOUND_RANDOM_END
+
+// Amount (snd_amt): 0 = nichts, 0.3 = leichte Variation um den aktuellen Wert, 1 = komplett neu
+function rand_group(group) {
+	var a = getv("snd_amt");
+	var t = SOUND_RANDOM[group];
+	for (var name in t) {
+		var lo = t[name][0], hi = t[name][1], isInt = t[name][2];
+		var cur = getv(name);
+		var v;
+		if (isInt) {
+			v = Math.random() < a ? lo + Math.floor(Math.random() * (hi - lo + 1)) : cur;
+			setv_int(name, v);
+		} else {
+			v = cur + (lo + Math.random() * (hi - lo) - cur) * a;
+			setv(name, v);
+		}
+	}
+}
+
+function rand_osc() {
+	rand_group("osc");
+}
+
+function rand_voice() {
+	rand_group("voice");
+}
+
+function rand_sound() {
+	rand_group("osc");
+	rand_group("voice");
+}
+
+function setv_int(name, v) {
+	var o = this.patcher.getnamed(name);
+	if (o) {
+		o.message("int", v);
+	}
+}
+
 // Alles zurück: alle Steps an, Velocity 1, Pitch 0, kein Retrig
 function clear_pattern() {
 	for (var i = 1; i <= STEPS; i++) {

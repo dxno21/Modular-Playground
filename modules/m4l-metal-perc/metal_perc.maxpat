@@ -14790,6 +14790,505 @@
    },
    {
     "box": {
+     "maxclass": "live.button",
+     "varname": "rand_osc",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      702,
+      404,
+      14,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      702,
+      4,
+      14,
+      14
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Rand OSC",
+       "parameter_shortname": "Rand OSC",
+       "parameter_type": 2,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_enum": [
+        "off",
+        "on"
+       ],
+       "parameter_mmax": 1
+      }
+     },
+     "id": "obj-293",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ]
+    }
+   },
+   {
+    "box": {
+     "maxclass": "message",
+     "text": "rand_osc",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1000,
+      1424,
+      68,
+      22
+     ],
+     "id": "obj-294"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "RND",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 8.5,
+     "patching_rect": [
+      678,
+      405,
+      26,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      678,
+      5,
+      26,
+      14
+     ],
+     "id": "obj-295",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.button",
+     "varname": "rand_voice",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1010,
+      404,
+      14,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1010,
+      4,
+      14,
+      14
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Rand Voice",
+       "parameter_shortname": "Rand Voice",
+       "parameter_type": 2,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_enum": [
+        "off",
+        "on"
+       ],
+       "parameter_mmax": 1
+      }
+     },
+     "id": "obj-296",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ]
+    }
+   },
+   {
+    "box": {
+     "maxclass": "message",
+     "text": "rand_voice",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1000,
+      1430,
+      82,
+      22
+     ],
+     "id": "obj-297"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "RND",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 8.5,
+     "patching_rect": [
+      986,
+      405,
+      26,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      986,
+      5,
+      26,
+      14
+     ],
+     "id": "obj-298",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.button",
+     "varname": "rand_sound",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      544,
+      546,
+      16,
+      16
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      544,
+      146,
+      16,
+      16
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Rand Sound",
+       "parameter_shortname": "Rand Sound",
+       "parameter_type": 2,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_enum": [
+        "off",
+        "on"
+       ],
+       "parameter_mmax": 1
+      }
+     },
+     "id": "obj-299",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
+    }
+   },
+   {
+    "box": {
+     "maxclass": "message",
+     "text": "rand_sound",
+     "numinlets": 2,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      1000,
+      1430,
+      82,
+      22
+     ],
+     "id": "obj-300"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "SOUND",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 8.5,
+     "patching_rect": [
+      564,
+      547,
+      40,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      564,
+      147,
+      40,
+      14
+     ],
+     "id": "obj-301",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "snd_amt",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      606,
+      540,
+      24,
+      24
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      606,
+      140,
+      24,
+      24
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Sound Rand Amount",
+       "parameter_shortname": "Amt",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.5
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 1.0,
+       "parameter_unitstyle": 1
+      }
+     },
+     "showname": 0,
+     "shownumber": 0,
+     "id": "obj-302",
+     "activedialcolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.162,
+      0.259,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "AMT",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 8.5,
+     "patching_rect": [
+      604,
+      528,
+      30,
+      12
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      604,
+      128,
+      30,
+      12
+     ],
+     "id": "obj-303",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
+    }
+   },
+   {
+    "box": {
      "maxclass": "comment",
      "text": "RTRG RATE",
      "numinlets": 1,
@@ -14808,7 +15307,7 @@
       60,
       14
      ],
-     "id": "obj-293",
+     "id": "obj-304",
      "textcolor": [
       0.541,
       0.561,
@@ -14863,7 +15362,7 @@
        "parameter_mmax": 4
       }
      },
-     "id": "obj-294",
+     "id": "obj-305",
      "bgcolor": [
       0.169,
       0.18,
@@ -14925,7 +15424,7 @@
       131,
       22
      ],
-     "id": "obj-295"
+     "id": "obj-306"
     }
    },
    {
@@ -14967,7 +15466,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-296",
+     "id": "obj-307",
      "activedialcolor": [
       0.18,
       0.827,
@@ -15029,7 +15528,7 @@
       124,
       22
      ],
-     "id": "obj-297"
+     "id": "obj-308"
     }
    },
    {
@@ -15071,7 +15570,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-298",
+     "id": "obj-309",
      "activedialcolor": [
       0.18,
       0.827,
@@ -15133,7 +15632,7 @@
       124,
       22
      ],
-     "id": "obj-299"
+     "id": "obj-310"
     }
    }
   ],
@@ -18309,11 +18808,11 @@
    {
     "patchline": {
      "source": [
-      "obj-294",
+      "obj-293",
       0
      ],
      "destination": [
-      "obj-295",
+      "obj-294",
       0
      ]
     }
@@ -18321,11 +18820,11 @@
    {
     "patchline": {
      "source": [
-      "obj-295",
+      "obj-294",
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-168",
       0
      ]
     }
@@ -18349,6 +18848,54 @@
       0
      ],
      "destination": [
+      "obj-168",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-299",
+      0
+     ],
+     "destination": [
+      "obj-300",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-300",
+      0
+     ],
+     "destination": [
+      "obj-168",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-305",
+      0
+     ],
+     "destination": [
+      "obj-306",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-306",
+      0
+     ],
+     "destination": [
       "obj-1",
       0
      ]
@@ -18357,11 +18904,11 @@
    {
     "patchline": {
      "source": [
-      "obj-298",
+      "obj-307",
       0
      ],
      "destination": [
-      "obj-299",
+      "obj-308",
       0
      ]
     }
@@ -18369,7 +18916,31 @@
    {
     "patchline": {
      "source": [
-      "obj-299",
+      "obj-308",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-309",
+      0
+     ],
+     "destination": [
+      "obj-310",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-310",
       0
      ],
      "destination": [

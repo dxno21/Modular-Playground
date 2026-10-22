@@ -128,6 +128,8 @@ class Player {
       reset: () => this.setParam('reset_id', ++this.resetCount),
       rand_steps: () => this.randSteps(), rand_vel: () => this.randVel(), rand_pitch: () => this.randPitch(),
       clear: () => this.clearPattern(),
+      rand_osc: () => this.randGroup('osc'), rand_voice: () => this.randGroup('voice'),
+      rand_sound: () => { this.randGroup('osc'); this.randGroup('voice'); },
     };
     (actions[c.el.var] || (() => {}))();
   }
@@ -162,6 +164,16 @@ class Player {
   randPitch() {
     const r = this.getControl('pitch_range');
     for (let i = 1; i <= 16; i++) this.setControl(`s${i}_pitch`, Math.round((Math.random() * 2 - 1) * r));
+  }
+  // Sound-Randomizer wie seq_random.js, Tabelle aus ui.json (Quelle: SOUND_RANDOM in build.py)
+  randGroup(group) {
+    const a = this.getControl('snd_amt');
+    for (const [name, [lo, hi, isInt]] of Object.entries(this.ui.soundRandom[group])) {
+      const cur = this.getControl(name);
+      const v = isInt ? (Math.random() < a ? lo + Math.floor(Math.random() * (hi - lo + 1)) : cur)
+        : cur + (lo + Math.random() * (hi - lo) - cur) * a;
+      this.setControl(name, v);
+    }
   }
   clearPattern() {
     for (let i = 1; i <= 16; i++) {

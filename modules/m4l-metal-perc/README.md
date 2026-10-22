@@ -91,7 +91,20 @@ GitHub Pages (`tools/build_site.py`). Einmalig unter *Settings → Pages → Sou
 - **Live** (Schalter): würfelt bei *jedem Schlag* neu, ohne die Regler zu verändern. Gut für hypnotische Variation.
   - Steps: Aktive Steps spielen nur mit der Wahrscheinlichkeit **Density**.
   - Velocity / Pitch: Abweichung innerhalb von **Range**.
-- **Clear:** alle Steps an, Velocity 1, Pitch 0.
+- **Clear:** alle Steps an, Velocity 1, Pitch 0, kein Retrig.
+
+### Sound-Randomizer
+- **RND** neben der Überschrift **OSC:** würfelt nur die Oszillatoren neu: Voices, Spread, Detune, Tilt, PW,
+  FM Ratio, FM Amt, FM FB, Ring, Sweep, Sw Time, Mod Wave.
+- **RND** neben der Überschrift **VOICE:** würfelt nur den Klang neu: Morph, Inharm, Attack, Decay, Damp, Bright,
+  Drive, Noise, Accent, Wave.
+- **SOUND** (unten in RANDOM): beides zusammen.
+- **AMT:** wie stark gewürfelt wird. 0 = gar nicht, ~0.3 = leichte Variation um den aktuellen Klang,
+  1 = komplett neu. Umschalter wie Wave oder Mod Wave wechseln mit der Wahrscheinlichkeit AMT.
+- Die Bereiche sind bewusst begrenzt, damit nichts klickt oder rauscht: Attack mindestens 0.5 ms, FM FB höchstens 0.3,
+  Noise höchstens 0.2. Tune, Level, Pitch-Einstellungen, Circuit und Analog bleiben unverändert.
+  Die Tabelle steht in `build.py` (`SOUND_RANDOM`). `build.py` überträgt sie in `seq_random.js` und in den
+  Browser-Player.
 
 ### Pitch (unten rechts)
 - **PITCH MODE:** *Scale* rastet die Gesamttonhöhe (Tune + Step-Pitch + CV + MIDI) auf die gewählte Skala ein.
