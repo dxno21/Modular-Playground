@@ -16,9 +16,287 @@
    900
   ],
   "openinpresentation": 1,
-  "devicewidth": 1321,
+  "devicewidth": 1300,
   "default_fontsize": 10.0,
   "boxes": [
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.075,
+      0.078,
+      0.09,
+      1.0
+     ],
+     "rounded": 0,
+     "border": 0,
+     "patching_rect": [
+      0,
+      400,
+      1300,
+      169
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      0,
+      0,
+      1300,
+      169
+     ],
+     "id": "panel-1"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.114,
+      0.122,
+      0.137,
+      1.0
+     ],
+     "rounded": 6,
+     "border": 1,
+     "patching_rect": [
+      2,
+      402,
+      436,
+      165
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      2,
+      2,
+      436,
+      165
+     ],
+     "bordercolor": [
+      0.165,
+      0.176,
+      0.2,
+      1.0
+     ],
+     "id": "panel-2"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.114,
+      0.122,
+      0.137,
+      1.0
+     ],
+     "rounded": 6,
+     "border": 1,
+     "patching_rect": [
+      442,
+      402,
+      94,
+      165
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      442,
+      2,
+      94,
+      165
+     ],
+     "bordercolor": [
+      0.165,
+      0.176,
+      0.2,
+      1.0
+     ],
+     "id": "panel-3"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.114,
+      0.122,
+      0.137,
+      1.0
+     ],
+     "rounded": 6,
+     "border": 1,
+     "patching_rect": [
+      540,
+      402,
+      290,
+      165
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      540,
+      2,
+      290,
+      165
+     ],
+     "bordercolor": [
+      0.165,
+      0.176,
+      0.2,
+      1.0
+     ],
+     "id": "panel-4"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.114,
+      0.122,
+      0.137,
+      1.0
+     ],
+     "rounded": 6,
+     "border": 1,
+     "patching_rect": [
+      834,
+      402,
+      406,
+      165
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      834,
+      2,
+      406,
+      165
+     ],
+     "bordercolor": [
+      0.165,
+      0.176,
+      0.2,
+      1.0
+     ],
+     "id": "panel-5"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.114,
+      0.122,
+      0.137,
+      1.0
+     ],
+     "rounded": 6,
+     "border": 1,
+     "patching_rect": [
+      1244,
+      402,
+      54,
+      165
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1244,
+      2,
+      54,
+      165
+     ],
+     "bordercolor": [
+      0.165,
+      0.176,
+      0.2,
+      1.0
+     ],
+     "id": "panel-6"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.145,
+      0.157,
+      0.176,
+      1.0
+     ],
+     "rounded": 3,
+     "border": 0,
+     "patching_rect": [
+      46,
+      418,
+      96,
+      82
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      46,
+      18,
+      96,
+      82
+     ],
+     "id": "panel-7"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.145,
+      0.157,
+      0.176,
+      1.0
+     ],
+     "rounded": 3,
+     "border": 0,
+     "patching_rect": [
+      238,
+      418,
+      96,
+      82
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      238,
+      18,
+      96,
+      82
+     ],
+     "id": "panel-8"
+    }
+   },
    {
     "box": {
      "maxclass": "newobj",
@@ -363,6 +641,36 @@
    },
    {
     "box": {
+     "maxclass": "comment",
+     "text": "OUT",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 10.0,
+     "patching_rect": [
+      1250,
+      404,
+      44,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1250,
+      4,
+      44,
+      14
+     ],
+     "id": "obj-3",
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Bold"
+    }
+   },
+   {
+    "box": {
      "maxclass": "live.gain~",
      "varname": "out_gain",
      "numinlets": 2,
@@ -376,17 +684,17 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1271,
-      404,
-      44,
-      160
+      1252,
+      420,
+      40,
+      132
      ],
      "presentation": 1,
      "presentation_rect": [
-      1271,
-      4,
-      44,
-      160
+      1252,
+      20,
+      40,
+      132
      ],
      "saved_attribute_attributes": {
       "valueof": {
@@ -403,7 +711,14 @@
        "parameter_unitstyle": 4
       }
      },
-     "id": "obj-3"
+     "id": "obj-4",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -419,7 +734,7 @@
       96,
       22
      ],
-     "id": "obj-4"
+     "id": "obj-5"
     }
    },
    {
@@ -480,7 +795,69 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-5"
+     "id": "obj-6",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -498,7 +875,7 @@
       96,
       22
      ],
-     "id": "obj-6"
+     "id": "obj-7"
     }
    },
    {
@@ -518,7 +895,7 @@
       54,
       22
      ],
-     "id": "obj-7"
+     "id": "obj-8"
     }
    },
    {
@@ -536,7 +913,7 @@
       89,
       22
      ],
-     "id": "obj-8"
+     "id": "obj-9"
     }
    },
    {
@@ -554,7 +931,7 @@
       54,
       22
      ],
-     "id": "obj-9"
+     "id": "obj-10"
     }
    },
    {
@@ -579,7 +956,7 @@
       75,
       22
      ],
-     "id": "obj-10"
+     "id": "obj-11"
     }
    },
    {
@@ -598,7 +975,7 @@
       47,
       22
      ],
-     "id": "obj-11"
+     "id": "obj-12"
     }
    },
    {
@@ -617,7 +994,7 @@
       82,
       22
      ],
-     "id": "obj-12"
+     "id": "obj-13"
     }
    },
    {
@@ -638,7 +1015,7 @@
       103,
       22
      ],
-     "id": "obj-13"
+     "id": "obj-14"
     }
    },
    {
@@ -656,7 +1033,7 @@
       131,
       22
      ],
-     "id": "obj-14"
+     "id": "obj-15"
     }
    },
    {
@@ -674,7 +1051,7 @@
       124,
       22
      ],
-     "id": "obj-15"
+     "id": "obj-16"
     }
    },
    {
@@ -692,7 +1069,37 @@
       117,
       22
      ],
-     "id": "obj-16"
+     "id": "obj-17"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "SEQ",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 10.0,
+     "patching_rect": [
+      8,
+      403,
+      40,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      8,
+      3,
+      40,
+      14
+     ],
+     "id": "obj-18",
+     "textcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "fontname": "Ableton Sans Bold"
     }
    },
    {
@@ -701,21 +1108,28 @@
      "text": "STEP",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      4,
-      420,
-      40,
+      8,
+      421,
+      38,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      4,
-      20,
-      40,
+      8,
+      21,
+      38,
       14
      ],
-     "id": "obj-17"
+     "id": "obj-19",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -724,21 +1138,28 @@
      "text": "VEL",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      4,
-      446,
-      40,
+      8,
+      447,
+      38,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      4,
-      46,
-      40,
+      8,
+      47,
+      38,
       14
      ],
-     "id": "obj-18"
+     "id": "obj-20",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -747,21 +1168,28 @@
      "text": "PITCH",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      4,
-      478,
-      44,
+      8,
+      479,
+      38,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      4,
-      78,
-      44,
+      8,
+      79,
+      38,
       14
      ],
-     "id": "obj-19"
+     "id": "obj-21",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -804,7 +1232,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-20"
+     "id": "obj-22",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -848,7 +1312,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-21"
+     "id": "obj-23",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -892,7 +1400,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-22"
+     "id": "obj-24",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -910,7 +1462,7 @@
       103,
       22
      ],
-     "id": "obj-23"
+     "id": "obj-25"
     }
    },
    {
@@ -928,7 +1480,7 @@
       110,
       22
      ],
-     "id": "obj-24"
+     "id": "obj-26"
     }
    },
    {
@@ -946,7 +1498,7 @@
       124,
       22
      ],
-     "id": "obj-25"
+     "id": "obj-27"
     }
    },
    {
@@ -989,7 +1541,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-26"
+     "id": "obj-28",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -1033,7 +1621,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-27"
+     "id": "obj-29",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1077,7 +1709,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-28"
+     "id": "obj-30",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1095,7 +1771,7 @@
       103,
       22
      ],
-     "id": "obj-29"
+     "id": "obj-31"
     }
    },
    {
@@ -1113,7 +1789,7 @@
       110,
       22
      ],
-     "id": "obj-30"
+     "id": "obj-32"
     }
    },
    {
@@ -1131,7 +1807,7 @@
       124,
       22
      ],
-     "id": "obj-31"
+     "id": "obj-33"
     }
    },
    {
@@ -1174,7 +1850,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-32"
+     "id": "obj-34",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -1218,7 +1930,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-33"
+     "id": "obj-35",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1262,7 +2018,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-34"
+     "id": "obj-36",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1280,7 +2080,7 @@
       103,
       22
      ],
-     "id": "obj-35"
+     "id": "obj-37"
     }
    },
    {
@@ -1298,7 +2098,7 @@
       110,
       22
      ],
-     "id": "obj-36"
+     "id": "obj-38"
     }
    },
    {
@@ -1316,7 +2116,7 @@
       124,
       22
      ],
-     "id": "obj-37"
+     "id": "obj-39"
     }
    },
    {
@@ -1359,7 +2159,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-38"
+     "id": "obj-40",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -1403,7 +2239,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-39"
+     "id": "obj-41",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1447,7 +2327,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-40"
+     "id": "obj-42",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1465,7 +2389,7 @@
       103,
       22
      ],
-     "id": "obj-41"
+     "id": "obj-43"
     }
    },
    {
@@ -1483,7 +2407,7 @@
       110,
       22
      ],
-     "id": "obj-42"
+     "id": "obj-44"
     }
    },
    {
@@ -1501,7 +2425,7 @@
       124,
       22
      ],
-     "id": "obj-43"
+     "id": "obj-45"
     }
    },
    {
@@ -1544,7 +2468,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-44"
+     "id": "obj-46",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -1588,7 +2548,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-45"
+     "id": "obj-47",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1632,7 +2636,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-46"
+     "id": "obj-48",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1650,7 +2698,7 @@
       103,
       22
      ],
-     "id": "obj-47"
+     "id": "obj-49"
     }
    },
    {
@@ -1668,7 +2716,7 @@
       110,
       22
      ],
-     "id": "obj-48"
+     "id": "obj-50"
     }
    },
    {
@@ -1686,7 +2734,7 @@
       124,
       22
      ],
-     "id": "obj-49"
+     "id": "obj-51"
     }
    },
    {
@@ -1729,7 +2777,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-50"
+     "id": "obj-52",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -1773,7 +2857,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-51"
+     "id": "obj-53",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1817,7 +2945,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-52"
+     "id": "obj-54",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -1835,7 +3007,7 @@
       103,
       22
      ],
-     "id": "obj-53"
+     "id": "obj-55"
     }
    },
    {
@@ -1853,7 +3025,7 @@
       110,
       22
      ],
-     "id": "obj-54"
+     "id": "obj-56"
     }
    },
    {
@@ -1871,7 +3043,7 @@
       124,
       22
      ],
-     "id": "obj-55"
+     "id": "obj-57"
     }
    },
    {
@@ -1914,7 +3086,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-56"
+     "id": "obj-58",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -1958,7 +3166,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-57"
+     "id": "obj-59",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2002,7 +3254,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-58"
+     "id": "obj-60",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2020,7 +3316,7 @@
       103,
       22
      ],
-     "id": "obj-59"
+     "id": "obj-61"
     }
    },
    {
@@ -2038,7 +3334,7 @@
       110,
       22
      ],
-     "id": "obj-60"
+     "id": "obj-62"
     }
    },
    {
@@ -2056,7 +3352,7 @@
       124,
       22
      ],
-     "id": "obj-61"
+     "id": "obj-63"
     }
    },
    {
@@ -2099,7 +3395,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-62"
+     "id": "obj-64",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -2143,7 +3475,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-63"
+     "id": "obj-65",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2187,7 +3563,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-64"
+     "id": "obj-66",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2205,7 +3625,7 @@
       103,
       22
      ],
-     "id": "obj-65"
+     "id": "obj-67"
     }
    },
    {
@@ -2223,7 +3643,7 @@
       110,
       22
      ],
-     "id": "obj-66"
+     "id": "obj-68"
     }
    },
    {
@@ -2241,7 +3661,7 @@
       124,
       22
      ],
-     "id": "obj-67"
+     "id": "obj-69"
     }
    },
    {
@@ -2284,7 +3704,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-68"
+     "id": "obj-70",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -2328,7 +3784,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-69"
+     "id": "obj-71",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2372,7 +3872,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-70"
+     "id": "obj-72",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2390,7 +3934,7 @@
       103,
       22
      ],
-     "id": "obj-71"
+     "id": "obj-73"
     }
    },
    {
@@ -2408,7 +3952,7 @@
       110,
       22
      ],
-     "id": "obj-72"
+     "id": "obj-74"
     }
    },
    {
@@ -2426,7 +3970,7 @@
       124,
       22
      ],
-     "id": "obj-73"
+     "id": "obj-75"
     }
    },
    {
@@ -2469,7 +4013,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-74"
+     "id": "obj-76",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -2513,7 +4093,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-75"
+     "id": "obj-77",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2557,7 +4181,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-76"
+     "id": "obj-78",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2575,7 +4243,7 @@
       110,
       22
      ],
-     "id": "obj-77"
+     "id": "obj-79"
     }
    },
    {
@@ -2593,7 +4261,7 @@
       117,
       22
      ],
-     "id": "obj-78"
+     "id": "obj-80"
     }
    },
    {
@@ -2611,7 +4279,7 @@
       131,
       22
      ],
-     "id": "obj-79"
+     "id": "obj-81"
     }
    },
    {
@@ -2654,7 +4322,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-80"
+     "id": "obj-82",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -2698,7 +4402,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-81"
+     "id": "obj-83",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2742,7 +4490,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-82"
+     "id": "obj-84",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2760,7 +4552,7 @@
       110,
       22
      ],
-     "id": "obj-83"
+     "id": "obj-85"
     }
    },
    {
@@ -2778,7 +4570,7 @@
       117,
       22
      ],
-     "id": "obj-84"
+     "id": "obj-86"
     }
    },
    {
@@ -2796,7 +4588,7 @@
       131,
       22
      ],
-     "id": "obj-85"
+     "id": "obj-87"
     }
    },
    {
@@ -2839,7 +4631,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-86"
+     "id": "obj-88",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -2883,7 +4711,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-87"
+     "id": "obj-89",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2927,7 +4799,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-88"
+     "id": "obj-90",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -2945,7 +4861,7 @@
       110,
       22
      ],
-     "id": "obj-89"
+     "id": "obj-91"
     }
    },
    {
@@ -2963,7 +4879,7 @@
       117,
       22
      ],
-     "id": "obj-90"
+     "id": "obj-92"
     }
    },
    {
@@ -2981,7 +4897,7 @@
       131,
       22
      ],
-     "id": "obj-91"
+     "id": "obj-93"
     }
    },
    {
@@ -3024,7 +4940,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-92"
+     "id": "obj-94",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -3068,7 +5020,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-93"
+     "id": "obj-95",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3112,7 +5108,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-94"
+     "id": "obj-96",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3130,7 +5170,7 @@
       110,
       22
      ],
-     "id": "obj-95"
+     "id": "obj-97"
     }
    },
    {
@@ -3148,7 +5188,7 @@
       117,
       22
      ],
-     "id": "obj-96"
+     "id": "obj-98"
     }
    },
    {
@@ -3166,7 +5206,7 @@
       131,
       22
      ],
-     "id": "obj-97"
+     "id": "obj-99"
     }
    },
    {
@@ -3209,7 +5249,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-98"
+     "id": "obj-100",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -3253,7 +5329,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-99"
+     "id": "obj-101",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3297,7 +5417,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-100"
+     "id": "obj-102",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3315,7 +5479,7 @@
       110,
       22
      ],
-     "id": "obj-101"
+     "id": "obj-103"
     }
    },
    {
@@ -3333,7 +5497,7 @@
       117,
       22
      ],
-     "id": "obj-102"
+     "id": "obj-104"
     }
    },
    {
@@ -3351,7 +5515,7 @@
       131,
       22
      ],
-     "id": "obj-103"
+     "id": "obj-105"
     }
    },
    {
@@ -3394,7 +5558,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-104"
+     "id": "obj-106",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -3438,7 +5638,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-105"
+     "id": "obj-107",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3482,7 +5726,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-106"
+     "id": "obj-108",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3500,7 +5788,7 @@
       110,
       22
      ],
-     "id": "obj-107"
+     "id": "obj-109"
     }
    },
    {
@@ -3518,7 +5806,7 @@
       117,
       22
      ],
-     "id": "obj-108"
+     "id": "obj-110"
     }
    },
    {
@@ -3536,7 +5824,7 @@
       131,
       22
      ],
-     "id": "obj-109"
+     "id": "obj-111"
     }
    },
    {
@@ -3579,7 +5867,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-110"
+     "id": "obj-112",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -3623,7 +5947,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-111"
+     "id": "obj-113",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3667,7 +6035,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-112"
+     "id": "obj-114",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3685,7 +6097,7 @@
       110,
       22
      ],
-     "id": "obj-113"
+     "id": "obj-115"
     }
    },
    {
@@ -3703,7 +6115,7 @@
       117,
       22
      ],
-     "id": "obj-114"
+     "id": "obj-116"
     }
    },
    {
@@ -3721,30 +6133,37 @@
       131,
       22
      ],
-     "id": "obj-115"
+     "id": "obj-117"
     }
    },
    {
     "box": {
      "maxclass": "comment",
-     "text": "SEQ",
+     "text": "RUN",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      48,
+      46,
       506,
       30,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      48,
+      46,
       106,
       30,
       14
      ],
-     "id": "obj-116"
+     "id": "obj-118",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -3787,7 +6206,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-117"
+     "id": "obj-119",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -3805,7 +6260,7 @@
       110,
       22
      ],
-     "id": "obj-118"
+     "id": "obj-120"
     }
    },
    {
@@ -3814,7 +6269,7 @@
      "text": "CLOCK",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
       72,
       506,
@@ -3828,7 +6283,14 @@
       60,
       14
      ],
-     "id": "obj-119"
+     "id": "obj-121",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -3876,7 +6338,69 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-120"
+     "id": "obj-122",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3894,7 +6418,7 @@
       138,
       22
      ],
-     "id": "obj-121"
+     "id": "obj-123"
     }
    },
    {
@@ -3903,7 +6427,7 @@
      "text": "DIV",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
       176,
       506,
@@ -3917,7 +6441,14 @@
       40,
       14
      ],
-     "id": "obj-122"
+     "id": "obj-124",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -3965,7 +6496,51 @@
        "parameter_mmax": 4
       }
      },
-     "id": "obj-123"
+     "id": "obj-125",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "activetextcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "tricolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activetricolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -3983,7 +6558,7 @@
       131,
       22
      ],
-     "id": "obj-124"
+     "id": "obj-126"
     }
    },
    {
@@ -4025,7 +6600,51 @@
        "parameter_unitstyle": 0
       }
      },
-     "id": "obj-125"
+     "id": "obj-127",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -4043,7 +6662,7 @@
       117,
       22
      ],
-     "id": "obj-126"
+     "id": "obj-128"
     }
    },
    {
@@ -4085,7 +6704,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-127"
+     "id": "obj-129",
+     "activedialcolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "dialcolor": [
+      0.081,
+      0.372,
+      0.346,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -4103,7 +6766,7 @@
       89,
       22
      ],
-     "id": "obj-128"
+     "id": "obj-130"
     }
    },
    {
@@ -4112,7 +6775,7 @@
      "text": "RESET",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
       344,
       506,
@@ -4126,7 +6789,14 @@
       40,
       14
      ],
-     "id": "obj-129"
+     "id": "obj-131",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -4169,7 +6839,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-130"
+     "id": "obj-132",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.18,
+      0.827,
+      0.769,
+      1.0
+     ]
     }
    },
    {
@@ -4190,7 +6896,7 @@
       103,
       22
      ],
-     "id": "obj-131"
+     "id": "obj-133"
     }
    },
    {
@@ -4208,7 +6914,7 @@
       124,
       22
      ],
-     "id": "obj-132"
+     "id": "obj-134"
     }
    },
    {
@@ -4224,7 +6930,37 @@
       124,
       22
      ],
-     "id": "obj-133"
+     "id": "obj-135"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "RANDOM",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 10.0,
+     "patching_rect": [
+      446,
+      403,
+      80,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      446,
+      3,
+      80,
+      14
+     ],
+     "id": "obj-136",
+     "textcolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "fontname": "Ableton Sans Bold"
     }
    },
    {
@@ -4233,21 +6969,28 @@
      "text": "RND",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      440,
-      404,
+      442,
+      500,
       24,
-      14
+      12
      ],
      "presentation": 1,
      "presentation_rect": [
-      440,
-      4,
+      442,
+      100,
       24,
-      14
+      12
      ],
-     "id": "obj-134"
+     "id": "obj-137",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -4256,21 +6999,28 @@
      "text": "RNG",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
       466,
-      404,
+      500,
       26,
-      14
+      12
      ],
      "presentation": 1,
      "presentation_rect": [
       466,
-      4,
+      100,
       26,
-      14
+      12
      ],
-     "id": "obj-135"
+     "id": "obj-138",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -4279,21 +7029,28 @@
      "text": "LIVE",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      498,
-      404,
+      496,
+      500,
       30,
-      14
+      12
      ],
      "presentation": 1,
      "presentation_rect": [
-      498,
-      4,
+      496,
+      100,
       30,
-      14
+      12
      ],
-     "id": "obj-136"
+     "id": "obj-139",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -4302,21 +7059,28 @@
      "text": "CLEAR",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      440,
-      506,
+      464,
+      525,
       40,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      440,
-      106,
+      464,
+      125,
       40,
       14
      ],
-     "id": "obj-137"
+     "id": "obj-140",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -4359,7 +7123,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-138"
+     "id": "obj-141",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
     }
    },
    {
@@ -4377,7 +7177,7 @@
       82,
       22
      ],
-     "id": "obj-139"
+     "id": "obj-142"
     }
    },
    {
@@ -4421,7 +7221,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-140"
+     "id": "obj-143",
+     "activedialcolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.162,
+      0.259,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -4439,7 +7283,7 @@
       117,
       22
      ],
-     "id": "obj-141"
+     "id": "obj-144"
     }
    },
    {
@@ -4482,7 +7326,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-142"
+     "id": "obj-145",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
     }
    },
    {
@@ -4500,7 +7380,7 @@
       138,
       22
      ],
-     "id": "obj-143"
+     "id": "obj-146"
     }
    },
    {
@@ -4543,7 +7423,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-144"
+     "id": "obj-147",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
     }
    },
    {
@@ -4561,7 +7477,7 @@
       68,
       22
      ],
-     "id": "obj-145"
+     "id": "obj-148"
     }
    },
    {
@@ -4605,7 +7521,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-146"
+     "id": "obj-149",
+     "activedialcolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.162,
+      0.259,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -4623,7 +7583,7 @@
       131,
       22
      ],
-     "id": "obj-147"
+     "id": "obj-150"
     }
    },
    {
@@ -4666,7 +7626,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-148"
+     "id": "obj-151",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
     }
    },
    {
@@ -4684,7 +7680,7 @@
       124,
       22
      ],
-     "id": "obj-149"
+     "id": "obj-152"
     }
    },
    {
@@ -4727,7 +7723,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-150"
+     "id": "obj-153",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
     }
    },
    {
@@ -4745,7 +7777,7 @@
       82,
       22
      ],
-     "id": "obj-151"
+     "id": "obj-154"
     }
    },
    {
@@ -4789,7 +7821,51 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-152"
+     "id": "obj-155",
+     "activedialcolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.162,
+      0.259,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -4807,7 +7883,7 @@
       145,
       22
      ],
-     "id": "obj-153"
+     "id": "obj-156"
     }
    },
    {
@@ -4850,7 +7926,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-154"
+     "id": "obj-157",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
     }
    },
    {
@@ -4868,7 +7980,7 @@
       138,
       22
      ],
-     "id": "obj-155"
+     "id": "obj-158"
     }
    },
    {
@@ -4883,14 +7995,14 @@
      "parameter_enable": 1,
      "patching_rect": [
       444,
-      522,
+      524,
       16,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
       444,
-      122,
+      124,
       16,
       16
      ],
@@ -4911,7 +8023,43 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-156"
+     "id": "obj-159",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.361,
+      0.576,
+      1.0
+     ]
     }
    },
    {
@@ -4929,7 +8077,7 @@
       103,
       22
      ],
-     "id": "obj-157"
+     "id": "obj-160"
     }
    },
    {
@@ -4938,21 +8086,28 @@
      "text": "OSC",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 10.0,
      "patching_rect": [
-      550,
-      402,
+      548,
+      403,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      550,
-      2,
+      548,
+      3,
       60,
       14
      ],
-     "id": "obj-158"
+     "id": "obj-161",
+     "textcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "fontname": "Ableton Sans Bold"
     }
    },
    {
@@ -4994,7 +8149,51 @@
        "parameter_unitstyle": 0
       }
      },
-     "id": "obj-159"
+     "id": "obj-162",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5012,7 +8211,7 @@
       110,
       22
      ],
-     "id": "obj-160"
+     "id": "obj-163"
     }
    },
    {
@@ -5054,7 +8253,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-161"
+     "id": "obj-164",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5072,7 +8315,7 @@
       110,
       22
      ],
-     "id": "obj-162"
+     "id": "obj-165"
     }
    },
    {
@@ -5114,7 +8357,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-163"
+     "id": "obj-166",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5132,7 +8419,7 @@
       110,
       22
      ],
-     "id": "obj-164"
+     "id": "obj-167"
     }
    },
    {
@@ -5174,7 +8461,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-165"
+     "id": "obj-168",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5192,7 +8523,7 @@
       96,
       22
      ],
-     "id": "obj-166"
+     "id": "obj-169"
     }
    },
    {
@@ -5234,7 +8565,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-167"
+     "id": "obj-170",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5252,7 +8627,7 @@
       82,
       22
      ],
-     "id": "obj-168"
+     "id": "obj-171"
     }
    },
    {
@@ -5294,7 +8669,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-169"
+     "id": "obj-172",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5312,7 +8731,7 @@
       124,
       22
      ],
-     "id": "obj-170"
+     "id": "obj-173"
     }
    },
    {
@@ -5354,7 +8773,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-171"
+     "id": "obj-174",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5372,7 +8835,7 @@
       110,
       22
      ],
-     "id": "obj-172"
+     "id": "obj-175"
     }
    },
    {
@@ -5414,7 +8877,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-173"
+     "id": "obj-176",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5432,7 +8939,7 @@
       103,
       22
      ],
-     "id": "obj-174"
+     "id": "obj-177"
     }
    },
    {
@@ -5474,7 +8981,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-175"
+     "id": "obj-178",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5492,7 +9043,7 @@
       96,
       22
      ],
-     "id": "obj-176"
+     "id": "obj-179"
     }
    },
    {
@@ -5534,7 +9085,51 @@
        "parameter_unitstyle": 7
       }
      },
-     "id": "obj-177"
+     "id": "obj-180",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5552,7 +9147,7 @@
       103,
       22
      ],
-     "id": "obj-178"
+     "id": "obj-181"
     }
    },
    {
@@ -5561,7 +9156,7 @@
      "text": "MOD WAVE",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
       550,
       516,
@@ -5575,7 +9170,14 @@
       80,
       14
      ],
-     "id": "obj-179"
+     "id": "obj-182",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -5624,7 +9226,69 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-180"
+     "id": "obj-183",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5642,7 +9306,7 @@
       124,
       22
      ],
-     "id": "obj-181"
+     "id": "obj-184"
     }
    },
    {
@@ -5651,7 +9315,7 @@
      "text": "PHASE",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
       670,
       516,
@@ -5665,7 +9329,14 @@
       60,
       14
      ],
-     "id": "obj-182"
+     "id": "obj-185",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -5712,7 +9383,69 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-183"
+     "id": "obj-186",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5730,7 +9463,7 @@
       110,
       22
      ],
-     "id": "obj-184"
+     "id": "obj-187"
     }
    },
    {
@@ -5772,7 +9505,51 @@
        "parameter_unitstyle": 2
       }
      },
-     "id": "obj-185"
+     "id": "obj-188",
+     "activedialcolor": [
+      0.616,
+      0.525,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.277,
+      0.236,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5790,7 +9567,7 @@
       138,
       22
      ],
-     "id": "obj-186"
+     "id": "obj-189"
     }
    },
    {
@@ -5799,21 +9576,28 @@
      "text": "VOICE",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 10.0,
      "patching_rect": [
-      870,
-      402,
+      842,
+      403,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      870,
-      2,
+      842,
+      3,
       60,
       14
      ],
-     "id": "obj-187"
+     "id": "obj-190",
+     "textcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "fontname": "Ableton Sans Bold"
     }
    },
    {
@@ -5828,14 +9612,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      870,
+      840,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      870,
+      840,
       14,
       44,
       48
@@ -5855,7 +9639,51 @@
        "parameter_unitstyle": 8
       }
      },
-     "id": "obj-188"
+     "id": "obj-191",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5873,7 +9701,7 @@
       96,
       22
      ],
-     "id": "obj-189"
+     "id": "obj-192"
     }
    },
    {
@@ -5888,14 +9716,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      926,
+      896,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      926,
+      896,
       14,
       44,
       48
@@ -5915,7 +9743,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-190"
+     "id": "obj-193",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5933,7 +9805,7 @@
       103,
       22
      ],
-     "id": "obj-191"
+     "id": "obj-194"
     }
    },
    {
@@ -5948,14 +9820,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      982,
+      952,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      982,
+      952,
       14,
       44,
       48
@@ -5975,7 +9847,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-192"
+     "id": "obj-195",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -5993,7 +9909,7 @@
       110,
       22
      ],
-     "id": "obj-193"
+     "id": "obj-196"
     }
    },
    {
@@ -6008,14 +9924,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1038,
+      1008,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1038,
+      1008,
       14,
       44,
       48
@@ -6035,7 +9951,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-194"
+     "id": "obj-197",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6053,7 +10013,7 @@
       103,
       22
      ],
-     "id": "obj-195"
+     "id": "obj-198"
     }
    },
    {
@@ -6068,14 +10028,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1094,
+      1064,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1094,
+      1064,
       14,
       44,
       48
@@ -6095,7 +10055,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-196"
+     "id": "obj-199",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6113,7 +10117,7 @@
       96,
       22
      ],
-     "id": "obj-197"
+     "id": "obj-200"
     }
    },
    {
@@ -6128,14 +10132,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1150,
+      1120,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1150,
+      1120,
       14,
       44,
       48
@@ -6155,7 +10159,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-198"
+     "id": "obj-201",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6173,7 +10221,7 @@
       110,
       22
      ],
-     "id": "obj-199"
+     "id": "obj-202"
     }
    },
    {
@@ -6188,14 +10236,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      870,
+      840,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      870,
+      840,
       64,
       44,
       48
@@ -6215,7 +10263,51 @@
        "parameter_unitstyle": 2
       }
      },
-     "id": "obj-200"
+     "id": "obj-203",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6233,7 +10325,7 @@
       110,
       22
      ],
-     "id": "obj-201"
+     "id": "obj-204"
     }
    },
    {
@@ -6248,14 +10340,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      926,
+      896,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      926,
+      896,
       64,
       44,
       48
@@ -6275,7 +10367,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-202"
+     "id": "obj-205",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6293,7 +10429,7 @@
       103,
       22
      ],
-     "id": "obj-203"
+     "id": "obj-206"
     }
    },
    {
@@ -6308,14 +10444,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      982,
+      952,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      982,
+      952,
       64,
       44,
       48
@@ -6335,7 +10471,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-204"
+     "id": "obj-207",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6353,7 +10533,7 @@
       131,
       22
      ],
-     "id": "obj-205"
+     "id": "obj-208"
     }
    },
    {
@@ -6368,14 +10548,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1038,
+      1008,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1038,
+      1008,
       64,
       44,
       48
@@ -6395,7 +10575,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-206"
+     "id": "obj-209",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6413,7 +10637,7 @@
       110,
       22
      ],
-     "id": "obj-207"
+     "id": "obj-210"
     }
    },
    {
@@ -6428,14 +10652,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1094,
+      1064,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1094,
+      1064,
       64,
       44,
       48
@@ -6455,7 +10679,51 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-208"
+     "id": "obj-211",
+     "activedialcolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "dialcolor": [
+      0.45,
+      0.305,
+      0.099,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6473,7 +10741,7 @@
       103,
       22
      ],
-     "id": "obj-209"
+     "id": "obj-212"
     }
    },
    {
@@ -6482,21 +10750,28 @@
      "text": "WAVE",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      1152,
+      1122,
       464,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1152,
+      1122,
       64,
       60,
       14
      ],
-     "id": "obj-210"
+     "id": "obj-213",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -6512,14 +10787,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1152,
+      1122,
       480,
       112,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1152,
+      1122,
       80,
       112,
       16
@@ -6545,7 +10820,69 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-211"
+     "id": "obj-214",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6563,7 +10900,7 @@
       124,
       22
      ],
-     "id": "obj-212"
+     "id": "obj-215"
     }
    },
    {
@@ -6572,21 +10909,28 @@
      "text": "PITCH MODE",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      870,
+      840,
       516,
       80,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      870,
+      840,
       116,
       80,
       14
      ],
-     "id": "obj-213"
+     "id": "obj-216",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -6602,14 +10946,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      870,
+      840,
       532,
       84,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      870,
+      840,
       132,
       84,
       16
@@ -6633,7 +10977,69 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-214"
+     "id": "obj-217",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "activebgoncolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6651,7 +11057,7 @@
       103,
       22
      ],
-     "id": "obj-215"
+     "id": "obj-218"
     }
    },
    {
@@ -6660,21 +11066,28 @@
      "text": "SCALE",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      962,
+      932,
       516,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      962,
+      932,
       116,
       60,
       14
      ],
-     "id": "obj-216"
+     "id": "obj-219",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -6690,14 +11103,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      962,
+      932,
       532,
       120,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      962,
+      932,
       132,
       120,
       16
@@ -6725,7 +11138,51 @@
        "parameter_mmax": 7
       }
      },
-     "id": "obj-217"
+     "id": "obj-220",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "activetextcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "tricolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "activetricolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6743,7 +11200,7 @@
       131,
       22
      ],
-     "id": "obj-218"
+     "id": "obj-221"
     }
    },
    {
@@ -6752,21 +11209,28 @@
      "text": "ROOT",
      "numinlets": 1,
      "numoutlets": 0,
-     "fontsize": 9.5,
+     "fontsize": 8.5,
      "patching_rect": [
-      1090,
+      1060,
       516,
       40,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1090,
+      1060,
       116,
       40,
       14
      ],
-     "id": "obj-219"
+     "id": "obj-222",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
     }
    },
    {
@@ -6782,14 +11246,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1090,
+      1060,
       532,
       52,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1090,
+      1060,
       132,
       52,
       16
@@ -6821,7 +11285,51 @@
        "parameter_mmax": 11
       }
      },
-     "id": "obj-220"
+     "id": "obj-223",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "activetextcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "tricolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "activetricolor": [
+      1.0,
+      0.678,
+      0.22,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
     }
    },
    {
@@ -6839,7 +11347,7 @@
       96,
       22
      ],
-     "id": "obj-221"
+     "id": "obj-224"
     }
    }
   ],
@@ -6863,7 +11371,7 @@
       0
      ],
      "destination": [
-      "obj-3",
+      "obj-4",
       0
      ]
     }
@@ -6875,30 +11383,6 @@
       0
      ],
      "destination": [
-      "obj-3",
-      1
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-3",
-      0
-     ],
-     "destination": [
-      "obj-4",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-3",
-      1
-     ],
-     "destination": [
       "obj-4",
       1
      ]
@@ -6907,43 +11391,7 @@
    {
     "patchline": {
      "source": [
-      "obj-1",
-      2
-     ],
-     "destination": [
-      "obj-6",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-6",
-      0
-     ],
-     "destination": [
-      "obj-7",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-7",
-      0
-     ],
-     "destination": [
-      "obj-8",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-8",
+      "obj-4",
       0
      ],
      "destination": [
@@ -6955,11 +11403,59 @@
    {
     "patchline": {
      "source": [
+      "obj-4",
+      1
+     ],
+     "destination": [
+      "obj-5",
+      1
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-1",
+      2
+     ],
+     "destination": [
+      "obj-7",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-7",
+      0
+     ],
+     "destination": [
+      "obj-8",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-8",
+      0
+     ],
+     "destination": [
+      "obj-9",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
       "obj-9",
       0
      ],
      "destination": [
-      "obj-10",
+      "obj-6",
       0
      ]
     }
@@ -6980,7 +11476,7 @@
     "patchline": {
      "source": [
       "obj-11",
-      1
+      0
      ],
      "destination": [
       "obj-12",
@@ -6991,8 +11487,8 @@
    {
     "patchline": {
      "source": [
-      "obj-11",
-      0
+      "obj-12",
+      1
      ],
      "destination": [
       "obj-13",
@@ -7015,20 +11511,8 @@
    {
     "patchline": {
      "source": [
-      "obj-14",
+      "obj-13",
       0
-     ],
-     "destination": [
-      "obj-1",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-12",
-      1
      ],
      "destination": [
       "obj-15",
@@ -7052,7 +11536,7 @@
     "patchline": {
      "source": [
       "obj-13",
-      0
+      1
      ],
      "destination": [
       "obj-16",
@@ -7075,11 +11559,11 @@
    {
     "patchline": {
      "source": [
-      "obj-20",
+      "obj-14",
       0
      ],
      "destination": [
-      "obj-23",
+      "obj-17",
       0
      ]
     }
@@ -7087,31 +11571,7 @@
    {
     "patchline": {
      "source": [
-      "obj-23",
-      0
-     ],
-     "destination": [
-      "obj-1",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-21",
-      0
-     ],
-     "destination": [
-      "obj-24",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-24",
+      "obj-17",
       0
      ],
      "destination": [
@@ -7147,11 +11607,11 @@
    {
     "patchline": {
      "source": [
-      "obj-26",
+      "obj-23",
       0
      ],
      "destination": [
-      "obj-29",
+      "obj-26",
       0
      ]
     }
@@ -7159,7 +11619,7 @@
    {
     "patchline": {
      "source": [
-      "obj-29",
+      "obj-26",
       0
      ],
      "destination": [
@@ -7171,11 +11631,11 @@
    {
     "patchline": {
      "source": [
-      "obj-27",
+      "obj-24",
       0
      ],
      "destination": [
-      "obj-30",
+      "obj-27",
       0
      ]
     }
@@ -7183,7 +11643,7 @@
    {
     "patchline": {
      "source": [
-      "obj-30",
+      "obj-27",
       0
      ],
      "destination": [
@@ -7219,11 +11679,11 @@
    {
     "patchline": {
      "source": [
-      "obj-32",
+      "obj-29",
       0
      ],
      "destination": [
-      "obj-35",
+      "obj-32",
       0
      ]
     }
@@ -7231,7 +11691,7 @@
    {
     "patchline": {
      "source": [
-      "obj-35",
+      "obj-32",
       0
      ],
      "destination": [
@@ -7243,11 +11703,11 @@
    {
     "patchline": {
      "source": [
-      "obj-33",
+      "obj-30",
       0
      ],
      "destination": [
-      "obj-36",
+      "obj-33",
       0
      ]
     }
@@ -7255,7 +11715,7 @@
    {
     "patchline": {
      "source": [
-      "obj-36",
+      "obj-33",
       0
      ],
      "destination": [
@@ -7291,11 +11751,11 @@
    {
     "patchline": {
      "source": [
-      "obj-38",
+      "obj-35",
       0
      ],
      "destination": [
-      "obj-41",
+      "obj-38",
       0
      ]
     }
@@ -7303,7 +11763,7 @@
    {
     "patchline": {
      "source": [
-      "obj-41",
+      "obj-38",
       0
      ],
      "destination": [
@@ -7315,11 +11775,11 @@
    {
     "patchline": {
      "source": [
-      "obj-39",
+      "obj-36",
       0
      ],
      "destination": [
-      "obj-42",
+      "obj-39",
       0
      ]
     }
@@ -7327,7 +11787,7 @@
    {
     "patchline": {
      "source": [
-      "obj-42",
+      "obj-39",
       0
      ],
      "destination": [
@@ -7363,11 +11823,11 @@
    {
     "patchline": {
      "source": [
-      "obj-44",
+      "obj-41",
       0
      ],
      "destination": [
-      "obj-47",
+      "obj-44",
       0
      ]
     }
@@ -7375,7 +11835,7 @@
    {
     "patchline": {
      "source": [
-      "obj-47",
+      "obj-44",
       0
      ],
      "destination": [
@@ -7387,11 +11847,11 @@
    {
     "patchline": {
      "source": [
-      "obj-45",
+      "obj-42",
       0
      ],
      "destination": [
-      "obj-48",
+      "obj-45",
       0
      ]
     }
@@ -7399,7 +11859,7 @@
    {
     "patchline": {
      "source": [
-      "obj-48",
+      "obj-45",
       0
      ],
      "destination": [
@@ -7435,11 +11895,11 @@
    {
     "patchline": {
      "source": [
-      "obj-50",
+      "obj-47",
       0
      ],
      "destination": [
-      "obj-53",
+      "obj-50",
       0
      ]
     }
@@ -7447,7 +11907,7 @@
    {
     "patchline": {
      "source": [
-      "obj-53",
+      "obj-50",
       0
      ],
      "destination": [
@@ -7459,11 +11919,11 @@
    {
     "patchline": {
      "source": [
-      "obj-51",
+      "obj-48",
       0
      ],
      "destination": [
-      "obj-54",
+      "obj-51",
       0
      ]
     }
@@ -7471,7 +11931,7 @@
    {
     "patchline": {
      "source": [
-      "obj-54",
+      "obj-51",
       0
      ],
      "destination": [
@@ -7507,11 +11967,11 @@
    {
     "patchline": {
      "source": [
-      "obj-56",
+      "obj-53",
       0
      ],
      "destination": [
-      "obj-59",
+      "obj-56",
       0
      ]
     }
@@ -7519,7 +11979,7 @@
    {
     "patchline": {
      "source": [
-      "obj-59",
+      "obj-56",
       0
      ],
      "destination": [
@@ -7531,11 +11991,11 @@
    {
     "patchline": {
      "source": [
-      "obj-57",
+      "obj-54",
       0
      ],
      "destination": [
-      "obj-60",
+      "obj-57",
       0
      ]
     }
@@ -7543,7 +12003,7 @@
    {
     "patchline": {
      "source": [
-      "obj-60",
+      "obj-57",
       0
      ],
      "destination": [
@@ -7579,11 +12039,11 @@
    {
     "patchline": {
      "source": [
-      "obj-62",
+      "obj-59",
       0
      ],
      "destination": [
-      "obj-65",
+      "obj-62",
       0
      ]
     }
@@ -7591,7 +12051,7 @@
    {
     "patchline": {
      "source": [
-      "obj-65",
+      "obj-62",
       0
      ],
      "destination": [
@@ -7603,11 +12063,11 @@
    {
     "patchline": {
      "source": [
-      "obj-63",
+      "obj-60",
       0
      ],
      "destination": [
-      "obj-66",
+      "obj-63",
       0
      ]
     }
@@ -7615,7 +12075,7 @@
    {
     "patchline": {
      "source": [
-      "obj-66",
+      "obj-63",
       0
      ],
      "destination": [
@@ -7651,11 +12111,11 @@
    {
     "patchline": {
      "source": [
-      "obj-68",
+      "obj-65",
       0
      ],
      "destination": [
-      "obj-71",
+      "obj-68",
       0
      ]
     }
@@ -7663,7 +12123,7 @@
    {
     "patchline": {
      "source": [
-      "obj-71",
+      "obj-68",
       0
      ],
      "destination": [
@@ -7675,11 +12135,11 @@
    {
     "patchline": {
      "source": [
-      "obj-69",
+      "obj-66",
       0
      ],
      "destination": [
-      "obj-72",
+      "obj-69",
       0
      ]
     }
@@ -7687,7 +12147,7 @@
    {
     "patchline": {
      "source": [
-      "obj-72",
+      "obj-69",
       0
      ],
      "destination": [
@@ -7723,11 +12183,11 @@
    {
     "patchline": {
      "source": [
-      "obj-74",
+      "obj-71",
       0
      ],
      "destination": [
-      "obj-77",
+      "obj-74",
       0
      ]
     }
@@ -7735,7 +12195,7 @@
    {
     "patchline": {
      "source": [
-      "obj-77",
+      "obj-74",
       0
      ],
      "destination": [
@@ -7747,11 +12207,11 @@
    {
     "patchline": {
      "source": [
-      "obj-75",
+      "obj-72",
       0
      ],
      "destination": [
-      "obj-78",
+      "obj-75",
       0
      ]
     }
@@ -7759,7 +12219,7 @@
    {
     "patchline": {
      "source": [
-      "obj-78",
+      "obj-75",
       0
      ],
      "destination": [
@@ -7795,11 +12255,11 @@
    {
     "patchline": {
      "source": [
-      "obj-80",
+      "obj-77",
       0
      ],
      "destination": [
-      "obj-83",
+      "obj-80",
       0
      ]
     }
@@ -7807,7 +12267,7 @@
    {
     "patchline": {
      "source": [
-      "obj-83",
+      "obj-80",
       0
      ],
      "destination": [
@@ -7819,11 +12279,11 @@
    {
     "patchline": {
      "source": [
-      "obj-81",
+      "obj-78",
       0
      ],
      "destination": [
-      "obj-84",
+      "obj-81",
       0
      ]
     }
@@ -7831,7 +12291,7 @@
    {
     "patchline": {
      "source": [
-      "obj-84",
+      "obj-81",
       0
      ],
      "destination": [
@@ -7867,11 +12327,11 @@
    {
     "patchline": {
      "source": [
-      "obj-86",
+      "obj-83",
       0
      ],
      "destination": [
-      "obj-89",
+      "obj-86",
       0
      ]
     }
@@ -7879,7 +12339,7 @@
    {
     "patchline": {
      "source": [
-      "obj-89",
+      "obj-86",
       0
      ],
      "destination": [
@@ -7891,11 +12351,11 @@
    {
     "patchline": {
      "source": [
-      "obj-87",
+      "obj-84",
       0
      ],
      "destination": [
-      "obj-90",
+      "obj-87",
       0
      ]
     }
@@ -7903,7 +12363,7 @@
    {
     "patchline": {
      "source": [
-      "obj-90",
+      "obj-87",
       0
      ],
      "destination": [
@@ -7939,11 +12399,11 @@
    {
     "patchline": {
      "source": [
-      "obj-92",
+      "obj-89",
       0
      ],
      "destination": [
-      "obj-95",
+      "obj-92",
       0
      ]
     }
@@ -7951,7 +12411,7 @@
    {
     "patchline": {
      "source": [
-      "obj-95",
+      "obj-92",
       0
      ],
      "destination": [
@@ -7963,11 +12423,11 @@
    {
     "patchline": {
      "source": [
-      "obj-93",
+      "obj-90",
       0
      ],
      "destination": [
-      "obj-96",
+      "obj-93",
       0
      ]
     }
@@ -7975,7 +12435,7 @@
    {
     "patchline": {
      "source": [
-      "obj-96",
+      "obj-93",
       0
      ],
      "destination": [
@@ -8011,11 +12471,11 @@
    {
     "patchline": {
      "source": [
-      "obj-98",
+      "obj-95",
       0
      ],
      "destination": [
-      "obj-101",
+      "obj-98",
       0
      ]
     }
@@ -8023,7 +12483,7 @@
    {
     "patchline": {
      "source": [
-      "obj-101",
+      "obj-98",
       0
      ],
      "destination": [
@@ -8035,11 +12495,11 @@
    {
     "patchline": {
      "source": [
-      "obj-99",
+      "obj-96",
       0
      ],
      "destination": [
-      "obj-102",
+      "obj-99",
       0
      ]
     }
@@ -8047,7 +12507,7 @@
    {
     "patchline": {
      "source": [
-      "obj-102",
+      "obj-99",
       0
      ],
      "destination": [
@@ -8083,11 +12543,11 @@
    {
     "patchline": {
      "source": [
-      "obj-104",
+      "obj-101",
       0
      ],
      "destination": [
-      "obj-107",
+      "obj-104",
       0
      ]
     }
@@ -8095,7 +12555,7 @@
    {
     "patchline": {
      "source": [
-      "obj-107",
+      "obj-104",
       0
      ],
      "destination": [
@@ -8107,11 +12567,11 @@
    {
     "patchline": {
      "source": [
-      "obj-105",
+      "obj-102",
       0
      ],
      "destination": [
-      "obj-108",
+      "obj-105",
       0
      ]
     }
@@ -8119,7 +12579,7 @@
    {
     "patchline": {
      "source": [
-      "obj-108",
+      "obj-105",
       0
      ],
      "destination": [
@@ -8155,11 +12615,11 @@
    {
     "patchline": {
      "source": [
-      "obj-110",
+      "obj-107",
       0
      ],
      "destination": [
-      "obj-113",
+      "obj-110",
       0
      ]
     }
@@ -8167,7 +12627,7 @@
    {
     "patchline": {
      "source": [
-      "obj-113",
+      "obj-110",
       0
      ],
      "destination": [
@@ -8179,11 +12639,11 @@
    {
     "patchline": {
      "source": [
-      "obj-111",
+      "obj-108",
       0
      ],
      "destination": [
-      "obj-114",
+      "obj-111",
       0
      ]
     }
@@ -8191,7 +12651,7 @@
    {
     "patchline": {
      "source": [
-      "obj-114",
+      "obj-111",
       0
      ],
      "destination": [
@@ -8227,11 +12687,11 @@
    {
     "patchline": {
      "source": [
-      "obj-117",
+      "obj-113",
       0
      ],
      "destination": [
-      "obj-118",
+      "obj-116",
       0
      ]
     }
@@ -8239,11 +12699,47 @@
    {
     "patchline": {
      "source": [
-      "obj-118",
+      "obj-116",
       0
      ],
      "destination": [
       "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-114",
+      0
+     ],
+     "destination": [
+      "obj-117",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-117",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-119",
+      0
+     ],
+     "destination": [
+      "obj-120",
       0
      ]
     }
@@ -8255,18 +12751,6 @@
       0
      ],
      "destination": [
-      "obj-121",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-121",
-      0
-     ],
-     "destination": [
       "obj-1",
       0
      ]
@@ -8275,11 +12759,11 @@
    {
     "patchline": {
      "source": [
-      "obj-123",
+      "obj-122",
       0
      ],
      "destination": [
-      "obj-124",
+      "obj-123",
       0
      ]
     }
@@ -8287,7 +12771,7 @@
    {
     "patchline": {
      "source": [
-      "obj-124",
+      "obj-123",
       0
      ],
      "destination": [
@@ -8347,31 +12831,19 @@
    {
     "patchline": {
      "source": [
+      "obj-129",
+      0
+     ],
+     "destination": [
       "obj-130",
       0
-     ],
-     "destination": [
-      "obj-131",
-      0
      ]
     }
    },
    {
     "patchline": {
      "source": [
-      "obj-131",
-      0
-     ],
-     "destination": [
-      "obj-132",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-132",
+      "obj-130",
       0
      ],
      "destination": [
@@ -8383,19 +12855,7 @@
    {
     "patchline": {
      "source": [
-      "obj-138",
-      0
-     ],
-     "destination": [
-      "obj-139",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-139",
+      "obj-132",
       0
      ],
      "destination": [
@@ -8407,11 +12867,23 @@
    {
     "patchline": {
      "source": [
-      "obj-140",
+      "obj-133",
       0
      ],
      "destination": [
-      "obj-141",
+      "obj-134",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-134",
+      0
+     ],
+     "destination": [
+      "obj-1",
       0
      ]
     }
@@ -8423,7 +12895,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-142",
       0
      ]
     }
@@ -8435,7 +12907,7 @@
       0
      ],
      "destination": [
-      "obj-143",
+      "obj-135",
       0
      ]
     }
@@ -8447,7 +12919,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-144",
       0
      ]
     }
@@ -8459,7 +12931,7 @@
       0
      ],
      "destination": [
-      "obj-145",
+      "obj-1",
       0
      ]
     }
@@ -8471,7 +12943,7 @@
       0
      ],
      "destination": [
-      "obj-133",
+      "obj-146",
       0
      ]
     }
@@ -8483,7 +12955,7 @@
       0
      ],
      "destination": [
-      "obj-147",
+      "obj-1",
       0
      ]
     }
@@ -8495,7 +12967,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-148",
       0
      ]
     }
@@ -8507,7 +12979,7 @@
       0
      ],
      "destination": [
-      "obj-149",
+      "obj-135",
       0
      ]
     }
@@ -8519,7 +12991,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-150",
       0
      ]
     }
@@ -8531,7 +13003,7 @@
       0
      ],
      "destination": [
-      "obj-151",
+      "obj-1",
       0
      ]
     }
@@ -8543,7 +13015,7 @@
       0
      ],
      "destination": [
-      "obj-133",
+      "obj-152",
       0
      ]
     }
@@ -8555,7 +13027,7 @@
       0
      ],
      "destination": [
-      "obj-153",
+      "obj-1",
       0
      ]
     }
@@ -8567,7 +13039,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-154",
       0
      ]
     }
@@ -8579,7 +13051,7 @@
       0
      ],
      "destination": [
-      "obj-155",
+      "obj-135",
       0
      ]
     }
@@ -8591,7 +13063,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-156",
       0
      ]
     }
@@ -8603,7 +13075,7 @@
       0
      ],
      "destination": [
-      "obj-157",
+      "obj-1",
       0
      ]
     }
@@ -8615,7 +13087,19 @@
       0
      ],
      "destination": [
-      "obj-133",
+      "obj-158",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-158",
+      0
+     ],
+     "destination": [
+      "obj-1",
       0
      ]
     }
@@ -8639,19 +13123,7 @@
       0
      ],
      "destination": [
-      "obj-1",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
-      "obj-161",
-      0
-     ],
-     "destination": [
-      "obj-162",
+      "obj-135",
       0
      ]
     }
@@ -8663,7 +13135,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-163",
       0
      ]
     }
@@ -8675,7 +13147,7 @@
       0
      ],
      "destination": [
-      "obj-164",
+      "obj-1",
       0
      ]
     }
@@ -8687,7 +13159,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-165",
       0
      ]
     }
@@ -8699,7 +13171,7 @@
       0
      ],
      "destination": [
-      "obj-166",
+      "obj-1",
       0
      ]
     }
@@ -8711,7 +13183,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-167",
       0
      ]
     }
@@ -8723,7 +13195,7 @@
       0
      ],
      "destination": [
-      "obj-168",
+      "obj-1",
       0
      ]
     }
@@ -8735,7 +13207,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-169",
       0
      ]
     }
@@ -8747,7 +13219,7 @@
       0
      ],
      "destination": [
-      "obj-170",
+      "obj-1",
       0
      ]
     }
@@ -8759,7 +13231,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-171",
       0
      ]
     }
@@ -8771,7 +13243,7 @@
       0
      ],
      "destination": [
-      "obj-172",
+      "obj-1",
       0
      ]
     }
@@ -8783,7 +13255,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-173",
       0
      ]
     }
@@ -8795,7 +13267,7 @@
       0
      ],
      "destination": [
-      "obj-174",
+      "obj-1",
       0
      ]
     }
@@ -8807,7 +13279,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-175",
       0
      ]
     }
@@ -8819,7 +13291,7 @@
       0
      ],
      "destination": [
-      "obj-176",
+      "obj-1",
       0
      ]
     }
@@ -8831,7 +13303,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-177",
       0
      ]
     }
@@ -8843,7 +13315,7 @@
       0
      ],
      "destination": [
-      "obj-178",
+      "obj-1",
       0
      ]
     }
@@ -8852,6 +13324,18 @@
     "patchline": {
      "source": [
       "obj-178",
+      0
+     ],
+     "destination": [
+      "obj-179",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-179",
       0
      ],
      "destination": [
@@ -8911,11 +13395,11 @@
    {
     "patchline": {
      "source": [
-      "obj-185",
+      "obj-186",
       0
      ],
      "destination": [
-      "obj-186",
+      "obj-187",
       0
      ]
     }
@@ -8923,7 +13407,7 @@
    {
     "patchline": {
      "source": [
-      "obj-186",
+      "obj-187",
       0
      ],
      "destination": [
@@ -8959,23 +13443,11 @@
    {
     "patchline": {
      "source": [
-      "obj-190",
-      0
-     ],
-     "destination": [
-      "obj-191",
-      0
-     ]
-    }
-   },
-   {
-    "patchline": {
-     "source": [
       "obj-191",
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-192",
       0
      ]
     }
@@ -8987,7 +13459,7 @@
       0
      ],
      "destination": [
-      "obj-193",
+      "obj-1",
       0
      ]
     }
@@ -8999,7 +13471,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-194",
       0
      ]
     }
@@ -9011,7 +13483,7 @@
       0
      ],
      "destination": [
-      "obj-195",
+      "obj-1",
       0
      ]
     }
@@ -9023,7 +13495,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-196",
       0
      ]
     }
@@ -9035,7 +13507,7 @@
       0
      ],
      "destination": [
-      "obj-197",
+      "obj-1",
       0
      ]
     }
@@ -9047,7 +13519,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-198",
       0
      ]
     }
@@ -9059,7 +13531,7 @@
       0
      ],
      "destination": [
-      "obj-199",
+      "obj-1",
       0
      ]
     }
@@ -9071,7 +13543,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-200",
       0
      ]
     }
@@ -9083,7 +13555,7 @@
       0
      ],
      "destination": [
-      "obj-201",
+      "obj-1",
       0
      ]
     }
@@ -9095,7 +13567,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-202",
       0
      ]
     }
@@ -9107,7 +13579,7 @@
       0
      ],
      "destination": [
-      "obj-203",
+      "obj-1",
       0
      ]
     }
@@ -9119,7 +13591,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-204",
       0
      ]
     }
@@ -9131,7 +13603,7 @@
       0
      ],
      "destination": [
-      "obj-205",
+      "obj-1",
       0
      ]
     }
@@ -9143,7 +13615,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-206",
       0
      ]
     }
@@ -9155,7 +13627,7 @@
       0
      ],
      "destination": [
-      "obj-207",
+      "obj-1",
       0
      ]
     }
@@ -9167,7 +13639,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-208",
       0
      ]
     }
@@ -9179,7 +13651,7 @@
       0
      ],
      "destination": [
-      "obj-209",
+      "obj-1",
       0
      ]
     }
@@ -9188,6 +13660,18 @@
     "patchline": {
      "source": [
       "obj-209",
+      0
+     ],
+     "destination": [
+      "obj-210",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-210",
       0
      ],
      "destination": [
@@ -9284,6 +13768,30 @@
     "patchline": {
      "source": [
       "obj-221",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-223",
+      0
+     ],
+     "destination": [
+      "obj-224",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-224",
       0
      ],
      "destination": [

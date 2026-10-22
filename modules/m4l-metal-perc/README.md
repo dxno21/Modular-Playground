@@ -11,6 +11,11 @@ drei Klang-Engines, vier Wellenformen, einem 1-V/Oct-Quantizer und einem eingeba
 
 *Layout-Vorschau, aus den Positionen im Patch gerendert (`tools/render_layout.py`). Es ist kein echter Max-Screenshot, in Live sieht es ähnlich aus.*
 
+**Design:** Dark Mode mit einer Karte pro Sektion und einer Akzentfarbe je Bereich: SEQ Türkis, RANDOM Pink,
+OSC Violett, VOICE Amber. Im Sequencer sind die Beats 1 und 3 leicht hinterlegt. Alle Farben stehen zentral in
+`THEME` und `SECTIONS` in `build.py`. Dort ändern und `python3 build.py` ausführen, dann ist das ganze Device umgefärbt.
+Die Farben sind fest gesetzt und folgen nicht dem Live-Theme.
+
 ## Dateien
 
 | Datei | Inhalt |

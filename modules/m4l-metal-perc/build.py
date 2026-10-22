@@ -14,7 +14,8 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 1321
+DEVICE_WIDTH = 1300
+DEVICE_HEIGHT = 169
 
 
 # ---------------------------------------------------------------- gen~ Code
@@ -70,8 +71,8 @@ class Patch:
             "outlettype": [""], "patching_rect": [x, y, max(40, 7 * len(text) + 12), 22],
         })
 
-    def comment(self, text, pres, size=9.5):
-        return self._add({
+    def comment(self, text, pres, size=9.5, header=False):
+        return self._add({"_header": header,
             "maxclass": "comment", "text": text, "numinlets": 1, "numoutlets": 0,
             "fontsize": size, "patching_rect": [pres[0], pres[1] + 400, pres[2], pres[3]],
             "presentation": 1, "presentation_rect": pres,
@@ -165,6 +166,98 @@ def gen_box(p, code, x, y):
     return p.obj("gen~", x, y, 5, 4, ["signal"] * 4, w=300, patcher=patcher)
 
 
+# ---------------------------------------------------------------- Theme (Dark Mode)
+def rgb(hexstr, a=1.0):
+    h = hexstr.lstrip("#")
+    return [round(int(h[i:i + 2], 16) / 255, 3) for i in (0, 2, 4)] + [a]
+
+
+THEME = {
+    "bg": rgb("#131417"), "card": rgb("#1d1f23"), "card_border": rgb("#2a2d33"), "stripe": rgb("#25282d"),
+    "ctrl": rgb("#2b2e35"), "track": rgb("#3a3e46"), "border": rgb("#3a3e46"),
+    "text": rgb("#d4d7dd"), "dim": rgb("#8a8f99"), "on_accent": rgb("#111214"),
+    "font": "Ableton Sans Medium", "font_bold": "Ableton Sans Bold",
+}
+# Akzentfarbe je Sektion, Zuordnung über die x-Position in der Presentation-Ansicht
+SECTIONS = [
+    # (Name, x von, x bis, Akzent)
+    ("SEQ", 0, 440, rgb("#2ed3c4")),
+    ("RANDOM", 440, 540, rgb("#ff5c93")),
+    ("OSC", 540, 832, rgb("#9d86ff")),
+    ("VOICE", 832, 1244, rgb("#ffad38")),
+    ("OUT", 1244, DEVICE_WIDTH, rgb("#d4d7dd")),
+]
+CARDS = [[2, 2, 436, 165], [442, 2, 94, 165], [540, 2, 290, 165], [834, 2, 406, 165], [1244, 2, 54, 165]]
+
+
+def accent_for(x):
+    for _, lo, hi, acc in SECTIONS:
+        if lo <= x < hi:
+            return acc
+    return THEME["text"]
+
+
+def dim(c, f=0.45):
+    return [round(c[0] * f, 3), round(c[1] * f, 3), round(c[2] * f, 3), 1.0]
+
+
+def apply_theme(p):
+    t = THEME
+    for wrapper in p.boxes:
+        b = wrapper["box"]
+        if not b.get("presentation"):
+            continue
+        acc = accent_for(b["presentation_rect"][0])
+        mc = b["maxclass"]
+        style = {}
+        if mc == "live.dial":
+            style = {"activedialcolor": acc, "dialcolor": dim(acc), "activefgdialcolor": t["track"],
+                     "fgdialcolor": t["track"], "activeneedlecolor": t["text"], "needlecolor": t["dim"],
+                     "textcolor": t["text"], "fontname": t["font"], "fontsize": 9.0}
+        elif mc in ("live.toggle", "live.button"):
+            style = {"bgcolor": t["ctrl"], "activebgcolor": t["ctrl"], "bgoncolor": acc, "activebgoncolor": acc,
+                     "bordercolor": t["border"], "focusbordercolor": acc}
+        elif mc == "live.tab":
+            style = {"bgcolor": t["ctrl"], "activebgcolor": t["ctrl"], "bgoncolor": acc, "activebgoncolor": acc,
+                     "bordercolor": t["border"], "focusbordercolor": acc, "textcolor": t["dim"],
+                     "activetextcolor": t["dim"], "textoncolor": t["on_accent"], "activetextoncolor": t["on_accent"],
+                     "fontname": t["font"], "fontsize": 9.0}
+        elif mc == "live.menu":
+            style = {"bgcolor": t["ctrl"], "activebgcolor": t["ctrl"], "bordercolor": t["border"],
+                     "textcolor": t["text"], "activetextcolor": t["text"], "tricolor": acc, "activetricolor": acc,
+                     "fontname": t["font"], "fontsize": 9.0}
+        elif mc == "live.gain~":
+            style = {"textcolor": t["dim"], "fontname": t["font"]}
+        elif mc == "comment":
+            header = b.pop("_header", False)
+            style = {"textcolor": acc if header else t["dim"], "fontname": t["font_bold"] if header else t["font"],
+                     "fontsize": 10.0 if header else 8.5}
+        b.update(style)
+
+
+def add_panels(p):
+    """Hintergrund, Sektions-Karten und Beat-Streifen als Panels ganz nach hinten legen."""
+    panels = []
+
+    def panel(rect, color, border=None, rounded=0):
+        box = {"maxclass": "panel", "numinlets": 1, "numoutlets": 0, "background": 1, "mode": 0,
+               "bgcolor": color, "rounded": rounded, "border": 1 if border else 0,
+               "patching_rect": [rect[0], rect[1] + 400, rect[2], rect[3]],
+               "presentation": 1, "presentation_rect": rect}
+        if border:
+            box["bordercolor"] = border
+        panels.append({"box": box})
+
+    panel([0, 0, DEVICE_WIDTH, DEVICE_HEIGHT], THEME["bg"])
+    for rect in CARDS:
+        panel(rect, THEME["card"], THEME["card_border"], rounded=6)
+    for g in (0, 2):  # Beat 1 und 3 leicht hervorheben
+        panel([46 + g * 96, 18, 96, 82], THEME["stripe"], rounded=3)
+    for i, wrapper in enumerate(panels):
+        wrapper["box"]["id"] = f"panel-{i + 1}"
+    p.boxes[:0] = panels
+
+
 def build_maxpat(code):
     p = Patch()
     gen = gen_box(p, code, 40, 1000)
@@ -177,7 +270,8 @@ def build_maxpat(code):
     # ---------------- Signalfluss
     phasor = p.obj("plugphasor~", 40, 940, 1, 1, ["signal"])
     p.line(phasor, 0, gen, 0)
-    gain = p.ui("live.gain~", "out_gain", [1271, 4, 44, 160],
+    p.comment("OUT", [1250, 4, 44, 14], header=True)
+    gain = p.ui("live.gain~", "out_gain", [1252, 20, 40, 132],
                 valueof("Output", "Output", 0, -70.0, 6.0, 0.0, unit=4), 2, 5,
                 ["signal", "signal", "", "float", "list"])
     p.line(gen, 0, gain, 0)
@@ -212,9 +306,10 @@ def build_maxpat(code):
     to_gen(flip, "midi_id", 700, 1090, 0)
 
     # ---------------- Sequencer
-    p.comment("STEP", [4, 20, 40, 14])
-    p.comment("VEL", [4, 46, 40, 14])
-    p.comment("PITCH", [4, 78, 44, 14])
+    p.comment("SEQ", [8, 3, 40, 14], header=True)
+    p.comment("STEP", [8, 21, 38, 14])
+    p.comment("VEL", [8, 47, 38, 14])
+    p.comment("PITCH", [8, 79, 38, 14])
     for i in range(1, STEPS + 1):
         x = 48 + (i - 1) * 24
         on = toggle(p, f"s{i}_on", f"S{i} On", [x + 4, 20, 16, 16], 1)
@@ -226,7 +321,7 @@ def build_maxpat(code):
         to_gen(vel, f"s{i}_vel", px, 1230)
         to_gen(pit, f"s{i}_pitch", px, 1260)
 
-    p.comment("SEQ", [48, 106, 30, 14])
+    p.comment("RUN", [46, 106, 30, 14])
     to_gen(toggle(p, "seq_on", "Seq On", [48, 122, 16, 16], 1), "seq_on", 40, 1320)
     p.comment("CLOCK", [72, 106, 60, 14])
     to_gen(tab(p, "clock_mode", "Clock", [72, 122, 96, 16], ["Host", "Ext", "Int"], 0), "clock_mode", 200, 1320)
@@ -244,10 +339,11 @@ def build_maxpat(code):
 
     # ---------------- Randomizer
     js = p.obj("js seq_random.js", 40, 1400, 1, 0, [])
-    p.comment("RND", [440, 4, 24, 14])
-    p.comment("RNG", [466, 4, 26, 14])
-    p.comment("LIVE", [498, 4, 30, 14])
-    p.comment("CLEAR", [440, 106, 40, 14])
+    p.comment("RANDOM", [446, 3, 80, 14], header=True)
+    p.comment("RND", [442, 100, 24, 12])
+    p.comment("RNG", [466, 100, 26, 12])
+    p.comment("LIVE", [496, 100, 30, 12])
+    p.comment("CLEAR", [464, 125, 40, 14])
     lanes = [
         ("steps", "density", "Density", "Dens", 0.0, 1.0, 0.6, 1, 20, "live_steps", "rand_steps"),
         ("vel", "vel_range", "Vel Range", "VRng", 0.0, 1.0, 0.5, 1, 42, "live_vel", "rand_vel"),
@@ -263,13 +359,13 @@ def build_maxpat(code):
                rvar, 200 + k * 140, 1440)
         to_gen(toggle(p, live_var, f"Live {lane.title()}", [500, y + 2, 16, 16], 0), live_var,
                200 + k * 140, 1470)
-    clr = button(p, "clear", "Clear Pattern", [444, 122, 16, 16])
+    clr = button(p, "clear", "Clear Pattern", [444, 124, 16, 16])
     clr_m = p.msg("clear_pattern", 620, 1400)
     p.line(clr, 0, clr_m, 0)
     p.line(clr_m, 0, js, 0)
 
     # ---------------- Oszillatoren
-    p.comment("OSC", [550, 2, 60, 14])
+    p.comment("OSC", [548, 3, 60, 14], header=True)
     osc_rows = [
         (14, [("voices", "Voices", 1, 6, 6, 0, 1), ("spread", "Spread", 0.0, 2.0, 1.0, 1, 0),
               ("detune", "Detune", 0.0, 50.0, 0.0, 1, 0), ("tilt", "Tilt", -1.0, 1.0, 0.0, 1, 0),
@@ -291,7 +387,7 @@ def build_maxpat(code):
            "sweep_time", 360, 1720)
 
     # ---------------- Voice
-    p.comment("VOICE", [870, 2, 60, 14])
+    p.comment("VOICE", [842, 3, 60, 14], header=True)
     row1 = [
         ("tune", "Tune", 24.0, 96.0, 56.0, 8),
         ("morph", "Morph", 0.0, 1.0, 0.0, 1),
@@ -309,19 +405,21 @@ def build_maxpat(code):
     ]
     for row, y in ((row1, 14), (row2, 64)):
         for c, (var, name, lo, hi, init, unit) in enumerate(row):
-            d = dial(p, var, name, name, [870 + c * 56, y, 44, 48], lo, hi, init, unit=unit)
+            d = dial(p, var, name, name, [840 + c * 56, y, 44, 48], lo, hi, init, unit=unit)
             to_gen(d, var, 40 + c * 140 + (0 if y == 14 else 70), 1520 if y == 14 else 1550)
-    p.comment("WAVE", [1152, 64, 60, 14])
-    to_gen(tab(p, "waveform", "Wave", [1152, 80, 112, 16], ["Sin", "Sqr", "Saw", "Tri"], 1), "waveform", 40, 1600)
-    p.comment("PITCH MODE", [870, 116, 80, 14])
-    to_gen(tab(p, "qmode", "Pitch Mode", [870, 132, 84, 16], ["Loose", "Scale"], 1), "qmode", 200, 1600)
-    p.comment("SCALE", [962, 116, 60, 14])
-    to_gen(menu(p, "scale_sel", "Scale", [962, 132, 120, 16], [n.replace("_", " ").title() for n in SCALE_NAMES], 1),
+    p.comment("WAVE", [1122, 64, 60, 14])
+    to_gen(tab(p, "waveform", "Wave", [1122, 80, 112, 16], ["Sin", "Sqr", "Saw", "Tri"], 1), "waveform", 40, 1600)
+    p.comment("PITCH MODE", [840, 116, 80, 14])
+    to_gen(tab(p, "qmode", "Pitch Mode", [840, 132, 84, 16], ["Loose", "Scale"], 1), "qmode", 200, 1600)
+    p.comment("SCALE", [932, 116, 60, 14])
+    to_gen(menu(p, "scale_sel", "Scale", [932, 132, 120, 16], [n.replace("_", " ").title() for n in SCALE_NAMES], 1),
            "scale_sel", 360, 1600)
-    p.comment("ROOT", [1090, 116, 40, 14])
-    to_gen(menu(p, "root", "Root", [1090, 132, 52, 16],
+    p.comment("ROOT", [1060, 116, 40, 14])
+    to_gen(menu(p, "root", "Root", [1060, 132, 52, 16],
                 ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"], 0), "root", 520, 1600)
 
+    apply_theme(p)
+    add_panels(p)
     return {
         "patcher": {
             "fileversion": 1,
