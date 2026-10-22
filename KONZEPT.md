@@ -108,6 +108,20 @@ Pro Modul: Funktion, Klangcharakter-Tags, HP, Stromverbrauch (+12 V / −12 V / 
 
 ---
 
+## 4b. Zwei Tools, ein gemeinsames Patch-Format
+
+| | Tool 1: M4L-Rack | Tool 2: Hardware-Planer |
+|---|---|---|
+| Zweck | Eigene Module bauen und spielen | Echte Module recherchieren, Rack und Verkabelung planen |
+| Umgebung | Max for Live in Ableton | Web-App im Browser |
+| Inhalt | `gen~`-Module, Routing-Matrix | Modul-Datenbank, Case-Layout (HP/Reihen), Strombudget, Kabel-Editor |
+
+Beide Tools speichern dasselbe **Patch-Format** (JSON: Module + Verbindungen). Ein im Planer geplanter Patch lässt sich
+im M4L-Rack mit den digitalen Gegenstücken anhören. Später kann man ihn auch als VCV-Patch exportieren.
+
+**Modul-Standard für das M4L-Rack:** Alle Ein- und Ausgänge sind Signale (auch Trigger und Gates).
+Die CV-Skalierung ist ±1.0 = ±5 V, Pitch ist 1 V/Oct (0.1 = 1 Oktave). Die Parameter haben feste Namen, damit die KI sie setzen kann.
+
 ## 5. Roadmap
 
 1. **MVP (ohne KI):** VCV Rack Pro in Live, CV Tools, 3–4 handgebaute Start-Patches (Kick-Rumble, Metall-Perc, Drone).
