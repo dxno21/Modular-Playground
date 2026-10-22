@@ -131,6 +131,6 @@ Die Hörproben sind normalisiert. Neu rendern mit `python3 reference/metal_perc_
 ## Bekannte Grenzen
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 93 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 90 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.
