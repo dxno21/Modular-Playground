@@ -159,6 +159,22 @@ Param hum(0, min=0, max=1);           // Brumm
 Param hum_hz(0, min=0, max=1);        // 0 = 50 Hz, 1 = 60 Hz
 Param seed(1, min=0, max=999);        // Charakter dieser Instanz
 Param quality(1, min=0, max=2);       // Oversampling 1x / 2x / 4x
+
+// ---------- Parameter: Filter ----------
+Param flt_type(0, min=0, max=4);      // 0 Off, 1 LP, 2 BP, 3 HP, 4 Notch
+Param cutoff(2000, min=20, max=18000); // Hz
+Param reso(0.2, min=0, max=1);
+Param flt_env(0, min=-1, max=1);      // Mod-Hüllkurve -> Cutoff, ±6 Oktaven
+Param key_trk(0, min=0, max=1);       // Cutoff folgt der Tonhöhe (1 = 100 %)
+
+// ---------- Parameter: Mod-Hüllkurve ----------
+Param menv_atk(2, min=0.1, max=500);  // ms
+Param menv_dec(150, min=5, max=3000); // ms
+Param menv_curve(0.6, min=0, max=1);  // 0 linear, 1 stark exponentiell
+Param menv_loop(0, min=0, max=1);     // 0 einmal, 1 Loop (AD-Zyklus läuft durch)
+Param menv_pitch(0, min=-24, max=24); // Halbtöne
+Param menv_fm(0, min=-1, max=1);      // zusätzlicher FM-Index
+Param menv_fold(0, min=0, max=1);     // zusätzlicher Fold
 Param accent(0.5, min=0, max=1);      // Velocity -> Decay/Helligkeit
 Param level(0.8, min=0, max=1);
 
@@ -231,6 +247,8 @@ History rt_total(0);
 History rt_int(0);
 History rt_vel(1);
 History rt_note(56);
+History me_lin(0);   // Mod-Hüllkurve: linearer Verlauf 0..1
+History me_stage(0); // 0 aus, 1 Attack, 2 Decay
 History env(0);
 History att(0);
 History target(0);
@@ -259,7 +277,7 @@ Data dr(9);     // Drift: 0-7 Oszillatoren, 8 global
 Data fq(8);
 Data slc(8);    // Slew-Koeffizient pro Oszillator     // Frequenz-Faktor pro Oszillator (Toleranz, Drift, Jitter)
 Data tol(40);   // Toleranzen: [i] Cent, [8+i] PW, [16+i] DC, [24+i] Slew, [32+j] Moden/Filter
-Data st(24);    // Filterzustände
+Data st(26);    // Filterzustände
 
 // ---------- Clock ----------
 spb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat
@@ -460,6 +478,7 @@ if (start > 0.5) {
 	att = 1;
 	exc = 1;
 	pe = 1;
+	me_stage = 1;
 	if (retrig > 0.5) {
 		for (r = 0; r < 8; r += 1) {
 			poke(ph, 0, r);
@@ -494,8 +513,31 @@ if (env > vac) {
 }
 
 pe = pe * exp(-6.9078 / (sweep_time * 0.001 * samplerate));
+
+// Mod-Hüllkurve (AD, optional Loop): linear gerechnet, Ausgabe mit Kurve geformt, skaliert mit der Velocity
+if (me_stage > 1.5) {
+	me_lin = me_lin - 1 / (menv_dec * 0.001 * samplerate);
+	if (me_lin <= 0) {
+		me_lin = 0;
+		me_stage = 0;
+		if (menv_loop > 0.5) {
+			me_stage = 1;
+		}
+	}
+} else if (me_stage > 0.5) {
+	me_lin = me_lin + 1 / (menv_atk * 0.001 * samplerate);
+	if (me_lin >= 1) {
+		me_lin = 1;
+		me_stage = 2;
+	}
+}
+me_out = me_lin;
+if (me_stage > 1.5 || me_stage < 0.5) {
+	me_out = mix(me_lin, me_lin * me_lin * me_lin * me_lin, menv_curve);
+}
+me_v = me_out * (0.5 + 0.5 * hit_vel);
 gdrift = peek(dr, 8) * d_norm * drift_c * 0.5;
-f0 = mtof(hit_note + sweep * pe + gdrift * 0.01) * (1 - sag * 0.012 * sagf);
+f0 = mtof(hit_note + sweep * pe + menv_pitch * me_v + gdrift * 0.01) * (1 - sag * 0.012 * sagf);
 w = floor(waveform + 0.5);
 mw = floor(mod_wave + 0.5);
 acc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);
@@ -505,7 +547,7 @@ nv = floor(voices + 0.5);
 osf = selector(floor(quality + 0.5) + 1, 1, 2, 4);
 sr2 = samplerate * osf;
 nyq = sr2 * 0.45;
-idx = fm_amt * 2 * env * (1 - accent * 0.4 + accent * 0.4 * hit_vel);
+idx = max(0, fm_amt * 2 * env * (1 - accent * 0.4 + accent * 0.4 * hit_vel) + menv_fm * 2 * me_v);
 amp = env;
 if (amp_mode > 0.5) {
 	amp = pow(vac, 1.4);
@@ -513,7 +555,12 @@ if (amp_mode > 0.5) {
 amp_ab = amp + bleed;
 lpg_fc = mix(16000, 60 * pow(2, vac * 8.2), lpg_color);
 q = mix(400, 12, damp);
-fold_g = 1 + wfold * 5;
+fold_e = clamp(wfold + menv_fold * me_v, 0, 1);
+fold_g = 1 + fold_e * 5;
+// Filter: Cutoff mit Hüllkurve, Key-Tracking (relativ zu C3) und Bauteil-Toleranz
+flt_fc = cutoff * pow(2, flt_env * 6 * me_v + key_trk * (hit_note - 60) / 12) * (1 + an * 0.05 * peek(tol, 38));
+flt_q = 0.5 + reso * reso * 24;
+ft = floor(flt_type + 0.5);
 dg = 1 + drive * 12;
 ab = asym * 0.3;
 
@@ -623,9 +670,19 @@ for (o = 0; o < osf; o += 1) {
 		voice = svf(voice, lpg_fc, 0.6, sr2, st, 14, 0, ota);
 	}
 
+	// ---------- Multimode-Filter (vor Fold und Drive) ----------
+	if (ft > 0.5) {
+		fcl = clamp(flt_fc, 20, nyq);
+		if (ft > 3.5) {
+			voice = voice - svf(voice, fcl, flt_q, sr2, st, 24, 1, ota);
+		} else {
+			voice = svf(voice, fcl, flt_q, sr2, st, 24, ft - 1, ota);
+		}
+	}
+
 	// ---------- Wavefolder + asymmetrische Sättigung ----------
-	if (wfold > 0.001) {
-		voice = mix(voice, sin(voice * fold_g * pi * 0.5), min(1, wfold * 3));
+	if (fold_e > 0.001) {
+		voice = mix(voice, sin(voice * fold_g * pi * 0.5), min(1, fold_e * 3));
 	}
 	y = (tanh(dg * (voice + ab)) - tanh(dg * ab)) / sqrt(dg);
 

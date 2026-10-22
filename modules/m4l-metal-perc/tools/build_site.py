@@ -34,6 +34,8 @@ SECTIONS = [
     ]),
     ("Presets", "#ffad38", [
         ("15_retrig_rolls_138", "Retrig-Rolls bei 138 BPM: Steps 7, 15, 16 mit x4-Retrig, Velocity fällt ab"),
+        ("16_filter_env_acid_metal", "Tiefpass mit Resonanz, von der Mod-Hüllkurve geöffnet, Key-Tracking"),
+        ("17_env_loop_pitch_fold", "Geloopte Mod-Hüllkurve auf Pitch, Fold und Bandpass"),
         ("09_lowmid_fm_metal", "Low/Mid FM Metal im Pattern, G Phrygian"),
         ("10_lowmid_fm_metal_hits_G1_D2_G2", "Low/Mid FM Metal als Einzelschläge auf G1, D2, G2"),
     ]),

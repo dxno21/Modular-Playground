@@ -14,8 +14,10 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 1836
+DEVICE_WIDTH = 2130
 SEQ_SHIFT = 100  # Breite, um die die SEQ-Sektion gewachsen ist (alles rechts davon rückt nach)
+FILTER_X = 1344  # neue Sektion FILTER · ENV beginnt hier, CIRCUIT/ANALOG/OUT rücken um FILTER_W nach
+FILTER_W = 294
 DEVICE_HEIGHT = 169
 
 
@@ -124,7 +126,7 @@ class Patch:
         self.lines.append({"patchline": {"source": [src, so], "destination": [dst, di]}})
 
 
-def valueof(longname, shortname, ptype, lo=0.0, hi=1.0, init=0.0, unit=1, enum=None, invisible=0):
+def valueof(longname, shortname, ptype, lo=0.0, hi=1.0, init=0.0, unit=1, enum=None, invisible=0, exp=None):
     v = {
         "parameter_longname": longname, "parameter_shortname": shortname,
         "parameter_type": ptype, "parameter_initial": [init], "parameter_initial_enable": 1,
@@ -135,12 +137,14 @@ def valueof(longname, shortname, ptype, lo=0.0, hi=1.0, init=0.0, unit=1, enum=N
         v["parameter_mmax"] = len(enum) - 1
     else:
         v.update({"parameter_mmin": lo, "parameter_mmax": hi, "parameter_unitstyle": unit})
+    if exp:
+        v["parameter_exponent"] = exp
     return v
 
 
-def dial(p, var, longname, shortname, pres, lo, hi, init, ptype=0, unit=1, small=False):
+def dial(p, var, longname, shortname, pres, lo, hi, init, ptype=0, unit=1, small=False, exp=None):
     attrs = {"showname": 0, "shownumber": 0} if small else {}
-    return p.ui("live.dial", var, pres, valueof(longname, shortname, ptype, lo, hi, init, unit),
+    return p.ui("live.dial", var, pres, valueof(longname, shortname, ptype, lo, hi, init, unit, exp=exp),
                 1, 2, ["", "float"], **attrs)
 
 
@@ -215,12 +219,13 @@ SECTIONS = [
     ("RANDOM", 540, 640, rgb("#ff5c93")),
     ("OSC", 640, 932, rgb("#9d86ff")),
     ("VOICE", 932, 1342, rgb("#ffad38")),
-    ("CIRCUIT", 1342, 1586, rgb("#ff6b4a")),
-    ("ANALOG", 1586, 1778, rgb("#7bd88f")),
-    ("OUT", 1778, DEVICE_WIDTH, rgb("#d4d7dd")),
+    ("FILTER", 1342, 1636, rgb("#4fb3ff")),
+    ("CIRCUIT", 1636, 1880, rgb("#ff6b4a")),
+    ("ANALOG", 1880, 2072, rgb("#7bd88f")),
+    ("OUT", 2072, DEVICE_WIDTH, rgb("#d4d7dd")),
 ]
 CARDS = [[2, 2, 536, 165], [542, 2, 94, 165], [640, 2, 290, 165], [934, 2, 406, 165],
-         [1344, 2, 240, 165], [1588, 2, 188, 165], [1780, 2, 54, 165]]
+         [1344, 2, 290, 165], [1638, 2, 240, 165], [1882, 2, 188, 165], [2074, 2, 54, 165]]
 
 
 def accent_for(x):
@@ -484,6 +489,34 @@ def build_maxpat(code):
         if b.get("presentation") and b["presentation_rect"][0] >= 440:
             b["presentation_rect"][0] += SEQ_SHIFT
             b["patching_rect"][0] += SEQ_SHIFT
+
+    # CIRCUIT, ANALOG und OUT für die neue Sektion FILTER · ENV nach rechts schieben
+    for wrapper in p.boxes:
+        b = wrapper["box"]
+        if b.get("presentation") and b["presentation_rect"][0] >= FILTER_X:
+            b["presentation_rect"][0] += FILTER_W
+            b["patching_rect"][0] += FILTER_W
+
+    # ---------------- FILTER · ENV
+    fx = FILTER_X + 6
+    p.comment("FILTER · ENV", [fx, 3, 120, 14], header=True)
+    for c, (var, name, lo, hi, init, unit, exp) in enumerate([
+            ("cutoff", "Cutoff", 20.0, 18000.0, 2000.0, 3, 4.0), ("reso", "Reso", 0.0, 1.0, 0.2, 1, None),
+            ("flt_env", "Flt Env", -1.0, 1.0, 0.0, 1, None), ("key_trk", "Key Trk", 0.0, 1.0, 0.0, 1, None),
+            ("menv_fold", "Env Fold", 0.0, 1.0, 0.0, 1, None)]):
+        to_gen(dial(p, var, name, name, [fx - 2 + c * 56, 14, 44, 48], lo, hi, init, unit=unit, exp=exp),
+               var, 40 + c * 140, 1960)
+    for c, (var, name, lo, hi, init, unit, exp) in enumerate([
+            ("menv_atk", "Env Atk", 0.1, 500.0, 2.0, 2, 3.0), ("menv_dec", "Env Dec", 5.0, 3000.0, 150.0, 2, 3.0),
+            ("menv_curve", "Curve", 0.0, 1.0, 0.6, 1, None), ("menv_pitch", "Env Pitch", -24.0, 24.0, 0.0, 7, None),
+            ("menv_fm", "Env FM", -1.0, 1.0, 0.0, 1, None)]):
+        to_gen(dial(p, var, name, name, [fx - 2 + c * 56, 64, 44, 48], lo, hi, init, unit=unit, exp=exp),
+               var, 40 + c * 140, 1990)
+    p.comment("FILTER", [fx - 2, 116, 60, 14])
+    to_gen(tab(p, "flt_type", "Filter Type", [fx - 2, 132, 180, 16], ["Off", "LP", "BP", "HP", "Notch"], 0),
+           "flt_type", 40, 2020)
+    p.comment("ENV", [fx + 186, 116, 60, 14])
+    to_gen(tab(p, "menv_loop", "Env Loop", [fx + 186, 132, 90, 16], ["One", "Loop"], 0), "menv_loop", 200, 2020)
 
     # ---------------- Sound-Randomizer (OSC, VOICE, beide), Positionen nach der Verschiebung
     for var, longname, rect, msg_text, lbl, lrect in [

@@ -31,6 +31,8 @@ def fmt(v, vo):
         return f"{v:+.0f} st"
     if u == 4:
         return f"{v:.1f} dB"
+    if u == 3:
+        return f"{v / 1000:.2f} kHz" if v >= 1000 else f"{v:.0f} Hz"
     if u == 2:
         return f"{v:.1f} ms" if v < 10 else f"{v:.0f} ms"
     if t == 1 or u == 0:
@@ -61,6 +63,8 @@ for wrapper in p["boxes"]:
     elif mc == "live.dial":
         lo, hi = vo["parameter_mmin"], vo["parameter_mmax"]
         f = (init - lo) / (hi - lo) if hi > lo else 0
+        if vo.get("parameter_exponent"):
+            f = f ** (1 / vo["parameter_exponent"])
         small = b.get("showname") == 0
         d = min(w, h - (0 if small else 22)) - 2
         cx, cy = x + w / 2, y + (h / 2 if small else 11 + d / 2 + 1)

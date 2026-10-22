@@ -16,7 +16,7 @@
    900
   ],
   "openinpresentation": 1,
-  "devicewidth": 1836,
+  "devicewidth": 2130,
   "default_fontsize": 10.0,
   "boxes": [
    {
@@ -37,14 +37,14 @@
      "patching_rect": [
       0,
       400,
-      1836,
+      2130,
       169
      ],
      "presentation": 1,
      "presentation_rect": [
       0,
       0,
-      1836,
+      2130,
       169
      ],
      "id": "panel-1"
@@ -216,14 +216,14 @@
      "patching_rect": [
       1344,
       402,
-      240,
+      290,
       165
      ],
      "presentation": 1,
      "presentation_rect": [
       1344,
       2,
-      240,
+      290,
       165
      ],
      "bordercolor": [
@@ -251,16 +251,16 @@
      "rounded": 6,
      "border": 1,
      "patching_rect": [
-      1588,
+      1638,
       402,
-      188,
+      240,
       165
      ],
      "presentation": 1,
      "presentation_rect": [
-      1588,
+      1638,
       2,
-      188,
+      240,
       165
      ],
      "bordercolor": [
@@ -288,16 +288,16 @@
      "rounded": 6,
      "border": 1,
      "patching_rect": [
-      1780,
+      1882,
       402,
-      54,
+      188,
       165
      ],
      "presentation": 1,
      "presentation_rect": [
-      1780,
+      1882,
       2,
-      54,
+      188,
       165
      ],
      "bordercolor": [
@@ -317,25 +317,31 @@
      "background": 1,
      "mode": 0,
      "bgcolor": [
-      0.145,
-      0.157,
-      0.176,
+      0.114,
+      0.122,
+      0.137,
       1.0
      ],
-     "rounded": 3,
-     "border": 0,
+     "rounded": 6,
+     "border": 1,
      "patching_rect": [
-      46,
-      418,
-      96,
-      86
+      2074,
+      402,
+      54,
+      165
      ],
      "presentation": 1,
      "presentation_rect": [
-      46,
-      18,
-      96,
-      86
+      2074,
+      2,
+      54,
+      165
+     ],
+     "bordercolor": [
+      0.165,
+      0.176,
+      0.2,
+      1.0
      ],
      "id": "panel-9"
     }
@@ -356,6 +362,37 @@
      "rounded": 3,
      "border": 0,
      "patching_rect": [
+      46,
+      418,
+      96,
+      86
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      46,
+      18,
+      96,
+      86
+     ],
+     "id": "panel-10"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "panel",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "background": 1,
+     "mode": 0,
+     "bgcolor": [
+      0.145,
+      0.157,
+      0.176,
+      1.0
+     ],
+     "rounded": 3,
+     "border": 0,
+     "patching_rect": [
       238,
       418,
       96,
@@ -368,7 +405,7 @@
       96,
       86
      ],
-     "id": "panel-10"
+     "id": "panel-11"
     }
    },
    {
@@ -499,7 +536,7 @@
        {
         "box": {
          "maxclass": "codebox",
-         "code": "// =====================================================================\n// m4l-metal-perc – metallischer Percussion-Generator mit Step-Sequencer\n// gen~ Codebox (GenExpr). Diese Datei wird von build.py erzeugt:\n// Quelle ist src/metal_perc.genexpr.in – dort editieren, nicht hier.\n//\n// Eingänge  (Signal, Konvention: ±1.0 = ±5 V)\n//   in1  Host-Beat-Phase (plugphasor~, 0..1 pro Beat)\n//   in2  Ext Clock (steigende Flanke = 1 Step)\n//   in3  Ext Reset (steigende Flanke)\n//   in4  Pitch CV, 1 V/Oct (0.2 = 1 Oktave), wird beim Trigger gehalten\n//   in5  Ext Trigger (spielt die Voice direkt, unabhängig vom Sequencer)\n// Ausgänge\n//   out1 Audio\n//   out2 Hüllkurve (0..1)\n//   out3 aktueller Step (0..15)\n//   out4 Gate/Trigger-Out (5 ms)\n// =====================================================================\n\n// ---------- Hilfsfunktionen ----------\nblep(t, dt) {\n\tr = 0;\n\tif (t < dt) {\n\t\tx = t / dt;\n\t\tr = x + x - x * x - 1;\n\t} else if (t > 1 - dt) {\n\t\tx = (t - 1) / dt;\n\t\tr = x * x + x + x + 1;\n\t}\n\treturn r;\n}\n\n// w: 0 Sine, 1 Square/Pulse (Breite pw), 2 Saw, 3 Triangle (bandbegrenzt via polyBLEP)\nosc(p, dt, w, pw) {\n\ty = 0;\n\tif (w < 0.5) {\n\t\ty = sin(twopi * p);\n\t} else if (w < 1.5) {\n\t\tsq = 1;\n\t\tif (p >= pw) {\n\t\t\tsq = -1;\n\t\t}\n\t\ty = sq + blep(p, dt) - blep(fract(p + 1 - pw), dt) - (2 * pw - 1);\n\t} else if (w < 2.5) {\n\t\ty = 2 * p - 1 - blep(p, dt);\n\t} else {\n\t\ty = 4 * abs(p - 0.5) - 1;\n\t}\n\treturn y;\n}\n\n// Nächstliegende Note in der Skala (mask = 12-Bit-Maske ab Grundton)\nquant(n, root, mask) {\n\tbase = floor(n + 0.5);\n\tbest = base;\n\tbestd = 100;\n\tfor (k = -6; k <= 6; k += 1) {\n\t\tcand = base + k;\n\t\tdeg = cand - root;\n\t\tdeg = deg - floor(deg / 12) * 12;\n\t\tbit = floor(mask / pow(2, deg));\n\t\tbit = bit - floor(bit / 2) * 2;\n\t\td = abs(cand - n);\n\t\tif (bit > 0.5 && d < bestd) {\n\t\t\tbest = cand;\n\t\t\tbestd = d;\n\t\t}\n\t}\n\treturn best;\n}\n\n// TPT-State-Variable-Filter mit optionaler OTA-Sättigung der Eingangsstufe (sat > 0).\n// mode 0 Lowpass, 1 Bandpass (unity peak), 2 Highpass. Zustände in Data st an i, i+1.\nsvf(x, fc, q, sr, st, i, mode, sat) {\n\tg = tan(pi * min(fc, sr * 0.49) / sr);\n\tk = 1 / q;\n\ta1 = 1 / (1 + g * (g + k));\n\ta2 = g * a1;\n\ta3 = g * a2;\n\tic1 = peek(st, i);\n\tic2 = peek(st, i + 1);\n\tv3 = x - ic2;\n\tif (sat > 0.001) {\n\t\tv3 = tanh(v3 * sat) / sat;\n\t}\n\tv1 = a1 * ic1 + a2 * v3;\n\tv2 = ic2 + a2 * ic1 + a3 * v3;\n\tpoke(st, 2 * v1 - ic1, i);\n\tpoke(st, 2 * v2 - ic2, i + 1);\n\ty = v2;\n\tif (mode > 1.5) {\n\t\ty = x - k * v1 - v2;\n\t} else if (mode > 0.5) {\n\t\ty = v1 * k;\n\t}\n\treturn y;\n}\n\n// Pseudozufall 0..1 aus Seed und Index (Bauteil-Toleranzen pro Device-Instanz)\nrnd_hash(sd, i) {\n\treturn wrap(sin(sd * 12.9898 + i * 78.233 + 0.5) * 43758.5453, 0, 1);\n}\n\n// Weiche Diodenkennlinie: sperrt unter ~0.2, dann quadratischer Übergang, dann linear\ndiode(v) {\n\tu = v - 0.2;\n\tr = 0;\n\tif (u > 0) {\n\t\tr = u * u / (u + 0.2);\n\t}\n\treturn r;\n}\n\n// Dioden-Ringmodulator (4 Dioden), skaliert auf ~c*m bei kleinen Pegeln\ndiode_ring(c, m) {\n\treturn (diode(c + m) + diode(-c - m) - diode(c - m) - diode(m - c)) * 1.25;\n}\n\n// ---------- Parameter: Voice ----------\nParam tune(56, min=24, max=96);       // Basis-Note (MIDI)\nParam waveform(1, min=0, max=3);          // 0 Sine 1 Square 2 Saw 3 Tri\nParam morph(0, min=0, max=1);         // 0 Bank -> 0.5 FM/Ring -> 1 Resonator\nParam inharm(0.5, min=0, max=1);      // 0 harmonisch -> 0.5 808-Metall -> 1 Membran/Glocke\nParam attack(0.5, min=0.1, max=50);   // ms, weicher Anschlag gegen Klicks\nParam decay(0.3, min=0, max=1);       // 10 ms .. 2.5 s\nParam damp(0.5, min=0, max=1);        // Resonator-Dämpfung\nParam bright(0.6, min=0, max=1);      // Filter/FM-Index\nParam drive(0.2, min=0, max=1);\nParam noise_mix(0.05, min=0, max=1);\n\n// ---------- Parameter: Oszillatoren ----------\nParam voices(6, min=1, max=6);        // aktive Bank-Oszillatoren\nParam spread(1, min=0, max=2);        // Abstand der Verhältnisse (0 = alle auf f0)\nParam detune(0, min=0, max=50);       // Verstimmung der Bank in Cent\nParam tilt(0, min=-1, max=1);         // Pegel der oberen Partials (- dunkel, + hell)\nParam pw(0.5, min=0.05, max=0.95);    // Pulsbreite (Square)\nParam fm_ratio(1.4142, min=0.5, max=8);\nParam fm_amt(0.36, min=0, max=1);     // FM-Index\nParam fm_fb(0, min=0, max=1);         // Modulator-Feedback\nParam ring(0.4, min=0, max=1);        // Mischung FM-Träger <-> Ringmodulation\nParam mod_wave(1, min=0, max=3);      // Wellenform des Modulators\nParam sweep(0, min=-24, max=48);      // Pitch-Hüllkurve in Halbtönen\nParam sweep_time(30, min=1, max=500);   // ms\nParam retrig(0, min=0, max=1);        // 0 Phasen frei, 1 Reset bei jedem Schlag\nParam fm_mode(0, min=0, max=1);       // 0 linear (Phasenmodulation), 1 exponentiell (analog)\nParam ring_bleed(0.15, min=0, max=1); // Durchschlag + Verzerrung des Dioden-Rings\n\n// ---------- Parameter: Circuit ----------\nParam wfold(0, min=0, max=1);          // Wavefolder\nParam asym(0.25, min=0, max=1);       // asymmetrische Sättigung (gerade Obertöne)\nParam amp_mode(0, min=0, max=1);      // 0 VCA, 1 Lowpass-Gate (Vactrol)\nParam lpg_color(0.6, min=0, max=1);   // Filteranteil des Lowpass-Gates\nParam reso_mode(0, min=0, max=1);     // 0 Modal, 1 Bridged-T (808-Prinzip)\n\n// ---------- Parameter: Analog ----------\nParam analog(0.5, min=0, max=1);      // Makro: Drift, Toleranz, Jitter, Bleed, Rauschen\nParam age(0.3, min=0, max=1);         // Clean -> Vintage -> Worn\nParam sag(0.25, min=0, max=1);        // Netzteil-Einbruch bei lauten Schlägen\nParam hum(0, min=0, max=1);           // Brumm\nParam hum_hz(0, min=0, max=1);        // 0 = 50 Hz, 1 = 60 Hz\nParam seed(1, min=0, max=999);        // Charakter dieser Instanz\nParam quality(1, min=0, max=2);       // Oversampling 1x / 2x / 4x\nParam accent(0.5, min=0, max=1);      // Velocity -> Decay/Helligkeit\nParam level(0.8, min=0, max=1);\n\n// ---------- Parameter: Pitch / Quantizer ----------\nParam qmode(1, min=0, max=1);         // 0 Loose, 1 Scale\nParam scale_sel(1, min=0, max=7);\nParam root(0, min=0, max=11);\n\n// ---------- Parameter: Sequencer ----------\nParam seq_on(1, min=0, max=1);\nParam clock_mode(0, min=0, max=2);    // 0 Host, 1 Ext Clock, 2 Intern\nParam bpm(130, min=40, max=300);\nParam clock_div(1, min=0, max=4);           // 1/8, 1/16, 1/32, 1/8T, 1/16T\nParam seq_len(16, min=1, max=16);\nParam reset_id(0);\nParam rtrg_rate(1, min=0, max=4);     // Retrig-Schläge pro Step: 2, 3, 4, 6, 8\nParam rtrg_len(1, min=0.25, max=8);   // Retrig-Länge in Steps\nParam rtrg_vel(-0.5, min=-1, max=1);  // Velocity-Verlauf: - ausblenden, + einblenden\n\n// ---------- Parameter: Live-Randomisierung ----------\nParam live_steps(0, min=0, max=1);\nParam live_vel(0, min=0, max=1);\nParam live_pitch(0, min=0, max=1);\nParam density(0.6, min=0, max=1);\nParam vel_range(0.5, min=0, max=1);\nParam pitch_range(7, min=0, max=24);\n\n// ---------- Parameter: MIDI ----------\nParam midi_id(0);\nParam midi_note(60);\nParam midi_vel(0);\n\n// ---------- Parameter: Steps ----------\nParam s1_on(1, min=0, max=1); Param s1_vel(1, min=0, max=1); Param s1_pitch(0, min=-24, max=24); Param s1_rtrg(0, min=0, max=1);\nParam s2_on(1, min=0, max=1); Param s2_vel(1, min=0, max=1); Param s2_pitch(0, min=-24, max=24); Param s2_rtrg(0, min=0, max=1);\nParam s3_on(1, min=0, max=1); Param s3_vel(1, min=0, max=1); Param s3_pitch(0, min=-24, max=24); Param s3_rtrg(0, min=0, max=1);\nParam s4_on(1, min=0, max=1); Param s4_vel(1, min=0, max=1); Param s4_pitch(0, min=-24, max=24); Param s4_rtrg(0, min=0, max=1);\nParam s5_on(1, min=0, max=1); Param s5_vel(1, min=0, max=1); Param s5_pitch(0, min=-24, max=24); Param s5_rtrg(0, min=0, max=1);\nParam s6_on(1, min=0, max=1); Param s6_vel(1, min=0, max=1); Param s6_pitch(0, min=-24, max=24); Param s6_rtrg(0, min=0, max=1);\nParam s7_on(1, min=0, max=1); Param s7_vel(1, min=0, max=1); Param s7_pitch(0, min=-24, max=24); Param s7_rtrg(0, min=0, max=1);\nParam s8_on(1, min=0, max=1); Param s8_vel(1, min=0, max=1); Param s8_pitch(0, min=-24, max=24); Param s8_rtrg(0, min=0, max=1);\nParam s9_on(1, min=0, max=1); Param s9_vel(1, min=0, max=1); Param s9_pitch(0, min=-24, max=24); Param s9_rtrg(0, min=0, max=1);\nParam s10_on(1, min=0, max=1); Param s10_vel(1, min=0, max=1); Param s10_pitch(0, min=-24, max=24); Param s10_rtrg(0, min=0, max=1);\nParam s11_on(1, min=0, max=1); Param s11_vel(1, min=0, max=1); Param s11_pitch(0, min=-24, max=24); Param s11_rtrg(0, min=0, max=1);\nParam s12_on(1, min=0, max=1); Param s12_vel(1, min=0, max=1); Param s12_pitch(0, min=-24, max=24); Param s12_rtrg(0, min=0, max=1);\nParam s13_on(1, min=0, max=1); Param s13_vel(1, min=0, max=1); Param s13_pitch(0, min=-24, max=24); Param s13_rtrg(0, min=0, max=1);\nParam s14_on(1, min=0, max=1); Param s14_vel(1, min=0, max=1); Param s14_pitch(0, min=-24, max=24); Param s14_rtrg(0, min=0, max=1);\nParam s15_on(1, min=0, max=1); Param s15_vel(1, min=0, max=1); Param s15_pitch(0, min=-24, max=24); Param s15_rtrg(0, min=0, max=1);\nParam s16_on(1, min=0, max=1); Param s16_vel(1, min=0, max=1); Param s16_pitch(0, min=-24, max=24); Param s16_rtrg(0, min=0, max=1);\n\n// ---------- Zustand ----------\nHistory beats(0);\nHistory last_phase(-1);\nHistory still(0);\nHistory int_phase(0);\nHistory ext_count(0);\nHistory clk_prev(0);\nHistory rst_prev(0);\nHistory trg_prev(0);\nHistory last_reset(0);\nHistory last_midi(0);\nHistory last_step(-1);\nHistory step_samps(5512);   // Länge eines Steps in Samples (gemessen bzw. berechnet)\nHistory clk_cnt(0);\nHistory rt_arm(0);\nHistory rt_on(0);\nHistory rt_cnt(0);\nHistory rt_next(0);\nHistory rt_total(0);\nHistory rt_int(0);\nHistory rt_vel(1);\nHistory rt_note(56);\nHistory env(0);\nHistory att(0);\nHistory target(0);\nHistory coef(0.999);\nHistory exc(0);\nHistory pe(0);\nHistory fb_prev(0);\nHistory hit_note(56);\nHistory hit_vel(1);\nHistory gate_cnt(0);\nHistory dc_y(0);   // Ausgang nach dem Koppel-Hochpass\nHistory pend(0);\nHistory p_note(56);\nHistory p_vel(1);\nHistory vac(0);\nHistory sagf(0);\nHistory bt_amp(0);\nHistory hum_ph(0);\nHistory pk0(0);\nHistory pk1(0);\nHistory pk2(0);\nHistory last_seed(-1);\nData ph(8);     // Phasen: 0-5 Bank, 6 Träger, 7 Modulator\nData osl(8);    // Slew-Zustände der Oszillatoren\nData dr(9);     // Drift: 0-7 Oszillatoren, 8 global\nData fq(8);\nData slc(8);    // Slew-Koeffizient pro Oszillator     // Frequenz-Faktor pro Oszillator (Toleranz, Drift, Jitter)\nData tol(40);   // Toleranzen: [i] Cent, [8+i] PW, [16+i] DC, [24+i] Slew, [32+j] Moden/Filter\nData st(24);    // Filterzustände\n\n// ---------- Clock ----------\nspb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat\nlen = floor(seq_len);\n\nif (reset_id != last_reset) {\n\tlast_reset = reset_id;\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst = in3 > 0.1;\nif (rst && rst_prev < 0.5) {\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst_prev = rst;\n\nstep_abs = -1;\nif (clock_mode < 0.5) {\n\tphs = in1;\n\t// Transport-Stopp erkennen: Phase steht > 50 ms -> beim Weiterlaufen neu ab Step 1\n\tif (phs == last_phase) {\n\t\tstill = still + 1;\n\t} else {\n\t\tif (still > samplerate * 0.05) {\n\t\t\tbeats = 0;\n\t\t\tlast_step = -1;\n\t\t} else if (phs < last_phase - 0.5) {\n\t\t\tbeats = beats + 1;\n\t\t} else if (phs > last_phase) {\n\t\t\tstep_samps = 1 / ((phs - last_phase) * spb);\n\t\t}\n\t\tstill = 0;\n\t}\n\tlast_phase = phs;\n\tif (still < samplerate * 0.05) {\n\t\tstep_abs = floor((beats + phs) * spb);\n\t} else {\n\t\tstep_abs = last_step;\n\t}\n} else if (clock_mode < 1.5) {\n\tc = in2 > 0.1;\n\tclk_cnt = clk_cnt + 1;\n\tif (c && clk_prev < 0.5) {\n\t\text_count = ext_count + 1;\n\t\tstep_samps = clk_cnt;\n\t\tclk_cnt = 0;\n\t}\n\tclk_prev = c;\n\tstep_abs = ext_count - 1;\n} else {\n\tint_phase = int_phase + bpm / 60 / samplerate;\n\tstep_abs = floor(int_phase * spb);\n\tstep_samps = samplerate * 60 / (bpm * spb);\n}\n\ncur_step = last_step;\nfire = 0;\nvel = 1;\npitch = 0;\nif (step_abs >= 0) {\n\tcur = step_abs - floor(step_abs / len) * len;\n\tif (cur != last_step) {\n\t\tlast_step = cur;\n\t\tcur_step = cur;\n\t\ton = selector(cur + 1, s1_on, s2_on, s3_on, s4_on, s5_on, s6_on, s7_on, s8_on, s9_on, s10_on, s11_on, s12_on, s13_on, s14_on, s15_on, s16_on);\n\t\tif (seq_on > 0.5 && on > 0.5) {\n\t\t\tif (live_steps < 0.5 || (noise() * 0.5 + 0.5) < density) {\n\t\t\t\tfire = 1;\n\t\t\t\tvel = selector(cur + 1, s1_vel, s2_vel, s3_vel, s4_vel, s5_vel, s6_vel, s7_vel, s8_vel, s9_vel, s10_vel, s11_vel, s12_vel, s13_vel, s14_vel, s15_vel, s16_vel);\n\t\t\t\tpitch = selector(cur + 1, s1_pitch, s2_pitch, s3_pitch, s4_pitch, s5_pitch, s6_pitch, s7_pitch, s8_pitch, s9_pitch, s10_pitch, s11_pitch, s12_pitch, s13_pitch, s14_pitch, s15_pitch, s16_pitch);\n\t\t\t\trt_arm = selector(cur + 1, s1_rtrg, s2_rtrg, s3_rtrg, s4_rtrg, s5_rtrg, s6_rtrg, s7_rtrg, s8_rtrg, s9_rtrg, s10_rtrg, s11_rtrg, s12_rtrg, s13_rtrg, s14_rtrg, s15_rtrg, s16_rtrg);\n\t\t\t\tif (live_vel > 0.5) {\n\t\t\t\t\tvel = vel * (1 - vel_range * (noise() * 0.5 + 0.5));\n\t\t\t\t}\n\t\t\t\tif (live_pitch > 0.5) {\n\t\t\t\t\tpitch = pitch + pitch_range * noise();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n\n// MIDI-Noten (aus Live-Clips) und Ext Trigger spielen die Voice direkt\nif (midi_id != last_midi) {\n\tlast_midi = midi_id;\n\tif (midi_vel > 0) {\n\t\tfire = 1;\n\t\tvel = midi_vel / 127;\n\t\tpitch = midi_note - 60;\n\t\trt_arm = 0;\n\t}\n}\ntr = in5 > 0.1;\nif (tr && trg_prev < 0.5) {\n\tfire = 1;\n\tvel = 1;\n\tpitch = 0;\n\trt_arm = 0;\n}\ntrg_prev = tr;\n\n// ---------- Analog-Charakter ----------\nan = analog;\nag = age;\nif (seed != last_seed) {\n\tlast_seed = seed;\n\tfor (t_i = 0; t_i < 8; t_i += 1) {\n\t\tpoke(tol, rnd_hash(seed, t_i) * 2 - 1, t_i);\n\t\tpoke(tol, rnd_hash(seed, t_i + 8) - 0.5, t_i + 8);\n\t\tpoke(tol, rnd_hash(seed, t_i + 16) - 0.5, t_i + 16);\n\t\tpoke(tol, rnd_hash(seed, t_i + 24), t_i + 24);\n\t}\n\tfor (t_j = 0; t_j < 8; t_j += 1) {\n\t\tpoke(tol, rnd_hash(seed, t_j + 32) * 2 - 1, t_j + 32);\n\t}\n}\n// Drift: tiefpassgefiltertes Rauschen (~0.7 Hz), auf Standardabweichung 1 normiert\nd_a = 1 - exp(-twopi * (0.4 + ag * 0.8) / samplerate);\nd_norm = 1 / sqrt(d_a / (2 - d_a) / 3);\nfor (d_i = 0; d_i < 9; d_i += 1) {\n\tdv = peek(dr, d_i);\n\tpoke(dr, dv + (noise() - dv) * d_a, d_i);\n}\ndrift_c = an * (2 + ag * 10);       // Cent (Standardabweichung)\ntol_c = an * (3 + ag * 5);          // Cent\njit_c = an * (0.3 + ag);            // Cent, schnelles Pitch-Rauschen\nshape_ev = an * (0.04 + ag * 0.08); // gerade Obertöne in den Wellenformen\nbleed = an * (0.0003 + ag * 0.0015);\nota = an * (0.4 + ag * 0.8);\n\n// ---------- Trigger -> Voice (mit Trigger-Jitter) ----------\nstart = 0;\ns_note = 0;\ns_vel = 0;\nif (fire > 0.5) {\n\tnote = tune + pitch + in4 * 60;\n\tif (qmode > 0.5) {\n\t\tmask = selector(floor(scale_sel) + 1, 4095, 1453, 1451, 2477, 1193, 1709, 1459, 397);\n\t\tnote = quant(note, root, mask);\n\t}\n\tjit = floor((noise() * 0.5 + 0.5) * an * 0.0004 * samplerate);\n\tif (jit < 1) {\n\t\tstart = 1;\n\t\ts_note = note;\n\t\ts_vel = vel;\n\t} else {\n\t\tpend = jit;\n\t\tp_note = note;\n\t\tp_vel = vel;\n\t}\n} else if (pend > 0) {\n\tpend = pend - 1;\n\tif (pend < 0.5) {\n\t\tstart = 1;\n\t\ts_note = p_note;\n\t\ts_vel = p_vel;\n\t}\n}\n\n// Retrig (Elektron-Prinzip): ein Step mit Retrig wiederholt den Schlag rtrg_rate-fach pro Step,\n// rtrg_len Steps lang, mit Velocity-Verlauf rtrg_vel. Ein neuer regulärer Schlag beendet ihn.\nif (start > 0.5) {\n\trt_on = 0;\n\tif (rt_arm > 0.5) {\n\t\trt_on = 1;\n\t\trt_cnt = 0;\n\t\trt_int = step_samps / selector(floor(rtrg_rate + 0.5) + 1, 2, 3, 4, 6, 8);\n\t\trt_next = rt_int;\n\t\trt_total = rtrg_len * step_samps;\n\t\trt_vel = s_vel;\n\t\trt_note = s_note;\n\t}\n\trt_arm = 0;\n} else if (rt_on > 0.5) {\n\trt_cnt = rt_cnt + 1;\n\tif (rt_cnt >= rt_total) {\n\t\trt_on = 0;\n\t} else if (rt_cnt >= rt_next) {\n\t\trt_next = rt_next + rt_int;\n\t\tstart = 1;\n\t\ts_note = rt_note;\n\t\ts_vel = clamp(rt_vel * (1 + rtrg_vel * rt_cnt / rt_total), 0, 1);\n\t}\n}\n\nif (start > 0.5) {\n\thit_note = s_note;\n\thit_vel = s_vel;\n\tt = 0.01 * pow(250, decay);\n\tt = t * (1 - accent * 0.5 + accent * s_vel);\n\tcoef = exp(-6.9078 / (t * samplerate));\n\ttarget = max(env, s_vel);\n\tatt = 1;\n\texc = 1;\n\tpe = 1;\n\tif (retrig > 0.5) {\n\t\tfor (r = 0; r < 8; r += 1) {\n\t\t\tpoke(ph, 0, r);\n\t\t}\n\t\tfb_prev = 0;\n\t}\n\tgate_cnt = samplerate * 0.005;\n}\n\n// Hüllkurve: RC-Ladekurve mit Überschwing-Ziel, Ausklang mit leichter Krümmung\nif (att > 0.5) {\n\tov = 1.01 + 0.02 * an;\n\tenv = env + (target * ov - env) * (1 - exp(-4.6 / (attack * 0.001 * samplerate)));\n\tif (env >= target) {\n\t\tenv = target;\n\t\tatt = 0;\n\t}\n} else {\n\tenv = env * pow(coef, 1 - 0.3 * an * (1 - env));\n}\nexc = exc * 0.992;\nif (gate_cnt > 0) {\n\tgate_cnt = gate_cnt - 1;\n}\n\n// Vactrol (Lowpass-Gate): schnell auf, langsam und nichtlinear zu\nif (env > vac) {\n\tvac = vac + (env - vac) * (1 - exp(-1 / (0.002 * samplerate)));\n} else {\n\ttau = 0.012 + 0.25 * (1 - vac) * (1 - vac);\n\tvac = vac + (env - vac) * (1 - exp(-1 / (tau * samplerate)));\n}\n\npe = pe * exp(-6.9078 / (sweep_time * 0.001 * samplerate));\ngdrift = peek(dr, 8) * d_norm * drift_c * 0.5;\nf0 = mtof(hit_note + sweep * pe + gdrift * 0.01) * (1 - sag * 0.012 * sagf);\nw = floor(waveform + 0.5);\nmw = floor(mod_wave + 0.5);\nacc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);\nta = clamp(inharm * 2, 0, 1);\ntb = clamp(inharm * 2 - 1, 0, 1);\nnv = floor(voices + 0.5);\nosf = selector(floor(quality + 0.5) + 1, 1, 2, 4);\nsr2 = samplerate * osf;\nnyq = sr2 * 0.45;\nidx = fm_amt * 2 * env * (1 - accent * 0.4 + accent * 0.4 * hit_vel);\namp = env;\nif (amp_mode > 0.5) {\n\tamp = pow(vac, 1.4);\n}\namp_ab = amp + bleed;\nlpg_fc = mix(16000, 60 * pow(2, vac * 8.2), lpg_color);\nq = mix(400, 12, damp);\nfold_g = 1 + wfold * 5;\ndg = 1 + drive * 12;\nab = asym * 0.3;\n\n// Frequenz-Faktor pro Oszillator: Toleranz + Drift + Jitter (in Cent)\nfor (c_i = 0; c_i < 8; c_i += 1) {\n\tcents = peek(tol, c_i) * tol_c + peek(dr, c_i) * d_norm * drift_c + noise() * jit_c;\n\tpoke(fq, pow(2, cents / 1200), c_i);\n\tfsl = mix(20000, 5000, an * ag) * (0.85 + 0.3 * peek(tol, c_i + 24));\n\tpoke(slc, 1 - exp(-twopi * min(fsl, nyq) / sr2), c_i);\n}\n\n// =====================================================================\n// Audio-Kern, läuft osf-mal pro Sample (Oversampling) mit Samplerate sr2\n// =====================================================================\nout_os = 0;\nfor (o = 0; o < osf; o += 1) {\n\t// ---------- Engine A: Oszillator-Bank (6 Oszillatoren) ----------\n\tbank = 0;\n\tasum = 0;\n\tfor (i = 0; i < 6; i += 1) {\n\t\trh = i + 1;\n\t\trm = selector(i + 1, 1, 1.483, 1.8, 2.546, 2.63, 3.897);\n\t\tre = selector(i + 1, 1, 1.593, 2.135, 2.296, 2.917, 3.598);\n\t\tratio = mix(mix(rh, rm, ta), re, tb);\n\t\tratio = 1 + (ratio - 1) * spread;\n\t\tratio = ratio * pow(2, detune * selector(i + 1, 0, 0.7, -0.4, 1, -0.9, 0.3) / 1200);\n\t\tinc = min(f0 * ratio * peek(fq, i) / sr2, 0.45);\n\t\tp = peek(ph, i);\n\t\tif (i < nv) {\n\t\t\tamp_i = pow(i + 1, tilt);\n\t\t\tpw_i = clamp(pw + an * 0.08 * peek(tol, i + 8), 0.03, 0.97);\n\t\t\tyo = osc(p, inc, w, pw_i);\n\t\t\tyo = yo + shape_ev * (yo * yo - 0.5) + an * 0.06 * peek(tol, i + 16);\n\t\t\tsl = peek(osl, i);\n\t\t\tsl = sl + (yo - sl) * peek(slc, i);\n\t\t\tpoke(osl, sl, i);\n\t\t\tbank = bank + sl * amp_i;\n\t\t\tasum = asum + amp_i;\n\t\t}\n\t\tpoke(ph, fract(p + inc), i);\n\t}\n\tbank = bank / asum;\n\tfca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * sqrt(env)) * (1 + an * 0.04 * peek(tol, 32)), nyq);\n\teng_a = 1.8 * svf(bank, fca, 1.5, sr2, st, 0, 1, ota) + 1.8 * svf(bank, fca, 0.7, sr2, st, 2, 2, ota);\n\n\t// ---------- Engine B: FM (linear/exponentiell) + Dioden-Ringmodulator ----------\n\tpc = peek(ph, 6);\n\tpm = peek(ph, 7);\n\tinc_m = min(f0 * fm_ratio * peek(fq, 7) / sr2, 0.45);\n\tmods = osc(wrap(pm + fm_fb * 0.5 * fb_prev, 0, 1), inc_m, mw, pw);\n\tmods = mods + shape_ev * (mods * mods - 0.5) + an * 0.06 * peek(tol, 23);\n\tfb_prev = mods;\n\tinc_c = min(f0 * peek(fq, 6) / sr2, 0.45);\n\tcar = 0;\n\tif (fm_mode > 0.5) {\n\t\tinc_c = min(inc_c * pow(2, idx * 0.75 * mods), 0.45);\n\t\tcar = osc(pc, inc_c, w, pw);\n\t} else {\n\t\tcar = osc(wrap(pc + idx * mods, 0, 1), inc_c, w, pw);\n\t}\n\tcplain = osc(pc, inc_c, w, pw);\n\trsig = mix(cplain * mods, diode_ring(cplain, mods), ring_bleed) + ring_bleed * (0.25 * cplain + 0.1 * mods);\n\tpoke(ph, fract(pc + inc_c), 6);\n\tpoke(ph, fract(pm + inc_m), 7);\n\teng_b = 1.2 * (car * (1 - ring) + rsig * ring);\n\n\t// ---------- Engine C: Modal-Resonator oder Bridged-T (808) ----------\n\tres = 0;\n\tif (reso_mode > 0.5) {\n\t\t// Bridged-T: kurzer Impuls regt gesättigte Schwingkreise an, Tonhöhe steigt mit der Amplitude\n\t\tex = exc * exc * exc * exc * hit_vel * 20;\n\t\tqb = q * 0.5;\n\t\tfor (j = 0; j < 2; j += 1) {\n\t\t\tmr = selector(j + 1, 1, mix(1.5, 2.3, inharm));\n\t\t\tfr = min(f0 * mr * (1 + 0.08 * bt_amp) * (1 + an * 0.01 * peek(tol, 33 + j)), nyq);\n\t\t\tres = res + svf(ex, fr, qb, sr2, st, 4 + j * 2, 1, 1.5) * qb / (j + 1);\n\t\t}\n\t\tbt_amp = bt_amp + (abs(res) - bt_amp) * 0.001;\n\t\tres = res * 0.5;\n\t} else {\n\t\tex = noise() * exc * exc * (0.4 + 0.6 * acc_b) * hit_vel;\n\t\tfor (j = 0; j < 4; j += 1) {\n\t\t\tmh = j + 1;\n\t\t\tmb = selector(j + 1, 1, 2.756, 5.404, 8.933);\n\t\t\tmp = selector(j + 1, 1, 1.594, 2.136, 2.653);\n\t\t\tmr = mix(mix(mh, mb, ta), mp, tb);\n\t\t\tfr = min(f0 * mr * (1 + an * 0.01 * peek(tol, 33 + j)), nyq);\n\t\t\tres = res + svf(ex, fr, q, sr2, st, 4 + j * 2, 1, 0) * sqrt(1000 / fr) / (j + 1);\n\t\t}\n\t\tres = res * sqrt(q) * 15 * pow(osf, 0.7);\n\t}\n\teng_c = res * min(1, env * 4);\n\n\t// ---------- Morph, Noise, Amp (VCA / LPG) ----------\n\tva = eng_a * amp_ab;\n\tvb = eng_b * amp_ab;\n\tm = morph * 2;\n\tvoice = 0;\n\tif (m < 1) {\n\t\tvoice = va * cos(m * pi * 0.5) + vb * sin(m * pi * 0.5);\n\t} else {\n\t\tm = m - 1;\n\t\tvoice = vb * cos(m * pi * 0.5) + eng_c * sin(m * pi * 0.5);\n\t}\n\tvoice = voice + svf(noise(), min(f0 * 8, nyq), 0.7, sr2, st, 12, 2, 0) * env * noise_mix * sqrt(osf);\n\tif (amp_mode > 0.5) {\n\t\tvoice = svf(voice, lpg_fc, 0.6, sr2, st, 14, 0, ota);\n\t}\n\n\t// ---------- Wavefolder + asymmetrische Sättigung ----------\n\tif (wfold > 0.001) {\n\t\tvoice = mix(voice, sin(voice * fold_g * pi * 0.5), min(1, wfold * 3));\n\t}\n\ty = (tanh(dg * (voice + ab)) - tanh(dg * ab)) / sqrt(dg);\n\n\t// ---------- Dezimation: Butterworth 6. Ordnung bei 0.42 * samplerate ----------\n\tif (osf > 1) {\n\t\ty = svf(y, samplerate * 0.42, 0.5176, sr2, st, 16, 0, 0);\n\t\ty = svf(y, samplerate * 0.42, 0.7071, sr2, st, 18, 0, 0);\n\t\ty = svf(y, samplerate * 0.42, 1.9319, sr2, st, 20, 0, 0);\n\t}\n\tout_os = y;\n}\ny = out_os;\n\n// Koppelkondensator: Hochpass 2. Ordnung bei 25 Hz entfernt Gleichanteil und den\n// hüllkurvenabhängigen Thump der asymmetrischen Sättigung\ndc_y = svf(y, 25, 0.7071, samplerate, st, 22, 2, 0);\n\n// Netzteil-Einbruch: Hüllkurvenfolger auf den Ausgang\nsagf = sagf + (abs(dc_y) - sagf) * selector((abs(dc_y) > sagf) + 1, 0.0003, 0.02);\ny_out = dc_y * level * (1 - sag * 0.2 * min(1, sagf * 2));\n\n// Grundrauschen (pink) und Brumm\nwn = noise();\npk0 = 0.99765 * pk0 + wn * 0.099046;\npk1 = 0.963 * pk1 + wn * 0.2965164;\npk2 = 0.57 * pk2 + wn * 1.0526913;\npink = (pk0 + pk1 + pk2 + wn * 0.1848) * 0.2;\nhum_ph = wrap(hum_ph + selector(floor(hum_hz + 0.5) + 1, 50, 60) / samplerate, 0, 1);\nhz = sin(twopi * hum_ph) + 0.5 * sin(twopi * 3 * hum_ph) + 0.25 * sin(twopi * 5 * hum_ph);\ny_out = y_out + pink * an * (0.00005 + ag * 0.0003) + hz * hum * 0.003;\n\nout1 = y_out;\nout2 = env;\nout3 = max(cur_step, 0);\nout4 = gate_cnt > 0;\n",
+         "code": "// =====================================================================\n// m4l-metal-perc – metallischer Percussion-Generator mit Step-Sequencer\n// gen~ Codebox (GenExpr). Diese Datei wird von build.py erzeugt:\n// Quelle ist src/metal_perc.genexpr.in – dort editieren, nicht hier.\n//\n// Eingänge  (Signal, Konvention: ±1.0 = ±5 V)\n//   in1  Host-Beat-Phase (plugphasor~, 0..1 pro Beat)\n//   in2  Ext Clock (steigende Flanke = 1 Step)\n//   in3  Ext Reset (steigende Flanke)\n//   in4  Pitch CV, 1 V/Oct (0.2 = 1 Oktave), wird beim Trigger gehalten\n//   in5  Ext Trigger (spielt die Voice direkt, unabhängig vom Sequencer)\n// Ausgänge\n//   out1 Audio\n//   out2 Hüllkurve (0..1)\n//   out3 aktueller Step (0..15)\n//   out4 Gate/Trigger-Out (5 ms)\n// =====================================================================\n\n// ---------- Hilfsfunktionen ----------\nblep(t, dt) {\n\tr = 0;\n\tif (t < dt) {\n\t\tx = t / dt;\n\t\tr = x + x - x * x - 1;\n\t} else if (t > 1 - dt) {\n\t\tx = (t - 1) / dt;\n\t\tr = x * x + x + x + 1;\n\t}\n\treturn r;\n}\n\n// w: 0 Sine, 1 Square/Pulse (Breite pw), 2 Saw, 3 Triangle (bandbegrenzt via polyBLEP)\nosc(p, dt, w, pw) {\n\ty = 0;\n\tif (w < 0.5) {\n\t\ty = sin(twopi * p);\n\t} else if (w < 1.5) {\n\t\tsq = 1;\n\t\tif (p >= pw) {\n\t\t\tsq = -1;\n\t\t}\n\t\ty = sq + blep(p, dt) - blep(fract(p + 1 - pw), dt) - (2 * pw - 1);\n\t} else if (w < 2.5) {\n\t\ty = 2 * p - 1 - blep(p, dt);\n\t} else {\n\t\ty = 4 * abs(p - 0.5) - 1;\n\t}\n\treturn y;\n}\n\n// Nächstliegende Note in der Skala (mask = 12-Bit-Maske ab Grundton)\nquant(n, root, mask) {\n\tbase = floor(n + 0.5);\n\tbest = base;\n\tbestd = 100;\n\tfor (k = -6; k <= 6; k += 1) {\n\t\tcand = base + k;\n\t\tdeg = cand - root;\n\t\tdeg = deg - floor(deg / 12) * 12;\n\t\tbit = floor(mask / pow(2, deg));\n\t\tbit = bit - floor(bit / 2) * 2;\n\t\td = abs(cand - n);\n\t\tif (bit > 0.5 && d < bestd) {\n\t\t\tbest = cand;\n\t\t\tbestd = d;\n\t\t}\n\t}\n\treturn best;\n}\n\n// TPT-State-Variable-Filter mit optionaler OTA-Sättigung der Eingangsstufe (sat > 0).\n// mode 0 Lowpass, 1 Bandpass (unity peak), 2 Highpass. Zustände in Data st an i, i+1.\nsvf(x, fc, q, sr, st, i, mode, sat) {\n\tg = tan(pi * min(fc, sr * 0.49) / sr);\n\tk = 1 / q;\n\ta1 = 1 / (1 + g * (g + k));\n\ta2 = g * a1;\n\ta3 = g * a2;\n\tic1 = peek(st, i);\n\tic2 = peek(st, i + 1);\n\tv3 = x - ic2;\n\tif (sat > 0.001) {\n\t\tv3 = tanh(v3 * sat) / sat;\n\t}\n\tv1 = a1 * ic1 + a2 * v3;\n\tv2 = ic2 + a2 * ic1 + a3 * v3;\n\tpoke(st, 2 * v1 - ic1, i);\n\tpoke(st, 2 * v2 - ic2, i + 1);\n\ty = v2;\n\tif (mode > 1.5) {\n\t\ty = x - k * v1 - v2;\n\t} else if (mode > 0.5) {\n\t\ty = v1 * k;\n\t}\n\treturn y;\n}\n\n// Pseudozufall 0..1 aus Seed und Index (Bauteil-Toleranzen pro Device-Instanz)\nrnd_hash(sd, i) {\n\treturn wrap(sin(sd * 12.9898 + i * 78.233 + 0.5) * 43758.5453, 0, 1);\n}\n\n// Weiche Diodenkennlinie: sperrt unter ~0.2, dann quadratischer Übergang, dann linear\ndiode(v) {\n\tu = v - 0.2;\n\tr = 0;\n\tif (u > 0) {\n\t\tr = u * u / (u + 0.2);\n\t}\n\treturn r;\n}\n\n// Dioden-Ringmodulator (4 Dioden), skaliert auf ~c*m bei kleinen Pegeln\ndiode_ring(c, m) {\n\treturn (diode(c + m) + diode(-c - m) - diode(c - m) - diode(m - c)) * 1.25;\n}\n\n// ---------- Parameter: Voice ----------\nParam tune(56, min=24, max=96);       // Basis-Note (MIDI)\nParam waveform(1, min=0, max=3);          // 0 Sine 1 Square 2 Saw 3 Tri\nParam morph(0, min=0, max=1);         // 0 Bank -> 0.5 FM/Ring -> 1 Resonator\nParam inharm(0.5, min=0, max=1);      // 0 harmonisch -> 0.5 808-Metall -> 1 Membran/Glocke\nParam attack(0.5, min=0.1, max=50);   // ms, weicher Anschlag gegen Klicks\nParam decay(0.3, min=0, max=1);       // 10 ms .. 2.5 s\nParam damp(0.5, min=0, max=1);        // Resonator-Dämpfung\nParam bright(0.6, min=0, max=1);      // Filter/FM-Index\nParam drive(0.2, min=0, max=1);\nParam noise_mix(0.05, min=0, max=1);\n\n// ---------- Parameter: Oszillatoren ----------\nParam voices(6, min=1, max=6);        // aktive Bank-Oszillatoren\nParam spread(1, min=0, max=2);        // Abstand der Verhältnisse (0 = alle auf f0)\nParam detune(0, min=0, max=50);       // Verstimmung der Bank in Cent\nParam tilt(0, min=-1, max=1);         // Pegel der oberen Partials (- dunkel, + hell)\nParam pw(0.5, min=0.05, max=0.95);    // Pulsbreite (Square)\nParam fm_ratio(1.4142, min=0.5, max=8);\nParam fm_amt(0.36, min=0, max=1);     // FM-Index\nParam fm_fb(0, min=0, max=1);         // Modulator-Feedback\nParam ring(0.4, min=0, max=1);        // Mischung FM-Träger <-> Ringmodulation\nParam mod_wave(1, min=0, max=3);      // Wellenform des Modulators\nParam sweep(0, min=-24, max=48);      // Pitch-Hüllkurve in Halbtönen\nParam sweep_time(30, min=1, max=500);   // ms\nParam retrig(0, min=0, max=1);        // 0 Phasen frei, 1 Reset bei jedem Schlag\nParam fm_mode(0, min=0, max=1);       // 0 linear (Phasenmodulation), 1 exponentiell (analog)\nParam ring_bleed(0.15, min=0, max=1); // Durchschlag + Verzerrung des Dioden-Rings\n\n// ---------- Parameter: Circuit ----------\nParam wfold(0, min=0, max=1);          // Wavefolder\nParam asym(0.25, min=0, max=1);       // asymmetrische Sättigung (gerade Obertöne)\nParam amp_mode(0, min=0, max=1);      // 0 VCA, 1 Lowpass-Gate (Vactrol)\nParam lpg_color(0.6, min=0, max=1);   // Filteranteil des Lowpass-Gates\nParam reso_mode(0, min=0, max=1);     // 0 Modal, 1 Bridged-T (808-Prinzip)\n\n// ---------- Parameter: Analog ----------\nParam analog(0.5, min=0, max=1);      // Makro: Drift, Toleranz, Jitter, Bleed, Rauschen\nParam age(0.3, min=0, max=1);         // Clean -> Vintage -> Worn\nParam sag(0.25, min=0, max=1);        // Netzteil-Einbruch bei lauten Schlägen\nParam hum(0, min=0, max=1);           // Brumm\nParam hum_hz(0, min=0, max=1);        // 0 = 50 Hz, 1 = 60 Hz\nParam seed(1, min=0, max=999);        // Charakter dieser Instanz\nParam quality(1, min=0, max=2);       // Oversampling 1x / 2x / 4x\n\n// ---------- Parameter: Filter ----------\nParam flt_type(0, min=0, max=4);      // 0 Off, 1 LP, 2 BP, 3 HP, 4 Notch\nParam cutoff(2000, min=20, max=18000); // Hz\nParam reso(0.2, min=0, max=1);\nParam flt_env(0, min=-1, max=1);      // Mod-Hüllkurve -> Cutoff, ±6 Oktaven\nParam key_trk(0, min=0, max=1);       // Cutoff folgt der Tonhöhe (1 = 100 %)\n\n// ---------- Parameter: Mod-Hüllkurve ----------\nParam menv_atk(2, min=0.1, max=500);  // ms\nParam menv_dec(150, min=5, max=3000); // ms\nParam menv_curve(0.6, min=0, max=1);  // 0 linear, 1 stark exponentiell\nParam menv_loop(0, min=0, max=1);     // 0 einmal, 1 Loop (AD-Zyklus läuft durch)\nParam menv_pitch(0, min=-24, max=24); // Halbtöne\nParam menv_fm(0, min=-1, max=1);      // zusätzlicher FM-Index\nParam menv_fold(0, min=0, max=1);     // zusätzlicher Fold\nParam accent(0.5, min=0, max=1);      // Velocity -> Decay/Helligkeit\nParam level(0.8, min=0, max=1);\n\n// ---------- Parameter: Pitch / Quantizer ----------\nParam qmode(1, min=0, max=1);         // 0 Loose, 1 Scale\nParam scale_sel(1, min=0, max=7);\nParam root(0, min=0, max=11);\n\n// ---------- Parameter: Sequencer ----------\nParam seq_on(1, min=0, max=1);\nParam clock_mode(0, min=0, max=2);    // 0 Host, 1 Ext Clock, 2 Intern\nParam bpm(130, min=40, max=300);\nParam clock_div(1, min=0, max=4);           // 1/8, 1/16, 1/32, 1/8T, 1/16T\nParam seq_len(16, min=1, max=16);\nParam reset_id(0);\nParam rtrg_rate(1, min=0, max=4);     // Retrig-Schläge pro Step: 2, 3, 4, 6, 8\nParam rtrg_len(1, min=0.25, max=8);   // Retrig-Länge in Steps\nParam rtrg_vel(-0.5, min=-1, max=1);  // Velocity-Verlauf: - ausblenden, + einblenden\n\n// ---------- Parameter: Live-Randomisierung ----------\nParam live_steps(0, min=0, max=1);\nParam live_vel(0, min=0, max=1);\nParam live_pitch(0, min=0, max=1);\nParam density(0.6, min=0, max=1);\nParam vel_range(0.5, min=0, max=1);\nParam pitch_range(7, min=0, max=24);\n\n// ---------- Parameter: MIDI ----------\nParam midi_id(0);\nParam midi_note(60);\nParam midi_vel(0);\n\n// ---------- Parameter: Steps ----------\nParam s1_on(1, min=0, max=1); Param s1_vel(1, min=0, max=1); Param s1_pitch(0, min=-24, max=24); Param s1_rtrg(0, min=0, max=1);\nParam s2_on(1, min=0, max=1); Param s2_vel(1, min=0, max=1); Param s2_pitch(0, min=-24, max=24); Param s2_rtrg(0, min=0, max=1);\nParam s3_on(1, min=0, max=1); Param s3_vel(1, min=0, max=1); Param s3_pitch(0, min=-24, max=24); Param s3_rtrg(0, min=0, max=1);\nParam s4_on(1, min=0, max=1); Param s4_vel(1, min=0, max=1); Param s4_pitch(0, min=-24, max=24); Param s4_rtrg(0, min=0, max=1);\nParam s5_on(1, min=0, max=1); Param s5_vel(1, min=0, max=1); Param s5_pitch(0, min=-24, max=24); Param s5_rtrg(0, min=0, max=1);\nParam s6_on(1, min=0, max=1); Param s6_vel(1, min=0, max=1); Param s6_pitch(0, min=-24, max=24); Param s6_rtrg(0, min=0, max=1);\nParam s7_on(1, min=0, max=1); Param s7_vel(1, min=0, max=1); Param s7_pitch(0, min=-24, max=24); Param s7_rtrg(0, min=0, max=1);\nParam s8_on(1, min=0, max=1); Param s8_vel(1, min=0, max=1); Param s8_pitch(0, min=-24, max=24); Param s8_rtrg(0, min=0, max=1);\nParam s9_on(1, min=0, max=1); Param s9_vel(1, min=0, max=1); Param s9_pitch(0, min=-24, max=24); Param s9_rtrg(0, min=0, max=1);\nParam s10_on(1, min=0, max=1); Param s10_vel(1, min=0, max=1); Param s10_pitch(0, min=-24, max=24); Param s10_rtrg(0, min=0, max=1);\nParam s11_on(1, min=0, max=1); Param s11_vel(1, min=0, max=1); Param s11_pitch(0, min=-24, max=24); Param s11_rtrg(0, min=0, max=1);\nParam s12_on(1, min=0, max=1); Param s12_vel(1, min=0, max=1); Param s12_pitch(0, min=-24, max=24); Param s12_rtrg(0, min=0, max=1);\nParam s13_on(1, min=0, max=1); Param s13_vel(1, min=0, max=1); Param s13_pitch(0, min=-24, max=24); Param s13_rtrg(0, min=0, max=1);\nParam s14_on(1, min=0, max=1); Param s14_vel(1, min=0, max=1); Param s14_pitch(0, min=-24, max=24); Param s14_rtrg(0, min=0, max=1);\nParam s15_on(1, min=0, max=1); Param s15_vel(1, min=0, max=1); Param s15_pitch(0, min=-24, max=24); Param s15_rtrg(0, min=0, max=1);\nParam s16_on(1, min=0, max=1); Param s16_vel(1, min=0, max=1); Param s16_pitch(0, min=-24, max=24); Param s16_rtrg(0, min=0, max=1);\n\n// ---------- Zustand ----------\nHistory beats(0);\nHistory last_phase(-1);\nHistory still(0);\nHistory int_phase(0);\nHistory ext_count(0);\nHistory clk_prev(0);\nHistory rst_prev(0);\nHistory trg_prev(0);\nHistory last_reset(0);\nHistory last_midi(0);\nHistory last_step(-1);\nHistory step_samps(5512);   // Länge eines Steps in Samples (gemessen bzw. berechnet)\nHistory clk_cnt(0);\nHistory rt_arm(0);\nHistory rt_on(0);\nHistory rt_cnt(0);\nHistory rt_next(0);\nHistory rt_total(0);\nHistory rt_int(0);\nHistory rt_vel(1);\nHistory rt_note(56);\nHistory me_lin(0);   // Mod-Hüllkurve: linearer Verlauf 0..1\nHistory me_stage(0); // 0 aus, 1 Attack, 2 Decay\nHistory env(0);\nHistory att(0);\nHistory target(0);\nHistory coef(0.999);\nHistory exc(0);\nHistory pe(0);\nHistory fb_prev(0);\nHistory hit_note(56);\nHistory hit_vel(1);\nHistory gate_cnt(0);\nHistory dc_y(0);   // Ausgang nach dem Koppel-Hochpass\nHistory pend(0);\nHistory p_note(56);\nHistory p_vel(1);\nHistory vac(0);\nHistory sagf(0);\nHistory bt_amp(0);\nHistory hum_ph(0);\nHistory pk0(0);\nHistory pk1(0);\nHistory pk2(0);\nHistory last_seed(-1);\nData ph(8);     // Phasen: 0-5 Bank, 6 Träger, 7 Modulator\nData osl(8);    // Slew-Zustände der Oszillatoren\nData dr(9);     // Drift: 0-7 Oszillatoren, 8 global\nData fq(8);\nData slc(8);    // Slew-Koeffizient pro Oszillator     // Frequenz-Faktor pro Oszillator (Toleranz, Drift, Jitter)\nData tol(40);   // Toleranzen: [i] Cent, [8+i] PW, [16+i] DC, [24+i] Slew, [32+j] Moden/Filter\nData st(26);    // Filterzustände\n\n// ---------- Clock ----------\nspb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat\nlen = floor(seq_len);\n\nif (reset_id != last_reset) {\n\tlast_reset = reset_id;\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst = in3 > 0.1;\nif (rst && rst_prev < 0.5) {\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst_prev = rst;\n\nstep_abs = -1;\nif (clock_mode < 0.5) {\n\tphs = in1;\n\t// Transport-Stopp erkennen: Phase steht > 50 ms -> beim Weiterlaufen neu ab Step 1\n\tif (phs == last_phase) {\n\t\tstill = still + 1;\n\t} else {\n\t\tif (still > samplerate * 0.05) {\n\t\t\tbeats = 0;\n\t\t\tlast_step = -1;\n\t\t} else if (phs < last_phase - 0.5) {\n\t\t\tbeats = beats + 1;\n\t\t} else if (phs > last_phase) {\n\t\t\tstep_samps = 1 / ((phs - last_phase) * spb);\n\t\t}\n\t\tstill = 0;\n\t}\n\tlast_phase = phs;\n\tif (still < samplerate * 0.05) {\n\t\tstep_abs = floor((beats + phs) * spb);\n\t} else {\n\t\tstep_abs = last_step;\n\t}\n} else if (clock_mode < 1.5) {\n\tc = in2 > 0.1;\n\tclk_cnt = clk_cnt + 1;\n\tif (c && clk_prev < 0.5) {\n\t\text_count = ext_count + 1;\n\t\tstep_samps = clk_cnt;\n\t\tclk_cnt = 0;\n\t}\n\tclk_prev = c;\n\tstep_abs = ext_count - 1;\n} else {\n\tint_phase = int_phase + bpm / 60 / samplerate;\n\tstep_abs = floor(int_phase * spb);\n\tstep_samps = samplerate * 60 / (bpm * spb);\n}\n\ncur_step = last_step;\nfire = 0;\nvel = 1;\npitch = 0;\nif (step_abs >= 0) {\n\tcur = step_abs - floor(step_abs / len) * len;\n\tif (cur != last_step) {\n\t\tlast_step = cur;\n\t\tcur_step = cur;\n\t\ton = selector(cur + 1, s1_on, s2_on, s3_on, s4_on, s5_on, s6_on, s7_on, s8_on, s9_on, s10_on, s11_on, s12_on, s13_on, s14_on, s15_on, s16_on);\n\t\tif (seq_on > 0.5 && on > 0.5) {\n\t\t\tif (live_steps < 0.5 || (noise() * 0.5 + 0.5) < density) {\n\t\t\t\tfire = 1;\n\t\t\t\tvel = selector(cur + 1, s1_vel, s2_vel, s3_vel, s4_vel, s5_vel, s6_vel, s7_vel, s8_vel, s9_vel, s10_vel, s11_vel, s12_vel, s13_vel, s14_vel, s15_vel, s16_vel);\n\t\t\t\tpitch = selector(cur + 1, s1_pitch, s2_pitch, s3_pitch, s4_pitch, s5_pitch, s6_pitch, s7_pitch, s8_pitch, s9_pitch, s10_pitch, s11_pitch, s12_pitch, s13_pitch, s14_pitch, s15_pitch, s16_pitch);\n\t\t\t\trt_arm = selector(cur + 1, s1_rtrg, s2_rtrg, s3_rtrg, s4_rtrg, s5_rtrg, s6_rtrg, s7_rtrg, s8_rtrg, s9_rtrg, s10_rtrg, s11_rtrg, s12_rtrg, s13_rtrg, s14_rtrg, s15_rtrg, s16_rtrg);\n\t\t\t\tif (live_vel > 0.5) {\n\t\t\t\t\tvel = vel * (1 - vel_range * (noise() * 0.5 + 0.5));\n\t\t\t\t}\n\t\t\t\tif (live_pitch > 0.5) {\n\t\t\t\t\tpitch = pitch + pitch_range * noise();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n\n// MIDI-Noten (aus Live-Clips) und Ext Trigger spielen die Voice direkt\nif (midi_id != last_midi) {\n\tlast_midi = midi_id;\n\tif (midi_vel > 0) {\n\t\tfire = 1;\n\t\tvel = midi_vel / 127;\n\t\tpitch = midi_note - 60;\n\t\trt_arm = 0;\n\t}\n}\ntr = in5 > 0.1;\nif (tr && trg_prev < 0.5) {\n\tfire = 1;\n\tvel = 1;\n\tpitch = 0;\n\trt_arm = 0;\n}\ntrg_prev = tr;\n\n// ---------- Analog-Charakter ----------\nan = analog;\nag = age;\nif (seed != last_seed) {\n\tlast_seed = seed;\n\tfor (t_i = 0; t_i < 8; t_i += 1) {\n\t\tpoke(tol, rnd_hash(seed, t_i) * 2 - 1, t_i);\n\t\tpoke(tol, rnd_hash(seed, t_i + 8) - 0.5, t_i + 8);\n\t\tpoke(tol, rnd_hash(seed, t_i + 16) - 0.5, t_i + 16);\n\t\tpoke(tol, rnd_hash(seed, t_i + 24), t_i + 24);\n\t}\n\tfor (t_j = 0; t_j < 8; t_j += 1) {\n\t\tpoke(tol, rnd_hash(seed, t_j + 32) * 2 - 1, t_j + 32);\n\t}\n}\n// Drift: tiefpassgefiltertes Rauschen (~0.7 Hz), auf Standardabweichung 1 normiert\nd_a = 1 - exp(-twopi * (0.4 + ag * 0.8) / samplerate);\nd_norm = 1 / sqrt(d_a / (2 - d_a) / 3);\nfor (d_i = 0; d_i < 9; d_i += 1) {\n\tdv = peek(dr, d_i);\n\tpoke(dr, dv + (noise() - dv) * d_a, d_i);\n}\ndrift_c = an * (2 + ag * 10);       // Cent (Standardabweichung)\ntol_c = an * (3 + ag * 5);          // Cent\njit_c = an * (0.3 + ag);            // Cent, schnelles Pitch-Rauschen\nshape_ev = an * (0.04 + ag * 0.08); // gerade Obertöne in den Wellenformen\nbleed = an * (0.0003 + ag * 0.0015);\nota = an * (0.4 + ag * 0.8);\n\n// ---------- Trigger -> Voice (mit Trigger-Jitter) ----------\nstart = 0;\ns_note = 0;\ns_vel = 0;\nif (fire > 0.5) {\n\tnote = tune + pitch + in4 * 60;\n\tif (qmode > 0.5) {\n\t\tmask = selector(floor(scale_sel) + 1, 4095, 1453, 1451, 2477, 1193, 1709, 1459, 397);\n\t\tnote = quant(note, root, mask);\n\t}\n\tjit = floor((noise() * 0.5 + 0.5) * an * 0.0004 * samplerate);\n\tif (jit < 1) {\n\t\tstart = 1;\n\t\ts_note = note;\n\t\ts_vel = vel;\n\t} else {\n\t\tpend = jit;\n\t\tp_note = note;\n\t\tp_vel = vel;\n\t}\n} else if (pend > 0) {\n\tpend = pend - 1;\n\tif (pend < 0.5) {\n\t\tstart = 1;\n\t\ts_note = p_note;\n\t\ts_vel = p_vel;\n\t}\n}\n\n// Retrig (Elektron-Prinzip): ein Step mit Retrig wiederholt den Schlag rtrg_rate-fach pro Step,\n// rtrg_len Steps lang, mit Velocity-Verlauf rtrg_vel. Ein neuer regulärer Schlag beendet ihn.\nif (start > 0.5) {\n\trt_on = 0;\n\tif (rt_arm > 0.5) {\n\t\trt_on = 1;\n\t\trt_cnt = 0;\n\t\trt_int = step_samps / selector(floor(rtrg_rate + 0.5) + 1, 2, 3, 4, 6, 8);\n\t\trt_next = rt_int;\n\t\trt_total = rtrg_len * step_samps;\n\t\trt_vel = s_vel;\n\t\trt_note = s_note;\n\t}\n\trt_arm = 0;\n} else if (rt_on > 0.5) {\n\trt_cnt = rt_cnt + 1;\n\tif (rt_cnt >= rt_total) {\n\t\trt_on = 0;\n\t} else if (rt_cnt >= rt_next) {\n\t\trt_next = rt_next + rt_int;\n\t\tstart = 1;\n\t\ts_note = rt_note;\n\t\ts_vel = clamp(rt_vel * (1 + rtrg_vel * rt_cnt / rt_total), 0, 1);\n\t}\n}\n\nif (start > 0.5) {\n\thit_note = s_note;\n\thit_vel = s_vel;\n\tt = 0.01 * pow(250, decay);\n\tt = t * (1 - accent * 0.5 + accent * s_vel);\n\tcoef = exp(-6.9078 / (t * samplerate));\n\ttarget = max(env, s_vel);\n\tatt = 1;\n\texc = 1;\n\tpe = 1;\n\tme_stage = 1;\n\tif (retrig > 0.5) {\n\t\tfor (r = 0; r < 8; r += 1) {\n\t\t\tpoke(ph, 0, r);\n\t\t}\n\t\tfb_prev = 0;\n\t}\n\tgate_cnt = samplerate * 0.005;\n}\n\n// Hüllkurve: RC-Ladekurve mit Überschwing-Ziel, Ausklang mit leichter Krümmung\nif (att > 0.5) {\n\tov = 1.01 + 0.02 * an;\n\tenv = env + (target * ov - env) * (1 - exp(-4.6 / (attack * 0.001 * samplerate)));\n\tif (env >= target) {\n\t\tenv = target;\n\t\tatt = 0;\n\t}\n} else {\n\tenv = env * pow(coef, 1 - 0.3 * an * (1 - env));\n}\nexc = exc * 0.992;\nif (gate_cnt > 0) {\n\tgate_cnt = gate_cnt - 1;\n}\n\n// Vactrol (Lowpass-Gate): schnell auf, langsam und nichtlinear zu\nif (env > vac) {\n\tvac = vac + (env - vac) * (1 - exp(-1 / (0.002 * samplerate)));\n} else {\n\ttau = 0.012 + 0.25 * (1 - vac) * (1 - vac);\n\tvac = vac + (env - vac) * (1 - exp(-1 / (tau * samplerate)));\n}\n\npe = pe * exp(-6.9078 / (sweep_time * 0.001 * samplerate));\n\n// Mod-Hüllkurve (AD, optional Loop): linear gerechnet, Ausgabe mit Kurve geformt, skaliert mit der Velocity\nif (me_stage > 1.5) {\n\tme_lin = me_lin - 1 / (menv_dec * 0.001 * samplerate);\n\tif (me_lin <= 0) {\n\t\tme_lin = 0;\n\t\tme_stage = 0;\n\t\tif (menv_loop > 0.5) {\n\t\t\tme_stage = 1;\n\t\t}\n\t}\n} else if (me_stage > 0.5) {\n\tme_lin = me_lin + 1 / (menv_atk * 0.001 * samplerate);\n\tif (me_lin >= 1) {\n\t\tme_lin = 1;\n\t\tme_stage = 2;\n\t}\n}\nme_out = me_lin;\nif (me_stage > 1.5 || me_stage < 0.5) {\n\tme_out = mix(me_lin, me_lin * me_lin * me_lin * me_lin, menv_curve);\n}\nme_v = me_out * (0.5 + 0.5 * hit_vel);\ngdrift = peek(dr, 8) * d_norm * drift_c * 0.5;\nf0 = mtof(hit_note + sweep * pe + menv_pitch * me_v + gdrift * 0.01) * (1 - sag * 0.012 * sagf);\nw = floor(waveform + 0.5);\nmw = floor(mod_wave + 0.5);\nacc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);\nta = clamp(inharm * 2, 0, 1);\ntb = clamp(inharm * 2 - 1, 0, 1);\nnv = floor(voices + 0.5);\nosf = selector(floor(quality + 0.5) + 1, 1, 2, 4);\nsr2 = samplerate * osf;\nnyq = sr2 * 0.45;\nidx = max(0, fm_amt * 2 * env * (1 - accent * 0.4 + accent * 0.4 * hit_vel) + menv_fm * 2 * me_v);\namp = env;\nif (amp_mode > 0.5) {\n\tamp = pow(vac, 1.4);\n}\namp_ab = amp + bleed;\nlpg_fc = mix(16000, 60 * pow(2, vac * 8.2), lpg_color);\nq = mix(400, 12, damp);\nfold_e = clamp(wfold + menv_fold * me_v, 0, 1);\nfold_g = 1 + fold_e * 5;\n// Filter: Cutoff mit Hüllkurve, Key-Tracking (relativ zu C3) und Bauteil-Toleranz\nflt_fc = cutoff * pow(2, flt_env * 6 * me_v + key_trk * (hit_note - 60) / 12) * (1 + an * 0.05 * peek(tol, 38));\nflt_q = 0.5 + reso * reso * 24;\nft = floor(flt_type + 0.5);\ndg = 1 + drive * 12;\nab = asym * 0.3;\n\n// Frequenz-Faktor pro Oszillator: Toleranz + Drift + Jitter (in Cent)\nfor (c_i = 0; c_i < 8; c_i += 1) {\n\tcents = peek(tol, c_i) * tol_c + peek(dr, c_i) * d_norm * drift_c + noise() * jit_c;\n\tpoke(fq, pow(2, cents / 1200), c_i);\n\tfsl = mix(20000, 5000, an * ag) * (0.85 + 0.3 * peek(tol, c_i + 24));\n\tpoke(slc, 1 - exp(-twopi * min(fsl, nyq) / sr2), c_i);\n}\n\n// =====================================================================\n// Audio-Kern, läuft osf-mal pro Sample (Oversampling) mit Samplerate sr2\n// =====================================================================\nout_os = 0;\nfor (o = 0; o < osf; o += 1) {\n\t// ---------- Engine A: Oszillator-Bank (6 Oszillatoren) ----------\n\tbank = 0;\n\tasum = 0;\n\tfor (i = 0; i < 6; i += 1) {\n\t\trh = i + 1;\n\t\trm = selector(i + 1, 1, 1.483, 1.8, 2.546, 2.63, 3.897);\n\t\tre = selector(i + 1, 1, 1.593, 2.135, 2.296, 2.917, 3.598);\n\t\tratio = mix(mix(rh, rm, ta), re, tb);\n\t\tratio = 1 + (ratio - 1) * spread;\n\t\tratio = ratio * pow(2, detune * selector(i + 1, 0, 0.7, -0.4, 1, -0.9, 0.3) / 1200);\n\t\tinc = min(f0 * ratio * peek(fq, i) / sr2, 0.45);\n\t\tp = peek(ph, i);\n\t\tif (i < nv) {\n\t\t\tamp_i = pow(i + 1, tilt);\n\t\t\tpw_i = clamp(pw + an * 0.08 * peek(tol, i + 8), 0.03, 0.97);\n\t\t\tyo = osc(p, inc, w, pw_i);\n\t\t\tyo = yo + shape_ev * (yo * yo - 0.5) + an * 0.06 * peek(tol, i + 16);\n\t\t\tsl = peek(osl, i);\n\t\t\tsl = sl + (yo - sl) * peek(slc, i);\n\t\t\tpoke(osl, sl, i);\n\t\t\tbank = bank + sl * amp_i;\n\t\t\tasum = asum + amp_i;\n\t\t}\n\t\tpoke(ph, fract(p + inc), i);\n\t}\n\tbank = bank / asum;\n\tfca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * sqrt(env)) * (1 + an * 0.04 * peek(tol, 32)), nyq);\n\teng_a = 1.8 * svf(bank, fca, 1.5, sr2, st, 0, 1, ota) + 1.8 * svf(bank, fca, 0.7, sr2, st, 2, 2, ota);\n\n\t// ---------- Engine B: FM (linear/exponentiell) + Dioden-Ringmodulator ----------\n\tpc = peek(ph, 6);\n\tpm = peek(ph, 7);\n\tinc_m = min(f0 * fm_ratio * peek(fq, 7) / sr2, 0.45);\n\tmods = osc(wrap(pm + fm_fb * 0.5 * fb_prev, 0, 1), inc_m, mw, pw);\n\tmods = mods + shape_ev * (mods * mods - 0.5) + an * 0.06 * peek(tol, 23);\n\tfb_prev = mods;\n\tinc_c = min(f0 * peek(fq, 6) / sr2, 0.45);\n\tcar = 0;\n\tif (fm_mode > 0.5) {\n\t\tinc_c = min(inc_c * pow(2, idx * 0.75 * mods), 0.45);\n\t\tcar = osc(pc, inc_c, w, pw);\n\t} else {\n\t\tcar = osc(wrap(pc + idx * mods, 0, 1), inc_c, w, pw);\n\t}\n\tcplain = osc(pc, inc_c, w, pw);\n\trsig = mix(cplain * mods, diode_ring(cplain, mods), ring_bleed) + ring_bleed * (0.25 * cplain + 0.1 * mods);\n\tpoke(ph, fract(pc + inc_c), 6);\n\tpoke(ph, fract(pm + inc_m), 7);\n\teng_b = 1.2 * (car * (1 - ring) + rsig * ring);\n\n\t// ---------- Engine C: Modal-Resonator oder Bridged-T (808) ----------\n\tres = 0;\n\tif (reso_mode > 0.5) {\n\t\t// Bridged-T: kurzer Impuls regt gesättigte Schwingkreise an, Tonhöhe steigt mit der Amplitude\n\t\tex = exc * exc * exc * exc * hit_vel * 20;\n\t\tqb = q * 0.5;\n\t\tfor (j = 0; j < 2; j += 1) {\n\t\t\tmr = selector(j + 1, 1, mix(1.5, 2.3, inharm));\n\t\t\tfr = min(f0 * mr * (1 + 0.08 * bt_amp) * (1 + an * 0.01 * peek(tol, 33 + j)), nyq);\n\t\t\tres = res + svf(ex, fr, qb, sr2, st, 4 + j * 2, 1, 1.5) * qb / (j + 1);\n\t\t}\n\t\tbt_amp = bt_amp + (abs(res) - bt_amp) * 0.001;\n\t\tres = res * 0.5;\n\t} else {\n\t\tex = noise() * exc * exc * (0.4 + 0.6 * acc_b) * hit_vel;\n\t\tfor (j = 0; j < 4; j += 1) {\n\t\t\tmh = j + 1;\n\t\t\tmb = selector(j + 1, 1, 2.756, 5.404, 8.933);\n\t\t\tmp = selector(j + 1, 1, 1.594, 2.136, 2.653);\n\t\t\tmr = mix(mix(mh, mb, ta), mp, tb);\n\t\t\tfr = min(f0 * mr * (1 + an * 0.01 * peek(tol, 33 + j)), nyq);\n\t\t\tres = res + svf(ex, fr, q, sr2, st, 4 + j * 2, 1, 0) * sqrt(1000 / fr) / (j + 1);\n\t\t}\n\t\tres = res * sqrt(q) * 15 * pow(osf, 0.7);\n\t}\n\teng_c = res * min(1, env * 4);\n\n\t// ---------- Morph, Noise, Amp (VCA / LPG) ----------\n\tva = eng_a * amp_ab;\n\tvb = eng_b * amp_ab;\n\tm = morph * 2;\n\tvoice = 0;\n\tif (m < 1) {\n\t\tvoice = va * cos(m * pi * 0.5) + vb * sin(m * pi * 0.5);\n\t} else {\n\t\tm = m - 1;\n\t\tvoice = vb * cos(m * pi * 0.5) + eng_c * sin(m * pi * 0.5);\n\t}\n\tvoice = voice + svf(noise(), min(f0 * 8, nyq), 0.7, sr2, st, 12, 2, 0) * env * noise_mix * sqrt(osf);\n\tif (amp_mode > 0.5) {\n\t\tvoice = svf(voice, lpg_fc, 0.6, sr2, st, 14, 0, ota);\n\t}\n\n\t// ---------- Multimode-Filter (vor Fold und Drive) ----------\n\tif (ft > 0.5) {\n\t\tfcl = clamp(flt_fc, 20, nyq);\n\t\tif (ft > 3.5) {\n\t\t\tvoice = voice - svf(voice, fcl, flt_q, sr2, st, 24, 1, ota);\n\t\t} else {\n\t\t\tvoice = svf(voice, fcl, flt_q, sr2, st, 24, ft - 1, ota);\n\t\t}\n\t}\n\n\t// ---------- Wavefolder + asymmetrische Sättigung ----------\n\tif (fold_e > 0.001) {\n\t\tvoice = mix(voice, sin(voice * fold_g * pi * 0.5), min(1, fold_e * 3));\n\t}\n\ty = (tanh(dg * (voice + ab)) - tanh(dg * ab)) / sqrt(dg);\n\n\t// ---------- Dezimation: Butterworth 6. Ordnung bei 0.42 * samplerate ----------\n\tif (osf > 1) {\n\t\ty = svf(y, samplerate * 0.42, 0.5176, sr2, st, 16, 0, 0);\n\t\ty = svf(y, samplerate * 0.42, 0.7071, sr2, st, 18, 0, 0);\n\t\ty = svf(y, samplerate * 0.42, 1.9319, sr2, st, 20, 0, 0);\n\t}\n\tout_os = y;\n}\ny = out_os;\n\n// Koppelkondensator: Hochpass 2. Ordnung bei 25 Hz entfernt Gleichanteil und den\n// hüllkurvenabhängigen Thump der asymmetrischen Sättigung\ndc_y = svf(y, 25, 0.7071, samplerate, st, 22, 2, 0);\n\n// Netzteil-Einbruch: Hüllkurvenfolger auf den Ausgang\nsagf = sagf + (abs(dc_y) - sagf) * selector((abs(dc_y) > sagf) + 1, 0.0003, 0.02);\ny_out = dc_y * level * (1 - sag * 0.2 * min(1, sagf * 2));\n\n// Grundrauschen (pink) und Brumm\nwn = noise();\npk0 = 0.99765 * pk0 + wn * 0.099046;\npk1 = 0.963 * pk1 + wn * 0.2965164;\npk2 = 0.57 * pk2 + wn * 1.0526913;\npink = (pk0 + pk1 + pk2 + wn * 0.1848) * 0.2;\nhum_ph = wrap(hum_ph + selector(floor(hum_hz + 0.5) + 1, 50, 60) / samplerate, 0, 1);\nhz = sin(twopi * hum_ph) + 0.5 * sin(twopi * 3 * hum_ph) + 0.25 * sin(twopi * 5 * hum_ph);\ny_out = y_out + pink * an * (0.00005 + ag * 0.0003) + hz * hum * 0.003;\n\nout1 = y_out;\nout2 = env;\nout3 = max(cur_step, 0);\nout4 = gate_cnt > 0;\n",
          "fontface": 0,
          "fontname": "<Monospaced>",
          "fontsize": 12,
@@ -721,14 +758,14 @@
      "numoutlets": 0,
      "fontsize": 10.0,
      "patching_rect": [
-      1786,
+      2080,
       403,
       44,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1786,
+      2080,
       3,
       44,
       14
@@ -758,14 +795,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1788,
+      2082,
       420,
       40,
       132
      ],
      "presentation": 1,
      "presentation_rect": [
-      1788,
+      2082,
       20,
       40,
       132
@@ -13014,14 +13051,14 @@
      "numoutlets": 0,
      "fontsize": 10.0,
      "patching_rect": [
-      1350,
+      1644,
       403,
       80,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1350,
+      1644,
       3,
       80,
       14
@@ -13048,14 +13085,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1348,
+      1642,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1348,
+      1642,
       14,
       44,
       48
@@ -13152,14 +13189,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1404,
+      1698,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1404,
+      1698,
       14,
       44,
       48
@@ -13256,14 +13293,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1460,
+      1754,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1460,
+      1754,
       14,
       44,
       48
@@ -13360,14 +13397,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1516,
+      1810,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1516,
+      1810,
       14,
       44,
       48
@@ -13460,14 +13497,14 @@
      "numoutlets": 0,
      "fontsize": 8.5,
      "patching_rect": [
-      1348,
+      1642,
       466,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1348,
+      1642,
       66,
       60,
       14
@@ -13495,14 +13532,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1348,
+      1642,
       482,
       104,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1348,
+      1642,
       82,
       104,
       16
@@ -13617,14 +13654,14 @@
      "numoutlets": 0,
      "fontsize": 8.5,
      "patching_rect": [
-      1460,
+      1754,
       466,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1460,
+      1754,
       66,
       60,
       14
@@ -13652,14 +13689,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1460,
+      1754,
       482,
       112,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1460,
+      1754,
       82,
       112,
       16
@@ -13774,14 +13811,14 @@
      "numoutlets": 0,
      "fontsize": 8.5,
      "patching_rect": [
-      1348,
+      1642,
       516,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1348,
+      1642,
       116,
       60,
       14
@@ -13809,14 +13846,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1348,
+      1642,
       532,
       140,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1348,
+      1642,
       132,
       140,
       16
@@ -13931,14 +13968,14 @@
      "numoutlets": 0,
      "fontsize": 10.0,
      "patching_rect": [
-      1594,
+      1888,
       403,
       80,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1594,
+      1888,
       3,
       80,
       14
@@ -13965,14 +14002,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1592,
+      1886,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1592,
+      1886,
       14,
       44,
       48
@@ -14069,14 +14106,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1648,
+      1942,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1648,
+      1942,
       14,
       44,
       48
@@ -14173,14 +14210,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1704,
+      1998,
       414,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1704,
+      1998,
       14,
       44,
       48
@@ -14277,14 +14314,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1592,
+      1886,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1592,
+      1886,
       64,
       44,
       48
@@ -14381,14 +14418,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1648,
+      1942,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1648,
+      1942,
       64,
       44,
       48
@@ -14481,14 +14518,14 @@
      "numoutlets": 0,
      "fontsize": 8.5,
      "patching_rect": [
-      1592,
+      1886,
       516,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1592,
+      1886,
       116,
       60,
       14
@@ -14516,14 +14553,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1592,
+      1886,
       532,
       96,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1592,
+      1886,
       132,
       96,
       16
@@ -14639,14 +14676,14 @@
      "numoutlets": 0,
      "fontsize": 8.5,
      "patching_rect": [
-      1700,
+      1994,
       516,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1700,
+      1994,
       116,
       60,
       14
@@ -14674,14 +14711,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1700,
+      1994,
       532,
       68,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1700,
+      1994,
       132,
       68,
       16
@@ -14790,6 +14827,1396 @@
    },
    {
     "box": {
+     "maxclass": "comment",
+     "text": "FILTER · ENV",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 10.0,
+     "patching_rect": [
+      1350,
+      403,
+      120,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1350,
+      3,
+      120,
+      14
+     ],
+     "id": "obj-293",
+     "textcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "fontname": "Ableton Sans Bold"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "cutoff",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1348,
+      414,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1348,
+      14,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Cutoff",
+       "parameter_shortname": "Cutoff",
+       "parameter_type": 0,
+       "parameter_initial": [
+        2000.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 20.0,
+       "parameter_mmax": 18000.0,
+       "parameter_unitstyle": 3,
+       "parameter_exponent": 4.0
+      }
+     },
+     "id": "obj-294",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend cutoff",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      40,
+      1960,
+      110,
+      22
+     ],
+     "id": "obj-295"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "reso",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1404,
+      414,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1404,
+      14,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Reso",
+       "parameter_shortname": "Reso",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.2
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 1.0,
+       "parameter_unitstyle": 1
+      }
+     },
+     "id": "obj-296",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend reso",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      180,
+      1960,
+      96,
+      22
+     ],
+     "id": "obj-297"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "flt_env",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1460,
+      414,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1460,
+      14,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Flt Env",
+       "parameter_shortname": "Flt Env",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": -1.0,
+       "parameter_mmax": 1.0,
+       "parameter_unitstyle": 1
+      }
+     },
+     "id": "obj-298",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend flt_env",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      320,
+      1960,
+      117,
+      22
+     ],
+     "id": "obj-299"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "key_trk",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1516,
+      414,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1516,
+      14,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Key Trk",
+       "parameter_shortname": "Key Trk",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 1.0,
+       "parameter_unitstyle": 1
+      }
+     },
+     "id": "obj-300",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend key_trk",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      460,
+      1960,
+      117,
+      22
+     ],
+     "id": "obj-301"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "menv_fold",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1572,
+      414,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1572,
+      14,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Env Fold",
+       "parameter_shortname": "Env Fold",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 1.0,
+       "parameter_unitstyle": 1
+      }
+     },
+     "id": "obj-302",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend menv_fold",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      600,
+      1960,
+      131,
+      22
+     ],
+     "id": "obj-303"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "menv_atk",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1348,
+      464,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1348,
+      64,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Env Atk",
+       "parameter_shortname": "Env Atk",
+       "parameter_type": 0,
+       "parameter_initial": [
+        2.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 0.1,
+       "parameter_mmax": 500.0,
+       "parameter_unitstyle": 2,
+       "parameter_exponent": 3.0
+      }
+     },
+     "id": "obj-304",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend menv_atk",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      40,
+      1990,
+      124,
+      22
+     ],
+     "id": "obj-305"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "menv_dec",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1404,
+      464,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1404,
+      64,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Env Dec",
+       "parameter_shortname": "Env Dec",
+       "parameter_type": 0,
+       "parameter_initial": [
+        150.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 5.0,
+       "parameter_mmax": 3000.0,
+       "parameter_unitstyle": 2,
+       "parameter_exponent": 3.0
+      }
+     },
+     "id": "obj-306",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend menv_dec",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      180,
+      1990,
+      124,
+      22
+     ],
+     "id": "obj-307"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "menv_curve",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1460,
+      464,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1460,
+      64,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Curve",
+       "parameter_shortname": "Curve",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.6
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 0.0,
+       "parameter_mmax": 1.0,
+       "parameter_unitstyle": 1
+      }
+     },
+     "id": "obj-308",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend menv_curve",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      320,
+      1990,
+      138,
+      22
+     ],
+     "id": "obj-309"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "menv_pitch",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1516,
+      464,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1516,
+      64,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Env Pitch",
+       "parameter_shortname": "Env Pitch",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": -24.0,
+       "parameter_mmax": 24.0,
+       "parameter_unitstyle": 7
+      }
+     },
+     "id": "obj-310",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend menv_pitch",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      460,
+      1990,
+      138,
+      22
+     ],
+     "id": "obj-311"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "menv_fm",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1572,
+      464,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1572,
+      64,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Env FM",
+       "parameter_shortname": "Env FM",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": -1.0,
+       "parameter_mmax": 1.0,
+       "parameter_unitstyle": 1
+      }
+     },
+     "id": "obj-312",
+     "activedialcolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "dialcolor": [
+      0.14,
+      0.316,
+      0.45,
+      1.0
+     ],
+     "activefgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "fgdialcolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "activeneedlecolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "needlecolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textcolor": [
+      0.831,
+      0.843,
+      0.867,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend menv_fm",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      600,
+      1990,
+      117,
+      22
+     ],
+     "id": "obj-313"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "FILTER",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 8.5,
+     "patching_rect": [
+      1348,
+      516,
+      60,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1348,
+      116,
+      60,
+      14
+     ],
+     "id": "obj-314",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.tab",
+     "varname": "flt_type",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "",
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1348,
+      532,
+      180,
+      16
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1348,
+      132,
+      180,
+      16
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Filter Type",
+       "parameter_shortname": "Filter Type",
+       "parameter_type": 2,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_enum": [
+        "Off",
+        "LP",
+        "BP",
+        "HP",
+        "Notch"
+       ],
+       "parameter_mmax": 4
+      }
+     },
+     "num_lines_presentation": 1,
+     "num_lines_patching": 1,
+     "id": "obj-315",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend flt_type",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      40,
+      2020,
+      124,
+      22
+     ],
+     "id": "obj-316"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "comment",
+     "text": "ENV",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "fontsize": 8.5,
+     "patching_rect": [
+      1536,
+      516,
+      60,
+      14
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1536,
+      116,
+      60,
+      14
+     ],
+     "id": "obj-317",
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.tab",
+     "varname": "menv_loop",
+     "numinlets": 1,
+     "numoutlets": 3,
+     "outlettype": [
+      "",
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      1536,
+      532,
+      90,
+      16
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      1536,
+      132,
+      90,
+      16
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Env Loop",
+       "parameter_shortname": "Env Loop",
+       "parameter_type": 2,
+       "parameter_initial": [
+        0
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_enum": [
+        "One",
+        "Loop"
+       ],
+       "parameter_mmax": 1
+      }
+     },
+     "num_lines_presentation": 1,
+     "num_lines_patching": 1,
+     "id": "obj-318",
+     "bgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "activebgcolor": [
+      0.169,
+      0.18,
+      0.208,
+      1.0
+     ],
+     "bgoncolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "activebgoncolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "bordercolor": [
+      0.227,
+      0.243,
+      0.275,
+      1.0
+     ],
+     "focusbordercolor": [
+      0.31,
+      0.702,
+      1.0,
+      1.0
+     ],
+     "textcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "activetextcolor": [
+      0.541,
+      0.561,
+      0.6,
+      1.0
+     ],
+     "textoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "activetextoncolor": [
+      0.067,
+      0.071,
+      0.078,
+      1.0
+     ],
+     "fontname": "Ableton Sans Medium",
+     "fontsize": 9.0
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend menv_loop",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      200,
+      2020,
+      131,
+      22
+     ],
+     "id": "obj-319"
+    }
+   },
+   {
+    "box": {
      "maxclass": "live.button",
      "varname": "rand_osc",
      "numinlets": 1,
@@ -14828,7 +16255,7 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-293",
+     "id": "obj-320",
      "bgcolor": [
       0.169,
       0.18,
@@ -14882,7 +16309,7 @@
       68,
       22
      ],
-     "id": "obj-294"
+     "id": "obj-321"
     }
    },
    {
@@ -14905,7 +16332,7 @@
       26,
       14
      ],
-     "id": "obj-295",
+     "id": "obj-322",
      "textcolor": [
       0.541,
       0.561,
@@ -14955,7 +16382,7 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-296",
+     "id": "obj-323",
      "bgcolor": [
       0.169,
       0.18,
@@ -15009,7 +16436,7 @@
       82,
       22
      ],
-     "id": "obj-297"
+     "id": "obj-324"
     }
    },
    {
@@ -15032,7 +16459,7 @@
       26,
       14
      ],
-     "id": "obj-298",
+     "id": "obj-325",
      "textcolor": [
       0.541,
       0.561,
@@ -15082,7 +16509,7 @@
        "parameter_mmax": 1
       }
      },
-     "id": "obj-299",
+     "id": "obj-326",
      "bgcolor": [
       0.169,
       0.18,
@@ -15136,7 +16563,7 @@
       82,
       22
      ],
-     "id": "obj-300"
+     "id": "obj-327"
     }
    },
    {
@@ -15159,7 +16586,7 @@
       40,
       14
      ],
-     "id": "obj-301",
+     "id": "obj-328",
      "textcolor": [
       0.541,
       0.561,
@@ -15210,7 +16637,7 @@
      },
      "showname": 0,
      "shownumber": 0,
-     "id": "obj-302",
+     "id": "obj-329",
      "activedialcolor": [
       1.0,
       0.361,
@@ -15277,7 +16704,7 @@
       30,
       12
      ],
-     "id": "obj-303",
+     "id": "obj-330",
      "textcolor": [
       0.541,
       0.561,
@@ -15307,7 +16734,7 @@
       60,
       14
      ],
-     "id": "obj-304",
+     "id": "obj-331",
      "textcolor": [
       0.541,
       0.561,
@@ -15362,7 +16789,7 @@
        "parameter_mmax": 4
       }
      },
-     "id": "obj-305",
+     "id": "obj-332",
      "bgcolor": [
       0.169,
       0.18,
@@ -15424,7 +16851,7 @@
       131,
       22
      ],
-     "id": "obj-306"
+     "id": "obj-333"
     }
    },
    {
@@ -15466,7 +16893,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-307",
+     "id": "obj-334",
      "activedialcolor": [
       0.18,
       0.827,
@@ -15528,7 +16955,7 @@
       124,
       22
      ],
-     "id": "obj-308"
+     "id": "obj-335"
     }
    },
    {
@@ -15570,7 +16997,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-309",
+     "id": "obj-336",
      "activedialcolor": [
       0.18,
       0.827,
@@ -15632,7 +17059,7 @@
       124,
       22
      ],
-     "id": "obj-310"
+     "id": "obj-337"
     }
    }
   ],
@@ -18808,11 +20235,11 @@
    {
     "patchline": {
      "source": [
-      "obj-293",
+      "obj-294",
       0
      ],
      "destination": [
-      "obj-294",
+      "obj-295",
       0
      ]
     }
@@ -18820,11 +20247,11 @@
    {
     "patchline": {
      "source": [
-      "obj-294",
+      "obj-295",
       0
      ],
      "destination": [
-      "obj-168",
+      "obj-1",
       0
      ]
     }
@@ -18848,7 +20275,19 @@
       0
      ],
      "destination": [
-      "obj-168",
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-298",
+      0
+     ],
+     "destination": [
+      "obj-299",
       0
      ]
     }
@@ -18860,7 +20299,7 @@
       0
      ],
      "destination": [
-      "obj-300",
+      "obj-1",
       0
      ]
     }
@@ -18872,7 +20311,55 @@
       0
      ],
      "destination": [
-      "obj-168",
+      "obj-301",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-301",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-302",
+      0
+     ],
+     "destination": [
+      "obj-303",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-303",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-304",
+      0
+     ],
+     "destination": [
+      "obj-305",
       0
      ]
     }
@@ -18884,7 +20371,7 @@
       0
      ],
      "destination": [
-      "obj-306",
+      "obj-1",
       0
      ]
     }
@@ -18896,7 +20383,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-307",
       0
      ]
     }
@@ -18908,7 +20395,7 @@
       0
      ],
      "destination": [
-      "obj-308",
+      "obj-1",
       0
      ]
     }
@@ -18920,7 +20407,7 @@
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-309",
       0
      ]
     }
@@ -18932,7 +20419,7 @@
       0
      ],
      "destination": [
-      "obj-310",
+      "obj-1",
       0
      ]
     }
@@ -18941,6 +20428,234 @@
     "patchline": {
      "source": [
       "obj-310",
+      0
+     ],
+     "destination": [
+      "obj-311",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-311",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-312",
+      0
+     ],
+     "destination": [
+      "obj-313",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-313",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-315",
+      0
+     ],
+     "destination": [
+      "obj-316",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-316",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-318",
+      0
+     ],
+     "destination": [
+      "obj-319",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-319",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-320",
+      0
+     ],
+     "destination": [
+      "obj-321",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-321",
+      0
+     ],
+     "destination": [
+      "obj-168",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-323",
+      0
+     ],
+     "destination": [
+      "obj-324",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-324",
+      0
+     ],
+     "destination": [
+      "obj-168",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-326",
+      0
+     ],
+     "destination": [
+      "obj-327",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-327",
+      0
+     ],
+     "destination": [
+      "obj-168",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-332",
+      0
+     ],
+     "destination": [
+      "obj-333",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-333",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-334",
+      0
+     ],
+     "destination": [
+      "obj-335",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-335",
+      0
+     ],
+     "destination": [
+      "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-336",
+      0
+     ],
+     "destination": [
+      "obj-337",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-337",
       0
      ],
      "destination": [

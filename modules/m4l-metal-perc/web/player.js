@@ -11,6 +11,7 @@ function fmt(v, vo) {
   if (u === 8) { const n = Math.round(v); return NOTES[((n % 12) + 12) % 12] + (Math.floor(n / 12) - 2); }
   if (u === 7) return `${v >= 0 ? '+' : ''}${v.toFixed(t === 1 ? 0 : 1)} st`;
   if (u === 4) return `${v.toFixed(1)} dB`;
+  if (u === 3) return v >= 1000 ? `${(v / 1000).toFixed(2)} kHz` : `${v.toFixed(0)} Hz`;
   if (u === 2) return v < 10 ? `${v.toFixed(1)} ms` : `${v.toFixed(0)} ms`;
   if (t === 1 || u === 0) return `${Math.round(v)}`;
   return v.toFixed(2);
@@ -362,15 +363,15 @@ class Dial extends Control {
       this.label = this.text(0, el.vo.parameter_shortname, 0.75);
       this.num = this.text(el.rect[3] - 11, '', 1);
     }
-    let startY = 0, startV = 0;
+    // Regler mit Exponent (z. B. Cutoff) arbeiten in der normierten Stellung 0..1 wie live.dial
+    this.exp = el.vo.parameter_exponent || 1;
+    let startY = 0, startN = 0;
     const move = (e) => {
-      const span = this.max - this.min;
       const sens = e.shiftKey ? 1000 : 200;
-      const raw = startV + (startY - e.clientY) / sens * span;
-      this.set(this.int ? raw : raw, true);
+      this.set(this.fromNorm(startN + (startY - e.clientY) / sens), true);
     };
     this.node.addEventListener('pointerdown', (e) => {
-      startY = e.clientY; startV = this.value;
+      startY = e.clientY; startN = this.toNorm(this.value);
       this.node.setPointerCapture(e.pointerId);
       this.node.addEventListener('pointermove', move);
     });
@@ -381,10 +382,17 @@ class Dial extends Control {
     this.node.addEventListener('dblclick', () => this.set(this.init, true));
     this.node.addEventListener('wheel', (e) => {
       e.preventDefault();
-      const step = this.int ? 1 : (this.max - this.min) / 100;
-      this.set(this.value - Math.sign(e.deltaY) * step, true);
+      if (this.int) this.set(this.value - Math.sign(e.deltaY), true);
+      else this.set(this.fromNorm(this.toNorm(this.value) - Math.sign(e.deltaY) * 0.01), true);
     }, { passive: false });
     this.draw();
+  }
+  toNorm(v) {
+    const f = this.max > this.min ? (v - this.min) / (this.max - this.min) : 0;
+    return Math.pow(Math.max(0, Math.min(1, f)), 1 / this.exp);
+  }
+  fromNorm(n) {
+    return this.min + Math.pow(Math.max(0, Math.min(1, n)), this.exp) * (this.max - this.min);
   }
   text(top, s, opacity) {
     const t = document.createElement('div');
@@ -397,7 +405,7 @@ class Dial extends Control {
   }
   draw() {
     const [, , w, h] = this.el.rect;
-    const f = this.max > this.min ? (this.value - this.min) / (this.max - this.min) : 0;
+    const f = this.toNorm(this.value);
     const d = Math.min(w, h - (this.small ? 0 : 22)) - 2;
     const cx = w / 2, cy = this.small ? h / 2 : 11 + d / 2 + 1, r = d / 2 - 2;
     const pt = (a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];

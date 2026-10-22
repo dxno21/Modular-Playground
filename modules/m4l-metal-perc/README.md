@@ -148,6 +148,25 @@ GitHub Pages (`tools/build_site.py`). Einmalig unter *Settings → Pages → Sou
 
 Im Resonator-Modus (Morph = 1) wirkt **Wave** nicht, weil die Moden durch Rauschen angeregt werden.
 
+### Filter · Env
+Multimode-Filter nach der Klangerzeugung, vor Fold und Drive, dazu eine eigene Modulations-Hüllkurve.
+
+| Regler | Wirkung |
+|---|---|
+| **Filter** | *Off* (Standard, alte Presets klingen unverändert), *LP*, *BP*, *HP*, *Notch* |
+| **Cutoff** | 20 Hz – 18 kHz, logarithmisch |
+| **Reso** | Resonanz bis kurz vor Selbstoszillation. Mit Analog > 0 sättigt die Filter-Eingangsstufe wie bei einem OTA-Filter |
+| **Flt Env** | Mod-Hüllkurve → Cutoff, ±6 Oktaven (negativ schließt das Filter beim Schlag) |
+| **Key Trk** | Cutoff folgt der Tonhöhe (1 = voll, bezogen auf C3) |
+| **Env Atk / Env Dec** | Anstieg 0.1–500 ms, Abfall 5 ms–3 s |
+| **Curve** | Form des Abfalls: 0 linear, 1 stark exponentiell (schnell, mit langem Ausklang) |
+| **Env** *One/Loop* | *One*: einmal pro Schlag. *Loop*: Der AD-Zyklus läuft durch, wie ein LFO, der mit jedem Schlag neu startet |
+| **Env Pitch** | Mod-Hüllkurve → Tonhöhe, ±24 Halbtöne (zusätzlich zum Sweep) |
+| **Env FM** | Mod-Hüllkurve → FM-Index (±) |
+| **Env Fold** | Mod-Hüllkurve → Wavefolder |
+
+Die Mod-Hüllkurve wird mit der Velocity skaliert (50–100 %). Die Lautstärke steuern weiterhin Attack und Decay in VOICE.
+
 ### Circuit (Schaltungs-Modelle)
 | Regler | Wirkung |
 |---|---|
@@ -209,6 +228,8 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `11_lpg_vactrol_fm_plonk` | Low/Mid FM Metal mit Lowpass-Gate (Vactrol) |
 | `12_bridged_t_808_toms` | Resonator im Bridged-T-Modus: 808-artige Metall-Toms |
 | `13_wavefolder_exp_fm` | Exponentielle FM und Wavefolder |
+| `16_filter_env_acid_metal` | Tiefpass mit Resonanz, von der Mod-Hüllkurve geöffnet, Key-Tracking |
+| `17_env_loop_pitch_fold` | Geloopte Mod-Hüllkurve auf Pitch, Fold und Bandpass |
 | `15_retrig_rolls_138` | Retrig-Rolls bei 138 BPM: Steps 7, 15, 16 mit x4-Retrig, Velocity fällt ab |
 | `14_ab_digital_then_analog` | A/B-Vergleich: dasselbe Pattern erst komplett digital, nach kurzer Pause mit allen Analog-Bausteinen |
 
@@ -301,6 +322,6 @@ jeder mit eigener Note. Alle anderen Einstellungen und die Automation bleiben gl
 - **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 124 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 136 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.

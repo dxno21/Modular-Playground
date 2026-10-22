@@ -137,6 +137,8 @@ DEFAULTS = dict(
     fm_mode=0, ring_bleed=0.15,
     wfold=0.0, asym=0.25, amp_mode=0, lpg_color=0.6, reso_mode=0,
     analog=0.5, age=0.3, sag=0.25, hum=0.0, hum_hz=0, seed=1, quality=1,
+    flt_type=0, cutoff=2000.0, reso=0.2, flt_env=0.0, key_trk=0.0,
+    menv_atk=2.0, menv_dec=150.0, menv_curve=0.6, menv_loop=0, menv_pitch=0.0, menv_fm=0.0, menv_fold=0.0,
     qmode=1, scale_sel=1, root=0,
     seq_on=1, bpm=130, clock_div=1, seq_len=16, rtrg_rate=1, rtrg_len=1.0, rtrg_vel=-0.5,
     live_steps=0, live_vel=0, live_pitch=0,
@@ -173,12 +175,14 @@ class MetalPerc:
         self.vac = 0.0
         self.sagf = 0.0
         self.bt_amp = 0.0
+        self.me_lin = 0.0
+        self.me_stage = 0
         self.hum_ph = 0.0
         self.pk = [0.0, 0.0, 0.0]
         self.ph = [0.0] * 8
         self.osl = [0.0] * 8
         self.dr = [0.0] * 9
-        self.st = [0.0] * 24
+        self.st = [0.0] * 26
         self.dc_x = self.dc_y = 0.0
         sd = p["seed"]
         self.tol = ([rnd_hash(sd, i) * 2 - 1 for i in range(8)] + [rnd_hash(sd, i + 8) - 0.5 for i in range(8)]
@@ -223,6 +227,7 @@ class MetalPerc:
         self.att = True
         self.exc = 1.0
         self.pe = 1.0
+        self.me_stage = 1
         if p["retrig"] > 0.5:
             self.ph = [0.0] * 8
             self.fb_prev = 0.0
@@ -296,8 +301,23 @@ class MetalPerc:
         vac = self.vac
 
         self.pe *= math.exp(-6.9078 / (p["sweep_time"] * 0.001 * SR))
+        # Mod-Hüllkurve (AD, optional Loop)
+        if self.me_stage == 2:
+            self.me_lin -= 1 / (p["menv_dec"] * 0.001 * SR)
+            if self.me_lin <= 0:
+                self.me_lin = 0.0
+                self.me_stage = 1 if p["menv_loop"] > 0.5 else 0
+        elif self.me_stage == 1:
+            self.me_lin += 1 / (p["menv_atk"] * 0.001 * SR)
+            if self.me_lin >= 1:
+                self.me_lin = 1.0
+                self.me_stage = 2
+        me_out = self.me_lin
+        if self.me_stage != 1:
+            me_out = mix(self.me_lin, self.me_lin ** 4, p["menv_curve"])
+        me_v = me_out * (0.5 + 0.5 * self.hit_vel)
         gdrift = self.dr[8] * d_norm * drift_c * 0.5
-        f0 = mtof(self.hit_note + p["sweep"] * self.pe + gdrift * 0.01) * (1 - p["sag"] * 0.012 * self.sagf)
+        f0 = mtof(self.hit_note + p["sweep"] * self.pe + p["menv_pitch"] * me_v + gdrift * 0.01) * (1 - p["sag"] * 0.012 * self.sagf)
         w = math.floor(p["waveform"] + 0.5)
         mw = math.floor(p["mod_wave"] + 0.5)
         acc_b = p["bright"] * (1 - p["accent"] * 0.4 + p["accent"] * 0.4 * self.hit_vel)
@@ -307,12 +327,18 @@ class MetalPerc:
         osf = [1, 2, 4][int(math.floor(p["quality"] + 0.5))]
         sr2 = SR * osf
         nyq = sr2 * 0.45
-        idx = p["fm_amt"] * 2 * env * (1 - p["accent"] * 0.4 + p["accent"] * 0.4 * self.hit_vel)
+        idx = max(0.0, p["fm_amt"] * 2 * env * (1 - p["accent"] * 0.4 + p["accent"] * 0.4 * self.hit_vel)
+                  + p["menv_fm"] * 2 * me_v)
         amp = vac ** 1.4 if p["amp_mode"] > 0.5 else env
         amp_ab = amp + bleed
         lpg_fc = mix(16000, 60 * 2 ** (vac * 8.2), p["lpg_color"])
         q = mix(400, 12, p["damp"])
-        fold_g = 1 + p["wfold"] * 5
+        fold_e = clamp(p["wfold"] + p["menv_fold"] * me_v, 0, 1)
+        fold_g = 1 + fold_e * 5
+        flt_fc = p["cutoff"] * 2 ** (p["flt_env"] * 6 * me_v + p["key_trk"] * (self.hit_note - 60) / 12) \
+            * (1 + an * 0.05 * self.tol[38])
+        flt_q = 0.5 + p["reso"] ** 2 * 24
+        ft = math.floor(p["flt_type"] + 0.5)
         dg = 1 + p["drive"] * 12
         ab = p["asym"] * 0.3
         fq, slc = [0.0] * 8, [0.0] * 8
@@ -392,8 +418,14 @@ class MetalPerc:
             voice += svf(noise(), min(f0 * 8, nyq), 0.7, sr2, st, 12, 2, 0) * env * p["noise_mix"] * math.sqrt(osf)
             if p["amp_mode"] > 0.5:
                 voice = svf(voice, lpg_fc, 0.6, sr2, st, 14, 0, ota)
-            if p["wfold"] > 0.001:
-                voice = mix(voice, math.sin(voice * fold_g * math.pi / 2), min(1, p["wfold"] * 3))
+            if ft > 0.5:
+                fcl = clamp(flt_fc, 20, nyq)
+                if ft > 3.5:
+                    voice = voice - svf(voice, fcl, flt_q, sr2, st, 24, 1, ota)
+                else:
+                    voice = svf(voice, fcl, flt_q, sr2, st, 24, ft - 1, ota)
+            if fold_e > 0.001:
+                voice = mix(voice, math.sin(voice * fold_g * math.pi / 2), min(1, fold_e * 3))
             y = (math.tanh(dg * (voice + ab)) - math.tanh(dg * ab)) / math.sqrt(dg)
             if osf > 1:
                 y = svf(y, SR * 0.42, 0.5176, sr2, st, 16, 0)
@@ -502,6 +534,19 @@ PRESETS = {
         params=dict(LOWMID_FM_METAL, bpm=138, tune=45, decay=0.2, rtrg_rate=2, rtrg_len=1.0, rtrg_vel=-0.7),
         pattern=seq("1001 0010 1001 0111", pitch=[0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0, 0, 0, -2, 0, 5]),
         rtrg=[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    ),
+    "16_filter_env_acid_metal": dict(
+        params=dict(LOWMID_FM_METAL, bpm=138, tune=43, waveform=2, mod_wave=2, fm_amt=0.6, decay=0.3,
+                    flt_type=1, cutoff=180.0, reso=0.75, flt_env=0.75, key_trk=0.5,
+                    menv_atk=3.0, menv_dec=140.0, menv_curve=0.7, menv_fm=0.3, drive=0.55),
+        pattern=seq("1011 0110 1101 0111", vel=[1, 0, .6, .8, 0, .9, .5, 0, 1, .6, 0, .8, 0, .7, .9, .5],
+                    pitch=[0, 0, 0, 3, 0, 0, 1, 0, 0, 12, 0, 0, 0, -2, 0, 3]),
+    ),
+    "17_env_loop_pitch_fold": dict(
+        params=dict(LOWMID_FM_METAL, bpm=138, tune=48, decay=0.5, menv_loop=1, menv_atk=20.0, menv_dec=90.0,
+                    menv_curve=0.4, menv_pitch=5.0, menv_fold=0.5, flt_type=2, cutoff=1500.0, reso=0.4,
+                    flt_env=0.4),
+        pattern=seq("1000 0000 1000 0010"),
     ),
     "09_lowmid_fm_metal": dict(
         params=dict(LOWMID_FM_METAL),
