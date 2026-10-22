@@ -216,6 +216,27 @@ Gemeinsam: Clock Host (Live auf 138 BPM), Div **1/16**, Pitch Mode **Loose**.
 Die Live-Randomisierung verändert Velocity und Tonhöhe bei jedem Schlag leicht. Das Pattern bleibt erkennbar,
 wiederholt sich aber nie exakt.
 
+## Main Layer im Mord-Stil (145 BPM)
+
+Roh, dunkel, industriell: eine verzerrte FM-Rolle aus 16teln, die die Kick-Positionen (Steps 1/5/9/13) frei lässt.
+Die Akzente liegen auf den Offbeats. Über 16 Takte fahren Fold, FM Amt und Decay hoch, wie Automation
+im Track-Aufbau. Quelle: `reference/sequence_mord_main.py`. Hörproben: `previews/mord_main_layer.wav` (solo) und
+`mord_main_with_ref_kick.wav` (mit einfacher Referenz-Kick, nur zur Orientierung).
+
+| Bereich | Einstellung |
+|---|---|
+| Sequencer | Live auf **145 BPM**, Div 1/16, Length 16, Steps `0111 0111 0111 0111` |
+| Velocity | `0 .55 1 .6 · 0 .55 1 .65 · 0 .6 1 .55 · 0 .7 1 .5`, Live Vel an (Range 0.2) |
+| Pitch | Scale **Phrygian**, Root **A#/Bb**, Tune **46** (Bb2). Step 8 **+1**, Step 14 **−2**, Step 16 **+3** |
+| Voice | Morph **0.50**, Wave **Sin**, Attack **3 ms**, Decay **0.18 → 0.30**, Accent **0.80**, Drive **0.85**, Noise 0, Level 0.8 |
+| OSC | Mod Wave **Saw**, FM Ratio **2.76**, FM Amt **0.75 → 1.0**, FM FB **0.15**, Ring **0.40**, Sweep **+7 st / 30 ms**, Phase Free |
+| Circuit | Fold **0.30 → 0.60**, Asym **0.50**, Bleed **0.40**, Amp VCA, FM **Lin** |
+| Analog | Analog **0.70**, Age **0.50**, Sag **0.60**, Quality 2x |
+| Automation | Fold, FM Amt und Decay linear über 16 Takte von Start- auf Endwert |
+
+Energie (Spektrum, solo): etwa 20 % unter 120 Hz, 62 % zwischen 120 Hz und 1 kHz, 15–17 % zwischen 1 und 5 kHz.
+Die Mitten tragen den Sound, und unten bleibt Platz für Kick und Rumble.
+
 ## Bekannte Grenzen
 - **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
