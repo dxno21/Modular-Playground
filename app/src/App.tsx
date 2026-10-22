@@ -22,6 +22,7 @@ import {
   updateRack,
 } from './lib/store';
 import type { AppState, Endpoint, Patch, Rack } from './lib/types';
+import { SUGGESTIONS } from './lib/suggestions';
 import { uid } from './lib/uid';
 
 type View = 'planer' | 'kabel' | 'vergleich';
@@ -162,6 +163,21 @@ export function App() {
             });
             resetSelection();
           }}>Löschen</button>
+          <select
+            value=""
+            onChange={(e) => {
+              const sug = SUGGESTIONS.find((x) => x.id === e.target.value);
+              if (!sug) return;
+              const r = sug.load();
+              setState((s) => ({ racks: [...s.racks, r], activeRack: r.id }));
+              resetSelection();
+            }}
+          >
+            <option value="">Vorschlag laden …</option>
+            {SUGGESTIONS.map((x) => (
+              <option key={x.id} value={x.id}>{x.name}</option>
+            ))}
+          </select>
         </div>
         <nav className="tabs">
           {(['planer', 'kabel', 'vergleich'] as View[]).map((v) => (

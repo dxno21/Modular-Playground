@@ -1,0 +1,28 @@
+{
+  "format": "modular-playground.patch",
+  "version": 1,
+  "name": "Vorschlag Case 1 – Rhythmus",
+  "description": "Rollende Kick, metallische Perkussion, Hihat-artige Plaits-Hits. Pamela gibt polymetrische Clocks vor, Maths formt die Dynamik.",
+  "tags": ["hypnotic", "rolling", "metallisch", "vorschlag"],
+  "modules": [
+    { "instance": "m1", "module": "alm-pamelas-pro-workout", "row": 0, "x_hp": 0, "params": {} },
+    { "instance": "m2", "module": "noiseengineering-basimilus-iteritas-alter", "row": 0, "x_hp": 8, "params": { "pitch": 0.2, "decay": 0.55, "harmonics": 0.15 } },
+    { "instance": "m3", "module": "mutable-plaits", "row": 0, "x_hp": 18, "params": { "model": 0.95, "harmonics": 0.7, "timbre": 0.6 } },
+    { "instance": "m4", "module": "mutable-rings", "row": 0, "x_hp": 30, "params": { "structure": 0.7, "brightness": 0.55, "damping": 0.35 } },
+    { "instance": "m5", "module": "makenoise-maths", "row": 0, "x_hp": 44, "params": {} },
+    { "instance": "m6", "module": "intellijel-quad-vca", "row": 0, "x_hp": 64, "params": {} }
+  ],
+  "cables": [
+    { "from": { "instance": "m1", "jack": "out1" }, "to": { "instance": "m2", "jack": "trig" }, "color": "#e5484d" },
+    { "from": { "instance": "m1", "jack": "out2" }, "to": { "instance": "m3", "jack": "trig" }, "color": "#f5a524" },
+    { "from": { "instance": "m1", "jack": "out3" }, "to": { "instance": "m4", "jack": "strum" }, "color": "#f2e14c" },
+    { "from": { "instance": "m1", "jack": "out4" }, "to": { "instance": "m5", "jack": "ch1_trig" }, "color": "#46a758" },
+    { "from": { "instance": "m5", "jack": "ch1_out" }, "to": { "instance": "m4", "jack": "bright" }, "color": "#3e9bd6" },
+    { "from": { "instance": "m1", "jack": "out5" }, "to": { "instance": "m5", "jack": "ch4_trig" }, "color": "#46a758" },
+    { "from": { "instance": "m5", "jack": "ch4_out" }, "to": { "instance": "m6", "jack": "cv2" }, "color": "#3e9bd6" },
+    { "from": { "instance": "m3", "jack": "aux" }, "to": { "instance": "m6", "jack": "in2" }, "color": "#8e4ec6" },
+    { "from": { "instance": "m4", "jack": "odd" }, "to": { "instance": "m6", "jack": "in3" }, "color": "#8e4ec6" },
+    { "from": { "instance": "m2", "jack": "out" }, "to": { "instance": "m6", "jack": "in1" }, "color": "#8e4ec6" }
+  ],
+  "notes": "Pamela: OUT1 = 1/4 (Kick), OUT2 = 1/16 mit Wahrscheinlichkeit ~70 % (Hats), OUT3 = Euclid 5/16 (Metall), OUT4 = Euclid 3/8 (Brightness-Hüllkurve), OUT5 = 1/8 offbeat (VCA-Hüllkurve für Hats). Plaits auf Hihat-Modell. Rings im Inharmonic-Modus."
+}

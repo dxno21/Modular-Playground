@@ -1,0 +1,25 @@
+{
+  "format": "modular-playground.patch",
+  "version": 1,
+  "name": "Vorschlag Case 2 – Drone und Raum",
+  "description": "Dunkle, langsam driftende Fläche: Ensemble Oscillator als Drone, Marbles moduliert zufällig, Noise Plethora für Rauschen, Clouds und Desmodus Versio für Tiefe.",
+  "tags": ["hypnotic", "drone", "dunkel", "atmosphärisch", "vorschlag"],
+  "modules": [
+    { "instance": "m1", "module": "mutable-marbles", "row": 0, "x_hp": 0, "params": { "t_rate": 0.3, "x_spread": 0.35, "deja_vu": 0.75 } },
+    { "instance": "m2", "module": "4ms-ensemble-oscillator", "row": 0, "x_hp": 18, "params": { "spread": 0.3, "warp": 0.4 } },
+    { "instance": "m3", "module": "befaco-noise-plethora", "row": 0, "x_hp": 34, "params": {} },
+    { "instance": "m4", "module": "mutable-clouds", "row": 0, "x_hp": 48, "params": { "position": 0.4, "size": 0.7, "density": 0.45, "blend": 0.5 } },
+    { "instance": "m5", "module": "noiseengineering-desmodus-versio", "row": 0, "x_hp": 66, "params": { "blend": 0.45, "time": 0.8 } }
+  ],
+  "cables": [
+    { "from": { "instance": "m1", "jack": "x1" }, "to": { "instance": "m2", "jack": "twist" }, "color": "#3e9bd6" },
+    { "from": { "instance": "m1", "jack": "x2" }, "to": { "instance": "m4", "jack": "position" }, "color": "#3e9bd6" },
+    { "from": { "instance": "m1", "jack": "y" }, "to": { "instance": "m3", "jack": "c_cutoff" }, "color": "#3e9bd6" },
+    { "from": { "instance": "m2", "jack": "out_a" }, "to": { "instance": "m4", "jack": "in_l" }, "color": "#8e4ec6" },
+    { "from": { "instance": "m3", "jack": "a_out" }, "to": { "instance": "m3", "jack": "c_in" }, "color": "#e2e2e2" },
+    { "from": { "instance": "m3", "jack": "c_out" }, "to": { "instance": "m4", "jack": "in_r" }, "color": "#8e4ec6" },
+    { "from": { "instance": "m4", "jack": "out_l" }, "to": { "instance": "m5", "jack": "in_l" }, "color": "#8e4ec6" },
+    { "from": { "instance": "m4", "jack": "out_r" }, "to": { "instance": "m5", "jack": "in_r" }, "color": "#8e4ec6" }
+  ],
+  "notes": "Clock von Case 1 (Pamela OUT6, langsam geteilt) in Marbles T CLOCK patchen, dann laufen beide Cases synchron. EnOsc tief stimmen (Root), Scale auf etwas Dissonantes."
+}

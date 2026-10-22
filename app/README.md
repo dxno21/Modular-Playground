@@ -26,6 +26,8 @@ npm run build    # statischer Build in app/dist (relativer base-Pfad, z.B. für 
 - **Patch-JSON Export/Import** im gemeinsamen Format (`../schema/patch.schema.json`). Import legt ein neues Rack an;
   unbekannte Module (z.B. `m4l-…` aus Tool 1) werden mit Hinweis übersprungen.
 
+Beim ersten Start sind zwei leere Behringer-Cases („Ist – Case 1/2“, je 80 HP nutzbar) und zwei Rack-Vorschläge aus `../data/patches/` angelegt; weitere Vorschläge über „Vorschlag laden …“.
+
 Der Zustand liegt im `localStorage` des Browsers. Für Sicherungen und den Austausch mit Tool 1 dient der JSON-Export.
 
 ## Modul-Daten

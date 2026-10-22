@@ -2,6 +2,8 @@ import { withoutInstance } from './cables';
 import { DEFAULT_CASE, emptyPatch } from './patch';
 import type { AppState, Patch, Rack } from './types';
 import { uid } from './uid';
+import { MY_CASE } from './cases';
+import { SUGGESTIONS } from './suggestions';
 
 const STORAGE_KEY = 'modular-playground.hardware-planer.v1';
 
@@ -11,9 +13,8 @@ export function newRack(name: string): Rack {
 }
 
 export function initialState(): AppState {
-  const ist = newRack('Ist-Rack');
-  const wunsch = newRack('Wunsch-Rack');
-  return { racks: [ist, wunsch], activeRack: ist.id };
+  const cases = ['Ist – Case 1', 'Ist – Case 2'].map((name) => ({ ...newRack(name), case: structuredClone(MY_CASE.config) }));
+  return { racks: [...cases, ...SUGGESTIONS.map((s) => s.load())], activeRack: cases[0].id };
 }
 
 export function loadState(): AppState {
