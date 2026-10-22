@@ -280,7 +280,7 @@ def seq(on, vel=None, pitch=None):
 # Low/Mid-FM-Metal: reine Sinus-FM (Träger + Modulator), Grundton G1 (~98 Hz),
 # Ratio 2.76 (Metallstab-Mode) für metallische Seitenbänder, weicher Anschlag gegen Klicks
 LOWMID_FM_METAL = dict(
-    morph=0.5, waveform=0, mod_wave=0, fm_ratio=2.76, fm_amt=0.9, fm_fb=0.25, ring=0.35,
+    morph=0.5, waveform=0, mod_wave=0, fm_ratio=2.76, fm_amt=0.9, fm_fb=0.0, ring=0.7,
     sweep=5, sweep_time=40, retrig=0, attack=4, tune=43, decay=0.38, accent=0.6, drive=0.2,
     noise_mix=0.0, scale_sel=2, root=7, level=0.8,
 )

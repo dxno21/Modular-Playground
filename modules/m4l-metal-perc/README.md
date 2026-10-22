@@ -140,7 +140,7 @@ metallische Seitenbänder über einem Grundton von G1 (~98 Hz). Etwa 60 % der En
 | Bereich | Einstellung |
 |---|---|
 | Voice | Tune **43** (G1) · Morph **0.50** (reine FM) · Wave **Sin** · Attack **4 ms** · Decay **0.38** · Accent **0.60** · Drive **0.20** · Noise **0** · Level 0.80 |
-| OSC | Mod Wave **Sin** · FM Ratio **2.76** · FM Amt **0.90** · FM FB **0.25** · Ring **0.35** · Sweep **+5 st** · Sw Time **40 ms** · Phase **Free** |
+| OSC | Mod Wave **Sin** · FM Ratio **2.76** · FM Amt **0.90** · FM FB **0** · Ring **0.70** · Sweep **+5 st** · Sw Time **40 ms** · Phase **Free** |
 | Pitch | Mode **Scale** · Scale **Phrygian** · Root **G** |
 | Pattern | Steps `1001 0010 0100 1010` · Pitch +1 auf Step 4, −2 auf Step 10, +3 auf Step 13 · Velocity leicht akzentuiert |
 
@@ -154,7 +154,7 @@ Gemessen (Transienten-Spitze über 5 kHz gegenüber dem Ausklang): vorher +21 dB
 Varianten:
 - **FM Ratio 3.53** klingt noch metallischer und glockiger.
 - **FM Ratio 1.73** klingt tiefer und tonaler.
-- **FM FB 0.4+** gibt mehr Rauheit.
+- **FM FB** ist die Hauptquelle von Rauschen. Für einen sauberen Klang auf 0 lassen, für Rauheit 0.2–0.4.
 - **Attack 6–10 ms** macht den Anschlag noch weicher, eher Mallet-artig.
 
 ## Bekannte Grenzen
