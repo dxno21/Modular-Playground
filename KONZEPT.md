@@ -120,7 +120,7 @@ Beide Tools speichern dasselbe **Patch-Format** (JSON: Module + Verbindungen). E
 im M4L-Rack mit den digitalen Gegenstücken anhören. Später kann man ihn auch als VCV-Patch exportieren.
 
 **Modul-Standard für das M4L-Rack:** Alle Ein- und Ausgänge sind Signale (auch Trigger und Gates).
-Die CV-Skalierung ist ±1.0 = ±5 V, Pitch ist 1 V/Oct (0.1 = 1 Oktave). Die Parameter haben feste Namen, damit die KI sie setzen kann.
+Die CV-Skalierung ist ±1.0 = ±5 V, Pitch ist 1 V/Oct (0.2 = 1 Oktave). Die Parameter haben feste Namen, damit die KI sie setzen kann.
 
 ## 5. Roadmap
 

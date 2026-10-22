@@ -1,0 +1,364 @@
+// =====================================================================
+// m4l-metal-perc – metallischer Percussion-Generator mit Step-Sequencer
+// gen~ Codebox (GenExpr). Diese Datei wird von build.py erzeugt:
+// Quelle ist src/metal_perc.genexpr.in – dort editieren, nicht hier.
+//
+// Eingänge  (Signal, Konvention: ±1.0 = ±5 V)
+//   in1  Host-Beat-Phase (plugphasor~, 0..1 pro Beat)
+//   in2  Ext Clock (steigende Flanke = 1 Step)
+//   in3  Ext Reset (steigende Flanke)
+//   in4  Pitch CV, 1 V/Oct (0.2 = 1 Oktave), wird beim Trigger gehalten
+//   in5  Ext Trigger (spielt die Voice direkt, unabhängig vom Sequencer)
+// Ausgänge
+//   out1 Audio
+//   out2 Hüllkurve (0..1)
+//   out3 aktueller Step (0..15)
+//   out4 Gate/Trigger-Out (5 ms)
+// =====================================================================
+
+// ---------- Hilfsfunktionen ----------
+blep(t, dt) {
+	r = 0;
+	if (t < dt) {
+		x = t / dt;
+		r = x + x - x * x - 1;
+	} else if (t > 1 - dt) {
+		x = (t - 1) / dt;
+		r = x * x + x + x + 1;
+	}
+	return r;
+}
+
+// w: 0 Sine, 1 Square, 2 Saw, 3 Triangle (bandbegrenzt via polyBLEP)
+osc(p, dt, w) {
+	y = 0;
+	if (w < 0.5) {
+		y = sin(twopi * p);
+	} else if (w < 1.5) {
+		sq = 1;
+		if (p >= 0.5) {
+			sq = -1;
+		}
+		y = sq + blep(p, dt) - blep(fract(p + 0.5), dt);
+	} else if (w < 2.5) {
+		y = 2 * p - 1 - blep(p, dt);
+	} else {
+		y = 4 * abs(p - 0.5) - 1;
+	}
+	return y;
+}
+
+// Nächstliegende Note in der Skala (mask = 12-Bit-Maske ab Grundton)
+quant(n, root, mask) {
+	base = floor(n + 0.5);
+	best = base;
+	bestd = 100;
+	for (k = -6; k <= 6; k += 1) {
+		cand = base + k;
+		deg = cand - root;
+		deg = deg - floor(deg / 12) * 12;
+		bit = floor(mask / pow(2, deg));
+		bit = bit - floor(bit / 2) * 2;
+		d = abs(cand - n);
+		if (bit > 0.5 && d < bestd) {
+			best = cand;
+			bestd = d;
+		}
+	}
+	return best;
+}
+
+// TPT-State-Variable-Filter: liefert Bandpass (unity peak) bzw. Highpass,
+// Zustände liegen in Data st an Index i und i+1.
+svf_bp(x, fc, q, st, i) {
+	g = tan(pi * fc / samplerate);
+	k = 1 / q;
+	a1 = 1 / (1 + g * (g + k));
+	a2 = g * a1;
+	a3 = g * a2;
+	ic1 = peek(st, i);
+	ic2 = peek(st, i + 1);
+	v3 = x - ic2;
+	v1 = a1 * ic1 + a2 * v3;
+	v2 = ic2 + a2 * ic1 + a3 * v3;
+	poke(st, 2 * v1 - ic1, i);
+	poke(st, 2 * v2 - ic2, i + 1);
+	return v1 * k;
+}
+
+svf_hp(x, fc, q, st, i) {
+	g = tan(pi * fc / samplerate);
+	k = 1 / q;
+	a1 = 1 / (1 + g * (g + k));
+	a2 = g * a1;
+	a3 = g * a2;
+	ic1 = peek(st, i);
+	ic2 = peek(st, i + 1);
+	v3 = x - ic2;
+	v1 = a1 * ic1 + a2 * v3;
+	v2 = ic2 + a2 * ic1 + a3 * v3;
+	poke(st, 2 * v1 - ic1, i);
+	poke(st, 2 * v2 - ic2, i + 1);
+	return x - k * v1 - v2;
+}
+
+// ---------- Parameter: Voice ----------
+Param tune(56, min=24, max=96);       // Basis-Note (MIDI)
+Param waveform(1, min=0, max=3);          // 0 Sine 1 Square 2 Saw 3 Tri
+Param morph(0, min=0, max=1);         // 0 Bank -> 0.5 FM/Ring -> 1 Resonator
+Param inharm(0.5, min=0, max=1);      // 0 harmonisch -> 0.5 808-Metall -> 1 Membran/Glocke
+Param decay(0.3, min=0, max=1);       // 10 ms .. 2.5 s
+Param damp(0.5, min=0, max=1);        // Resonator-Dämpfung
+Param bright(0.6, min=0, max=1);      // Filter/FM-Index
+Param drive(0.2, min=0, max=1);
+Param noise_mix(0.05, min=0, max=1);
+Param accent(0.5, min=0, max=1);      // Velocity -> Decay/Helligkeit
+Param level(0.8, min=0, max=1);
+
+// ---------- Parameter: Pitch / Quantizer ----------
+Param qmode(1, min=0, max=1);         // 0 Loose, 1 Scale
+Param scale_sel(1, min=0, max=7);
+Param root(0, min=0, max=11);
+
+// ---------- Parameter: Sequencer ----------
+Param seq_on(1, min=0, max=1);
+Param clock_mode(0, min=0, max=2);    // 0 Host, 1 Ext Clock, 2 Intern
+Param bpm(130, min=40, max=300);
+Param clock_div(1, min=0, max=4);           // 1/8, 1/16, 1/32, 1/8T, 1/16T
+Param seq_len(16, min=1, max=16);
+Param reset_id(0);
+
+// ---------- Parameter: Live-Randomisierung ----------
+Param live_steps(0, min=0, max=1);
+Param live_vel(0, min=0, max=1);
+Param live_pitch(0, min=0, max=1);
+Param density(0.6, min=0, max=1);
+Param vel_range(0.5, min=0, max=1);
+Param pitch_range(7, min=0, max=24);
+
+// ---------- Parameter: MIDI ----------
+Param midi_id(0);
+Param midi_note(60);
+Param midi_vel(0);
+
+// ---------- Parameter: Steps ----------
+@STEP_PARAMS@
+
+// ---------- Zustand ----------
+History beats(0);
+History last_phase(-1);
+History still(0);
+History int_phase(0);
+History ext_count(0);
+History clk_prev(0);
+History rst_prev(0);
+History trg_prev(0);
+History last_reset(0);
+History last_midi(0);
+History last_step(-1);
+History env(0);
+History coef(0.999);
+History exc(0);
+History hit_note(56);
+History hit_vel(1);
+History gate_cnt(0);
+History dc_x(0);
+History dc_y(0);
+Data ph(8);     // Phasen: 0-5 Bank, 6 Träger, 7 Modulator
+Data st(16);    // Filterzustände
+
+// ---------- Clock ----------
+spb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat
+len = floor(seq_len);
+
+if (reset_id != last_reset) {
+	last_reset = reset_id;
+	beats = 0;
+	int_phase = 0;
+	ext_count = 0;
+	last_step = -1;
+}
+rst = in3 > 0.1;
+if (rst && rst_prev < 0.5) {
+	beats = 0;
+	int_phase = 0;
+	ext_count = 0;
+	last_step = -1;
+}
+rst_prev = rst;
+
+step_abs = -1;
+if (clock_mode < 0.5) {
+	phs = in1;
+	// Transport-Stopp erkennen: Phase steht > 50 ms -> beim Weiterlaufen neu ab Step 1
+	if (phs == last_phase) {
+		still = still + 1;
+	} else {
+		if (still > samplerate * 0.05) {
+			beats = 0;
+			last_step = -1;
+		} else if (phs < last_phase - 0.5) {
+			beats = beats + 1;
+		}
+		still = 0;
+	}
+	last_phase = phs;
+	if (still < samplerate * 0.05) {
+		step_abs = floor((beats + phs) * spb);
+	} else {
+		step_abs = last_step;
+	}
+} else if (clock_mode < 1.5) {
+	c = in2 > 0.1;
+	if (c && clk_prev < 0.5) {
+		ext_count = ext_count + 1;
+	}
+	clk_prev = c;
+	step_abs = ext_count - 1;
+} else {
+	int_phase = int_phase + bpm / 60 / samplerate;
+	step_abs = floor(int_phase * spb);
+}
+
+cur_step = last_step;
+fire = 0;
+vel = 1;
+pitch = 0;
+if (step_abs >= 0) {
+	cur = step_abs - floor(step_abs / len) * len;
+	if (cur != last_step) {
+		last_step = cur;
+		cur_step = cur;
+		on = @SEL_ON@;
+		if (seq_on > 0.5 && on > 0.5) {
+			if (live_steps < 0.5 || (noise() * 0.5 + 0.5) < density) {
+				fire = 1;
+				vel = @SEL_VEL@;
+				pitch = @SEL_PITCH@;
+				if (live_vel > 0.5) {
+					vel = vel * (1 - vel_range * (noise() * 0.5 + 0.5));
+				}
+				if (live_pitch > 0.5) {
+					pitch = pitch + pitch_range * noise();
+				}
+			}
+		}
+	}
+}
+
+// MIDI-Noten (aus Live-Clips) und Ext Trigger spielen die Voice direkt
+if (midi_id != last_midi) {
+	last_midi = midi_id;
+	if (midi_vel > 0) {
+		fire = 1;
+		vel = midi_vel / 127;
+		pitch = midi_note - 60;
+	}
+}
+tr = in5 > 0.1;
+if (tr && trg_prev < 0.5) {
+	fire = 1;
+	vel = 1;
+	pitch = 0;
+}
+trg_prev = tr;
+
+// ---------- Trigger -> Voice ----------
+if (fire > 0.5) {
+	note = tune + pitch + in4 * 60;
+	if (qmode > 0.5) {
+		mask = selector(floor(scale_sel) + 1, @SCALE_MASKS@);
+		note = quant(note, root, mask);
+	}
+	hit_note = note;
+	hit_vel = vel;
+	t = 0.01 * pow(250, decay);
+	t = t * (1 - accent * 0.5 + accent * vel);
+	coef = exp(-6.9078 / (t * samplerate));
+	env = max(env, vel);
+	exc = 1;
+	gate_cnt = samplerate * 0.005;
+}
+
+env = env * coef;
+exc = exc * 0.992;
+if (gate_cnt > 0) {
+	gate_cnt = gate_cnt - 1;
+}
+
+f0 = mtof(hit_note);
+nyq = samplerate * 0.45;
+w = floor(waveform + 0.5);
+acc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);
+
+// ---------- Engine A: Oszillator-Bank (6 Oszillatoren) ----------
+ta = clamp(inharm * 2, 0, 1);
+tb = clamp(inharm * 2 - 1, 0, 1);
+bank = 0;
+for (i = 0; i < 6; i += 1) {
+	rh = i + 1;
+	rm = selector(i + 1, 1, 1.483, 1.8, 2.546, 2.63, 3.897);
+	re = selector(i + 1, 1, 1.593, 2.135, 2.296, 2.917, 3.598);
+	ratio = mix(mix(rh, rm, ta), re, tb);
+	inc = min(f0 * ratio / samplerate, 0.45);
+	p = peek(ph, i);
+	bank = bank + osc(p, inc, w);
+	poke(ph, fract(p + inc), i);
+}
+bank = bank / 6;
+fca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * sqrt(env)), nyq);
+eng_a = 1.8 * svf_bp(bank, fca, 1.5, st, 0) + 1.8 * svf_hp(bank, fca, 0.7, st, 2);
+
+// ---------- Engine B: FM / Ringmodulation ----------
+rmod = mix(mix(2, 1.4142, ta), 3.7321, tb);
+inc_c = min(f0 / samplerate, 0.45);
+inc_m = min(f0 * rmod / samplerate, 0.45);
+pc = peek(ph, 6);
+pm = peek(ph, 7);
+mods = osc(pm, inc_m, w);
+idx = acc_b * 1.2 * env;
+car = osc(fract(pc + idx * mods + 1), inc_c, w);
+ring = osc(pc, inc_c, w) * mods;
+poke(ph, fract(pc + inc_c), 6);
+poke(ph, fract(pm + inc_m), 7);
+eng_b = 0.7 * car + 0.5 * ring;
+
+// ---------- Engine C: Resonator-Bank (4 Moden, angeregt durch Rauschimpuls) ----------
+ex = noise() * exc * exc * (0.4 + 0.6 * acc_b) * hit_vel;
+q = mix(400, 12, damp);
+res = 0;
+for (j = 0; j < 4; j += 1) {
+	mh = j + 1;
+	mb = selector(j + 1, 1, 2.756, 5.404, 8.933);
+	mp = selector(j + 1, 1, 1.594, 2.136, 2.653);
+	mr = mix(mix(mh, mb, ta), mp, tb);
+	fr = min(f0 * mr, nyq);
+	res = res + svf_bp(ex, fr, q, st, 4 + j * 2) * sqrt(1000 / fr) / (j + 1);
+}
+eng_c = res * sqrt(q) * 15 * min(1, env * 4);
+
+// ---------- Morph, Noise, Drive ----------
+va = eng_a * env;
+vb = eng_b * env;
+m = morph * 2;
+voice = 0;
+if (m < 1) {
+	voice = va * cos(m * pi * 0.5) + vb * sin(m * pi * 0.5);
+} else {
+	m = m - 1;
+	voice = vb * cos(m * pi * 0.5) + eng_c * sin(m * pi * 0.5);
+}
+nz = svf_hp(noise(), min(f0 * 8, nyq), 0.7, st, 12) * env * noise_mix;
+x = voice + nz;
+
+g = 1 + drive * 12;
+y = tanh(x * g) / sqrt(g);
+
+// DC-Blocker
+dc_y = y - dc_x + 0.995 * dc_y;
+dc_x = y;
+
+out1 = dc_y * level;
+out2 = env;
+out3 = max(cur_step, 0);
+out4 = gate_cnt > 0;
