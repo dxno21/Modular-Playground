@@ -14,10 +14,12 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 2242
+DEVICE_WIDTH = 2938
 SEQ_SHIFT = 100  # Breite, um die die SEQ-Sektion gewachsen ist (alles rechts davon rückt nach)
 FILTER_X = 1344  # neue Sektion FILTER · ENV beginnt hier, CIRCUIT/ANALOG/OUT rücken um FILTER_W nach
 FILTER_W = 406
+DIRT_X = 1994    # DIRT und RUMBLE beginnen hier, ANALOG/OUT rücken um DIRT_W nach
+DIRT_W = 696
 DEVICE_HEIGHT = 169
 
 
@@ -221,11 +223,14 @@ SECTIONS = [
     ("VOICE", 932, 1342, rgb("#ffad38")),
     ("FILTER", 1342, 1748, rgb("#4fb3ff")),
     ("CIRCUIT", 1748, 1992, rgb("#ff6b4a")),
-    ("ANALOG", 1992, 2184, rgb("#7bd88f")),
-    ("OUT", 2184, DEVICE_WIDTH, rgb("#d4d7dd")),
+    ("DIRT", 1992, 2394, rgb("#f2e85c")),
+    ("RUMBLE", 2394, 2688, rgb("#8fa8ff")),
+    ("ANALOG", 2688, 2880, rgb("#7bd88f")),
+    ("OUT", 2880, DEVICE_WIDTH, rgb("#d4d7dd")),
 ]
 CARDS = [[2, 2, 536, 165], [542, 2, 94, 165], [640, 2, 290, 165], [934, 2, 406, 165],
-         [1344, 2, 402, 165], [1750, 2, 240, 165], [1994, 2, 188, 165], [2186, 2, 54, 165]]
+         [1344, 2, 402, 165], [1750, 2, 240, 165], [1994, 2, 398, 165], [2396, 2, 290, 165],
+         [2690, 2, 188, 165], [2882, 2, 54, 165]]
 
 
 def accent_for(x):
@@ -523,6 +528,44 @@ def build_maxpat(code):
     to_gen(tab(p, "flt_slope", "Filter Slope", [fx + 270, 132, 54, 16], ["12", "24"], 0), "flt_slope", 360, 2020)
     p.comment("ENV", [fx + 330, 116, 60, 14])
     to_gen(tab(p, "menv_loop", "Env Loop", [fx + 330, 132, 64, 16], ["One", "Loop"], 0), "menv_loop", 520, 2020)
+
+    # ANALOG und OUT für DIRT und RUMBLE nach rechts schieben
+    for wrapper in p.boxes:
+        b = wrapper["box"]
+        if b.get("presentation") and b["presentation_rect"][0] >= DIRT_X:
+            b["presentation_rect"][0] += DIRT_W
+            b["patching_rect"][0] += DIRT_W
+
+    # ---------------- DIRT: Distortion, Bitcrusher, Feedback-Patch, Hard Sync, Filter-FM
+    dx = DIRT_X + 6
+    p.comment("DIRT", [dx, 3, 60, 14], header=True)
+    for c, (var, name, lo, hi, init, unit, exp, ptype) in enumerate([
+            ("dist_drive", "Dist Drv", 0.0, 1.0, 0.4, 1, None, 0), ("dist_tone", "Tone", 0.0, 1.0, 0.7, 1, None, 0),
+            ("dist_mix", "Mix", 0.0, 1.0, 1.0, 1, None, 0), ("crush_bits", "Bits", 2, 16, 16, 0, None, 1),
+            ("crush_rate", "Rate", 200.0, 48000.0, 48000.0, 3, 3.0, 0), ("sync", "Sync", 0.0, 1.0, 0.0, 1, None, 0),
+            ("flt_fm", "Flt FM", 0.0, 1.0, 0.0, 1, None, 0)]):
+        to_gen(dial(p, var, name, name, [dx - 2 + c * 56, 14, 44, 48], lo, hi, init, ptype=ptype, unit=unit, exp=exp),
+               var, 40 + c * 140, 2060)
+    for c, (var, name, init) in enumerate([("fb_amt", "FB Amt", 0.0), ("fb_tone", "FB Tone", 0.5)]):
+        to_gen(dial(p, var, name, name, [dx - 2 + c * 56, 64, 44, 48], 0.0, 1.0, init), var, 40 + c * 140, 2090)
+    p.comment("DIST", [dx - 2, 116, 60, 14])
+    to_gen(tab(p, "dist_type", "Dist Type", [dx - 2, 132, 240, 16], ["Off", "Diode", "Tube", "Fuzz", "Rect", "Fold"], 0),
+           "dist_type", 40, 2120)
+    p.comment("FEEDBACK →", [dx + 250, 116, 80, 14])
+    to_gen(tab(p, "fb_dest", "Feedback Dest", [dx + 250, 132, 136, 16], ["FM", "Filter", "Both"], 0), "fb_dest",
+           200, 2120)
+
+    # ---------------- RUMBLE-Bus
+    rx = DIRT_X + 402 + 6
+    p.comment("RUMBLE", [rx, 3, 70, 14], header=True)
+    for c, (var, name, lo, hi, init, unit, exp) in enumerate([
+            ("rmb_send", "Send", 0.0, 1.0, 0.0, 1, None), ("rmb_decay", "Decay", 0.0, 1.0, 0.5, 1, None),
+            ("rmb_drive", "Drive", 0.0, 1.0, 0.5, 1, None), ("rmb_lp", "LP", 40.0, 500.0, 150.0, 3, 2.0),
+            ("rmb_duck", "Duck", 0.0, 1.0, 0.6, 1, None)]):
+        to_gen(dial(p, var, name, name, [rx - 2 + c * 56, 14, 44, 48], lo, hi, init, unit=unit, exp=exp),
+               var, 40 + c * 140, 2150)
+    p.comment("Hall → Verzerrung → Tiefpass, geduckt vom Schlag", [rx - 2, 80, 280, 14])
+    p.comment("Send 0 = aus (spart CPU)", [rx - 2, 96, 280, 14])
 
     # ---------------- Sound-Randomizer (OSC, VOICE, beide), Positionen nach der Verschiebung
     for var, longname, rect, msg_text, lbl, lrect in [

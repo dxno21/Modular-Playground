@@ -26,6 +26,12 @@ SECTIONS = [
         ("seq138_mid", "Mid: Plonks über das Lowpass-Gate, 14 Steps, D2"),
         ("seq138_high", "High: metallische Ticks aus der Oszillator-Bank, 15 Steps, G4"),
     ]),
+    ("DIRT & RUMBLE", "#f2e85c", [
+        ("21_dirt_distortion_types", "Je 1 Takt: Off, Diode, Tube, Fuzz, Rectify, Foldback, dann Bitcrusher (6 Bit, 6 kHz)"),
+        ("22_dirt_feedback_patch", "Feedback-Patch: aus, in die FM (0.4 / 0.8), in den Filter (0.5 / 0.8), in beide"),
+        ("23_dirt_hard_sync_filter_fm", "Hard Sync 0 → 0.3 → 0.6 → 1, dann Filter-FM 0.5 und 1"),
+        ("24_rumble_bus", "Hypnotisches Pattern: 2 Takte trocken, dann mit Rumble-Bus"),
+    ]),
     ("Analoge Filter-Schaltungen", "#4fb3ff", [
         ("18_filter_circuits_clean_osr_ms2_smp_prd", "Dieselbe Sequenz je 2 Takte durch Clean, OSR, MS2, SMP und PRD"),
         ("19_filter_morph_sweep", "Morph-Filter wandert pro Takt von LP über BP, HP und Notch zurück zu LP"),
@@ -249,6 +255,19 @@ def export_presets():
         base = {k: v for k, v in JSP.FILTER_BASE.items() if k != "clock_mode"}
         presets[f"Filter Acid – {circ}"] = entry(dict(base, flt_circ=c), JSP.PATTERN["on"], JSP.PATTERN["vel"],
                                                  JSP.PATTERN["pitch"])
+    def strip(d):
+        return {k: v for k, v in d.items() if k != "clock_mode"}
+    mp = JSP.MORD_PATTERN
+    presets["Mord Dirt – Fuzz + Feedback"] = entry(
+        dict(strip(JSP.MORD_BASE), dist_type=3, dist_drive=0.55, dist_tone=0.6, fb_amt=0.45, fb_dest=2,
+             flt_type=1, flt_circ=2, cutoff=1800.0, reso=0.5), mp["on"], mp["vel"], mp["pitch"])
+    presets["Mord Dirt – Sync + Filter-FM"] = entry(
+        dict(strip(JSP.MORD_BASE), waveform=2, fm_amt=0.25, sync=0.5, flt_type=1, flt_circ=4, cutoff=600.0,
+             reso=0.6, flt_fm=0.6, dist_type=1, dist_drive=0.4), mp["on"], mp["vel"], mp["pitch"])
+    hp = JSP.HYPNO_PATTERN
+    presets["Hypnotic Rumble 138"] = entry(
+        dict(strip(JSP.PREVIEWS["24_rumble_bus"]["base"]), rmb_send=0.7, rmb_decay=0.7, rmb_drive=0.6, rmb_lp=140.0,
+             rmb_duck=0.7), hp["on"], hp["vel"], hp["pitch"])
     for key, p in R.PRESETS.items():
         on, vel, pitch = p["pattern"]
         presets[key.split("_", 1)[1].replace("_", " ").title()] = entry(p["params"], on, vel, pitch, p.get("rtrg"))

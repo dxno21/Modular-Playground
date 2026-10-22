@@ -186,6 +186,31 @@ dem DSP des Devices.
 
 Die Mod-Hüllkurve wird mit der Velocity skaliert (50–100 %). Die Lautstärke steuern weiterhin Attack und Decay in VOICE.
 
+### Dirt
+Dreck am Ende der Kette und modulare Rückkopplung. Alles steht standardmäßig auf aus beziehungsweise neutral.
+
+| Regler | Wirkung |
+|---|---|
+| **Dist** | *Off*, *Diode* (asymmetrisches Dioden-Paar), *Tube* (asymmetrische weiche Röhren-Sättigung), *Fuzz* (hart, asymmetrisch, sputtert bei leisen Signalen), *Rect* (Gleichrichter, Oktav-Effekt), *Fold* (Foldback) |
+| **Dist Drv / Tone / Mix** | Verzerrungsgrad, Tiefpass nach der Verzerrung (500 Hz – 18 kHz), Dry/Wet |
+| **Bits / Rate** | Bitcrusher nach dem Koppel-Hochpass: Quantisierung (16 = aus) und Sample & Hold (48 kHz = aus) |
+| **FB Amt / FB Tone** | Feedback-Patch: Der Ausgang geht zurück ins Device, wie ein Kabel vom Ausgang in einen Eingang. Tone filtert den Rückweg (200 Hz – 12 kHz) |
+| **Feedback →** | Ziel des Feedbacks: *FM* (Träger-Phase), *Filter* (Filtereingang, ohne Filter direkt vor Fold und Drive), *Both* |
+| **Sync** | Hard Sync: Der FM-Träger läuft mit dem 1- bis 8-fachen Verhältnis und wird bei jeder Grundton-Periode zurückgesetzt. In der Bank setzt Oszillator 1 die übrigen zurück |
+| **Flt FM** | Filter-FM im Audiotakt: Der Modulator verschiebt den Cutoff um bis zu ±4 Oktaven. Braucht einen aktiven Filter |
+
+### Rumble
+Der klassische Industrial-Techno-Rumble als eingebauter Bus: Das Signal geht in einen dunklen Hall (Feedback-Delay-Netzwerk
+mit 4 Linien), dann durch eine Verzerrung und einen Tiefpass 24 dB, und wird bei jedem Schlag geduckt.
+
+| Regler | Wirkung |
+|---|---|
+| **Send** | Anteil in den Rumble (0 = aus, dann wird auch nichts gerechnet) |
+| **Decay** | Nachhallzeit 1–10 s |
+| **Drive** | Verzerrung des Halls |
+| **LP** | Tiefpass 40–500 Hz |
+| **Duck** | Wie stark der Rumble bei jedem Schlag weggeduckt wird (Pumpen) |
+
 ### Circuit (Schaltungs-Modelle)
 | Regler | Wirkung |
 |---|---|
@@ -247,6 +272,10 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `11_lpg_vactrol_fm_plonk` | Low/Mid FM Metal mit Lowpass-Gate (Vactrol) |
 | `12_bridged_t_808_toms` | Resonator im Bridged-T-Modus: 808-artige Metall-Toms |
 | `13_wavefolder_exp_fm` | Exponentielle FM und Wavefolder |
+| `21_dirt_distortion_types` | Je 1 Takt Off, Diode, Tube, Fuzz, Rect, Fold, dann Bitcrusher |
+| `22_dirt_feedback_patch` | Feedback-Patch aus / in die FM / in den Filter / in beide |
+| `23_dirt_hard_sync_filter_fm` | Hard Sync 0 → 1, dann Filter-FM |
+| `24_rumble_bus` | Hypnotisches Pattern, erst trocken, dann mit Rumble-Bus |
 | `18_filter_circuits_clean_osr_ms2_smp_prd` | Dieselbe Sequenz je 2 Takte durch Clean, OSR, MS2, SMP, PRD (mit Device-DSP gerendert) |
 | `19_filter_morph_sweep` | Morph-Filter von LP über BP, HP, Notch zurück zu LP |
 | `20_filter_drive_ms2` | MS2 mit Filter-Drive 0, 0.5, 1 |
@@ -342,8 +371,9 @@ jeder mit eigener Note. Alle anderen Einstellungen und die Automation bleiben gl
 
 ## Bekannte Grenzen
 - **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
+  Der Rumble-Bus wird nur gerechnet, wenn Send > 0 ist.
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 140 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 156 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.
