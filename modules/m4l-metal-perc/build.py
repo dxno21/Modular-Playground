@@ -244,8 +244,10 @@ def build_maxpat(code):
 
     # ---------------- Randomizer
     js = p.obj("js seq_random.js", 40, 1400, 1, 0, [])
-    p.comment("RANDOM", [444, 2, 60, 14])
-    p.comment("Rnd  Range  Live", [440, 106, 120, 14])
+    p.comment("RND", [440, 4, 24, 14])
+    p.comment("RNG", [466, 4, 26, 14])
+    p.comment("LIVE", [498, 4, 30, 14])
+    p.comment("CLEAR", [440, 106, 40, 14])
     lanes = [
         ("steps", "density", "Density", "Dens", 0.0, 1.0, 0.6, 1, 20, "live_steps", "rand_steps"),
         ("vel", "vel_range", "Vel Range", "VRng", 0.0, 1.0, 0.5, 1, 42, "live_vel", "rand_vel"),
@@ -262,7 +264,6 @@ def build_maxpat(code):
         to_gen(toggle(p, live_var, f"Live {lane.title()}", [500, y + 2, 16, 16], 0), live_var,
                200 + k * 140, 1470)
     clr = button(p, "clear", "Clear Pattern", [444, 122, 16, 16])
-    p.comment("Clear", [462, 122, 40, 14])
     clr_m = p.msg("clear_pattern", 620, 1400)
     p.line(clr, 0, clr_m, 0)
     p.line(clr_m, 0, js, 0)

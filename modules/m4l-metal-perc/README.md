@@ -7,6 +7,10 @@ drei Klang-Engines, vier Wellenformen, einem 1-V/Oct-Quantizer und einem eingeba
 > Der Klang-Algorithmus ist über die Python-Referenz geprüft (`previews/*.wav`). Fehlermeldungen
 > aus dem gen~-Compiler bitte melden (Max-Konsole, Zeilennummer). Sie lassen sich schnell beheben.
 
+![Layout-Vorschau](layout.png)
+
+*Layout-Vorschau, aus den Positionen im Patch gerendert (`tools/render_layout.py`). Es ist kein echter Max-Screenshot, in Live sieht es ähnlich aus.*
+
 ## Dateien
 
 | Datei | Inhalt |
