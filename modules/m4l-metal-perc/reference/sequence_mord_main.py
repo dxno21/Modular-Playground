@@ -18,12 +18,13 @@ PARAMS = dict(
     bpm=BPM, clock_div=1, seq_len=16,
     # Pitch: Bb Phrygian (dunkle kleine Sekunde), Grundton Bb2 (~117 Hz) über der Kick
     tune=46, qmode=1, scale_sel=2, root=10,
-    # Klang: lineare FM mit Metallstab-Ratio, Sinus-Träger, Saw-Modulator, viel Sättigung und Fold
-    morph=0.5, waveform=0, mod_wave=2, fm_mode=0, fm_ratio=2.76, fm_amt=0.75, fm_fb=0.15,
-    ring=0.4, ring_bleed=0.4, sweep=7, sweep_time=30, retrig=0,
-    attack=3, decay=0.18, accent=0.8, drive=0.85, asym=0.5, wfold=0.3, noise_mix=0.0, level=0.8,
-    # Analog: rau und lebendig, Sag pumpt mit den lauten Schlägen
-    analog=0.7, age=0.5, sag=0.6, quality=1,
+    # Klang: tonale FM (Ratio 2 = Oktave, Sinus auf Sinus), kein Feedback, kein Fold.
+    # Der Dreck kommt am Ende der Kette aus Drive (+ wenig Asym), nicht aus der Klangquelle.
+    morph=0.5, waveform=0, mod_wave=0, fm_mode=0, fm_ratio=2.0, fm_amt=0.45, fm_fb=0.0,
+    ring=0.15, ring_bleed=0.1, sweep=3, sweep_time=40, retrig=0,
+    attack=8, decay=0.18, accent=0.8, drive=0.75, asym=0.15, wfold=0.0, noise_mix=0.0, level=0.8,
+    # Analog: lebendig, aber ohne Rauschen und Unruhe; Sag pumpt mit den lauten Schlägen
+    analog=0.5, age=0.3, sag=0.6, quality=1,
     # leichte Velocity-Variation pro Schlag
     live_vel=1, vel_range=0.2,
 )
@@ -39,7 +40,7 @@ ALL_VEL = [.8, .5, 1, .6, .75, .5, 1, .65, .8, .5, 1, .55, .75, .7, 1, .5]
 ALL_PITCH = [0, 12, 1, 0, -2, 0, 3, 1, 0, 12, 1, 0, -5, -2, 3, 7]
 
 # Automation: (Parameter, Startwert, Endwert) linear über die 16 Takte
-AUTOMATION = [("wfold", 0.3, 0.6), ("fm_amt", 0.75, 1.0), ("decay", 0.18, 0.3)]
+AUTOMATION = [("drive", 0.75, 1.0), ("fm_amt", 0.4, 0.55), ("decay", 0.18, 0.3)]
 
 
 def bar_len():

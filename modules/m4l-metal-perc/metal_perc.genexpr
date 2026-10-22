@@ -228,8 +228,7 @@ History fb_prev(0);
 History hit_note(56);
 History hit_vel(1);
 History gate_cnt(0);
-History dc_x(0);
-History dc_y(0);
+History dc_y(0);   // Ausgang nach dem Koppel-Hochpass
 History pend(0);
 History p_note(56);
 History p_vel(1);
@@ -592,9 +591,9 @@ for (o = 0; o < osf; o += 1) {
 }
 y = out_os;
 
-// DC-Blocker
-dc_y = y - dc_x + 0.995 * dc_y;
-dc_x = y;
+// Koppelkondensator: Hochpass 2. Ordnung bei 25 Hz entfernt Gleichanteil und den
+// hüllkurvenabhängigen Thump der asymmetrischen Sättigung
+dc_y = svf(y, 25, 0.7071, samplerate, st, 22, 2, 0);
 
 // Netzteil-Einbruch: Hüllkurvenfolger auf den Ausgang
 sagf = sagf + (abs(dc_y) - sagf) * selector((abs(dc_y) > sagf) + 1, 0.0003, 0.02);

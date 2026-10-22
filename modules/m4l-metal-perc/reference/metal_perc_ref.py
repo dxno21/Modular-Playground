@@ -370,9 +370,7 @@ class MetalPerc:
                 y = svf(y, SR * 0.42, 0.7071, sr2, st, 18, 0)
                 y = svf(y, SR * 0.42, 1.9319, sr2, st, 20, 0)
 
-        self.dc_y = y - self.dc_x + 0.995 * self.dc_y
-        self.dc_x = y
-        dcy = self.dc_y
+        dcy = svf(y, 25, 0.7071, SR, st, 22, 2)
         self.sagf += (abs(dcy) - self.sagf) * (0.02 if abs(dcy) > self.sagf else 0.0003)
         y_out = dcy * p["level"] * (1 - p["sag"] * 0.2 * min(1, self.sagf * 2))
         wn = noise()

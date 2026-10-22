@@ -103,7 +103,7 @@ Im Resonator-Modus (Morph = 1) wirkt **Wave** nicht, weil die Moden durch Rausch
 | Regler | Wirkung |
 |---|---|
 | **Fold** | Wavefolder (West Coast): Die Welle faltet sich zurück, wenn sie zu laut wird. Erzeugt metallische Obertöne |
-| **Asym** | Asymmetrische Sättigung wie bei Transistor oder Röhre. Erzeugt gerade Obertöne und klingt dadurch wärmer |
+| **Asym** | Asymmetrische Sättigung wie bei Transistor oder Röhre. Erzeugt gerade Obertöne und klingt dadurch wärmer. Ein Koppel-Hochpass (25 Hz, 2. Ordnung) am Ausgang entfernt den Gleichanteil. Werte über ~0.3 erzeugen mit viel Drive trotzdem einen tiefen Thump bei jedem Schlag |
 | **Bleed** | Dioden-Ringmodulator: Anteil der Diodenkennlinie und Durchschlag von Träger und Modulator |
 | **LPG Col** | Filteranteil des Lowpass-Gates (0 = fast nur Lautstärke, 1 = volles Tiefpassfilter) |
 | **Amp** | *VCA*: klassischer Verstärker. *LPG*: Buchla-artiges Lowpass-Gate mit Vactrol. Öffnet schnell, schließt langsam und nichtlinear: der typische „Plonk“ |
@@ -228,11 +228,15 @@ im Track-Aufbau. Quelle: `reference/sequence_mord_main.py`. Hörproben: `preview
 | Sequencer | Live auf **145 BPM**, Div 1/16, Length 16, Steps `0111 0111 0111 0111` |
 | Velocity | `0 .55 1 .6 · 0 .55 1 .65 · 0 .6 1 .55 · 0 .7 1 .5`, Live Vel an (Range 0.2) |
 | Pitch | Scale **Phrygian**, Root **A#/Bb**, Tune **46** (Bb2). Step 8 **+1**, Step 14 **−2**, Step 16 **+3** |
-| Voice | Morph **0.50**, Wave **Sin**, Attack **3 ms**, Decay **0.18 → 0.30**, Accent **0.80**, Drive **0.85**, Noise 0, Level 0.8 |
-| OSC | Mod Wave **Saw**, FM Ratio **2.76**, FM Amt **0.75 → 1.0**, FM FB **0.15**, Ring **0.40**, Sweep **+7 st / 30 ms**, Phase Free |
-| Circuit | Fold **0.30 → 0.60**, Asym **0.50**, Bleed **0.40**, Amp VCA, FM **Lin** |
-| Analog | Analog **0.70**, Age **0.50**, Sag **0.60**, Quality 2x |
-| Automation | Fold, FM Amt und Decay linear über 16 Takte von Start- auf Endwert |
+| Voice | Morph **0.50**, Wave **Sin**, Attack **8 ms**, Decay **0.18 → 0.30**, Accent **0.80**, Drive **0.75 → 1.0**, Noise 0, Level 0.8 |
+| OSC | Mod Wave **Sin**, FM Ratio **2.0**, FM Amt **0.40 → 0.55**, FM FB **0**, Ring **0.15**, Sweep **+3 st / 40 ms**, Phase Free |
+| Circuit | Fold **0**, Asym **0.15**, Bleed **0.10**, Amp VCA, FM **Lin** |
+| Analog | Analog **0.50**, Age **0.30**, Sag **0.60**, Quality 2x |
+| Automation | Drive, FM Amt und Decay linear über 16 Takte von Start- auf Endwert |
+
+**Tonal statt noisy:** Die Klangquelle ist sauber und harmonisch: FM Ratio 2.0 ist eine Oktave, Sinus auf Sinus, ohne
+Feedback und Fold. Die Verzerrung kommt erst am Ende der Kette über Drive und steigt zum Ende der 16 Takte an.
+Gemessen gegenüber der vorigen Version: Klick 9.6 dB → 1.5 dB, harmonischer Anteil 28 % → 61 %.
 
 **Variante „alle Steps“** (`previews/mord_main_all_steps.wav`, ohne Kick): Alle 16 Steps sind aktiv,
 jeder mit eigener Note. Alle anderen Einstellungen und die Automation bleiben gleich.
@@ -242,9 +246,6 @@ jeder mit eigener Note. Alle anderen Einstellungen und die Automation bleiben gl
 | Pitch (st) | 0 | +12 | +1 | 0 | −2 | 0 | +3 | +1 | 0 | +12 | +1 | 0 | −5 | −2 | +3 | +7 |
 | Note | Bb2 | Bb3 | B2 | Bb2 | Ab2 | Bb2 | Db3 | B2 | Bb2 | Bb3 | B2 | Bb2 | F2 | Ab2 | Db3 | F3 |
 | Vel | .8 | .5 | 1 | .6 | .75 | .5 | 1 | .65 | .8 | .5 | 1 | .55 | .75 | .7 | 1 | .5 |
-
-Energie (Spektrum, solo): etwa 20 % unter 120 Hz, 62 % zwischen 120 Hz und 1 kHz, 15–17 % zwischen 1 und 5 kHz.
-Die Mitten tragen den Sound, und unten bleibt Platz für Kick und Rumble.
 
 ## Bekannte Grenzen
 - **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
