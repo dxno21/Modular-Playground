@@ -51,6 +51,22 @@ Modulation und Steuerung durch die KI.
 
 ---
 
+## 2b. Alternative: Eigenes modulares System komplett in Max for Live
+
+Kein VCV nötig, alles nativ in M4L:
+
+- **Variante A – Ein Device = ein ganzes Rack:** Ein M4L-Device hostet Modul-Abstraktionen (`bpatcher` / `poly~`),
+  „Kabel“ sind eine Routing-Matrix (`matrix~`). Die Module selbst sind `gen~`-Patches (sample-genau, auch Feedback).
+  Patch-Zustände werden als JSON gespeichert, die KI kann sie also erzeugen.
+- **Variante B – Ein Device = ein Modul:** Jedes Modul ist ein eigenes M4L-Device in Live. Alle M4L-Devices laufen in
+  derselben Max-Instanz, darum verbinden globale `send~`/`receive~` die Devices wie Patchkabel.
+  Bei Kabeln über Tracks hinweg kommt Puffer-Latenz dazu. Für enge Rückkopplungen ist Variante A besser.
+- **Startpunkt BEAP:** In Max ist BEAP enthalten, eine Sammlung modularer Synth-Module im Eurorack-Stil.
+  Damit lässt sich das Konzept sofort ausprobieren und erweitern.
+- **Weg zur Hardware:** `gen~`-Module mit *oopsy* auf Electrosmith Daisy übertragen und als echtes Eurorack-Modul nutzen.
+
+---
+
 ## 3. Das KI-Tool – Bausteine
 
 ### 3.1 Sound-Profil („Wie klinge ich?“)
