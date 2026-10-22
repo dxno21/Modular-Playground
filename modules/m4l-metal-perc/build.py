@@ -14,10 +14,10 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 2130
+DEVICE_WIDTH = 2242
 SEQ_SHIFT = 100  # Breite, um die die SEQ-Sektion gewachsen ist (alles rechts davon rückt nach)
 FILTER_X = 1344  # neue Sektion FILTER · ENV beginnt hier, CIRCUIT/ANALOG/OUT rücken um FILTER_W nach
-FILTER_W = 294
+FILTER_W = 406
 DEVICE_HEIGHT = 169
 
 
@@ -219,13 +219,13 @@ SECTIONS = [
     ("RANDOM", 540, 640, rgb("#ff5c93")),
     ("OSC", 640, 932, rgb("#9d86ff")),
     ("VOICE", 932, 1342, rgb("#ffad38")),
-    ("FILTER", 1342, 1636, rgb("#4fb3ff")),
-    ("CIRCUIT", 1636, 1880, rgb("#ff6b4a")),
-    ("ANALOG", 1880, 2072, rgb("#7bd88f")),
-    ("OUT", 2072, DEVICE_WIDTH, rgb("#d4d7dd")),
+    ("FILTER", 1342, 1748, rgb("#4fb3ff")),
+    ("CIRCUIT", 1748, 1992, rgb("#ff6b4a")),
+    ("ANALOG", 1992, 2184, rgb("#7bd88f")),
+    ("OUT", 2184, DEVICE_WIDTH, rgb("#d4d7dd")),
 ]
 CARDS = [[2, 2, 536, 165], [542, 2, 94, 165], [640, 2, 290, 165], [934, 2, 406, 165],
-         [1344, 2, 290, 165], [1638, 2, 240, 165], [1882, 2, 188, 165], [2074, 2, 54, 165]]
+         [1344, 2, 402, 165], [1750, 2, 240, 165], [1994, 2, 188, 165], [2186, 2, 54, 165]]
 
 
 def accent_for(x):
@@ -503,7 +503,8 @@ def build_maxpat(code):
     for c, (var, name, lo, hi, init, unit, exp) in enumerate([
             ("cutoff", "Cutoff", 20.0, 18000.0, 2000.0, 3, 4.0), ("reso", "Reso", 0.0, 1.0, 0.2, 1, None),
             ("flt_env", "Flt Env", -1.0, 1.0, 0.0, 1, None), ("key_trk", "Key Trk", 0.0, 1.0, 0.0, 1, None),
-            ("menv_fold", "Env Fold", 0.0, 1.0, 0.0, 1, None)]):
+            ("menv_fold", "Env Fold", 0.0, 1.0, 0.0, 1, None), ("flt_drive", "Flt Drive", 0.0, 1.0, 0.0, 1, None),
+            ("flt_morph", "Morph", 0.0, 1.0, 0.0, 1, None)]):
         to_gen(dial(p, var, name, name, [fx - 2 + c * 56, 14, 44, 48], lo, hi, init, unit=unit, exp=exp),
                var, 40 + c * 140, 1960)
     for c, (var, name, lo, hi, init, unit, exp) in enumerate([
@@ -513,10 +514,15 @@ def build_maxpat(code):
         to_gen(dial(p, var, name, name, [fx - 2 + c * 56, 64, 44, 48], lo, hi, init, unit=unit, exp=exp),
                var, 40 + c * 140, 1990)
     p.comment("FILTER", [fx - 2, 116, 60, 14])
-    to_gen(tab(p, "flt_type", "Filter Type", [fx - 2, 132, 180, 16], ["Off", "LP", "BP", "HP", "Notch"], 0),
+    to_gen(tab(p, "flt_type", "Filter Type", [fx - 2, 132, 198, 16], ["Off", "LP", "BP", "HP", "Ntch", "Mrph"], 0),
            "flt_type", 40, 2020)
-    p.comment("ENV", [fx + 186, 116, 60, 14])
-    to_gen(tab(p, "menv_loop", "Env Loop", [fx + 186, 132, 90, 16], ["One", "Loop"], 0), "menv_loop", 200, 2020)
+    p.comment("CIRCUIT", [fx + 202, 116, 60, 14])
+    to_gen(menu(p, "flt_circ", "Filter Circuit", [fx + 202, 132, 62, 16], ["Clean", "OSR", "MS2", "SMP", "PRD"], 0),
+           "flt_circ", 200, 2020)
+    p.comment("SLOPE", [fx + 270, 116, 60, 14])
+    to_gen(tab(p, "flt_slope", "Filter Slope", [fx + 270, 132, 54, 16], ["12", "24"], 0), "flt_slope", 360, 2020)
+    p.comment("ENV", [fx + 330, 116, 60, 14])
+    to_gen(tab(p, "menv_loop", "Env Loop", [fx + 330, 132, 64, 16], ["One", "Loop"], 0), "menv_loop", 520, 2020)
 
     # ---------------- Sound-Randomizer (OSC, VOICE, beide), Positionen nach der Verschiebung
     for var, longname, rect, msg_text, lbl, lrect in [

@@ -100,6 +100,86 @@ rnd_hash(sd, i) {
 	return wrap(sin(sd * 12.9898 + i * 78.233 + 0.5) * 43758.5453, 0, 1);
 }
 
+// ---------- Analoge Filter-Schaltungen (Konzepte wie die Circuit-Typen in Abletons Auto Filter) ----------
+// Ein-Pol-Tiefpass (TPT/ZDF), G = g / (1 + g), Zustand in d[i]
+op1(x, G, d, i) {
+	s = peek(d, i);
+	v = (x - s) * G;
+	y = v + s;
+	poke(d, y + v, i);
+	return y;
+}
+
+// Ausgang LP/BP/HP/Notch/Morph aus den Teilsignalen; Morph blendet LP -> BP -> HP -> Notch -> LP
+flt_out(lp, bp, hp, mo, mph) {
+	y = lp;
+	if (mo > 4.5) {
+		m4 = clamp(mph, 0, 1) * 4;
+		seg = min(floor(m4), 3);
+		fr = m4 - seg;
+		ya = selector(seg + 1, lp, bp, hp, lp + hp);
+		yb = selector(seg + 1, bp, hp, lp + hp, lp);
+		y = mix(ya, yb, fr);
+	} else if (mo > 3.5) {
+		y = lp + hp;
+	} else if (mo > 2.5) {
+		y = hp;
+	} else if (mo > 1.5) {
+		y = bp;
+	}
+	return y;
+}
+
+// State-Variable-Filter 12 dB mit Begrenzung des Resonanz-(Bandpass-)Zustands:
+// lim 0 = Clean, 1 = harte Diodenbegrenzung (OSR-Prinzip), 2 = weiche Begrenzung (MS2-/Sallen-Key-Prinzip).
+// sat > 0: OTA-Sättigung der Eingangsstufe. Zustände in d[i], d[i+1].
+svf_lim(x, g, k, d, i, mo, lim, mph, sat) {
+	a1 = 1 / (1 + g * (g + k));
+	a2 = g * a1;
+	a3 = g * a2;
+	ic1 = peek(d, i);
+	ic2 = peek(d, i + 1);
+	v3 = x - ic2;
+	if (sat > 0.001) {
+		v3 = tanh(v3 * sat) / sat;
+	}
+	v1 = a1 * ic1 + a2 * v3;
+	v2 = ic2 + a2 * ic1 + a3 * v3;
+	n1 = 2 * v1 - ic1;
+	if (lim > 1.5) {
+		n1 = tanh(n1 / 3) * 3;
+	} else if (lim > 0.5) {
+		n1 = clamp(n1, -2, 2);
+	}
+	poke(d, n1, i);
+	poke(d, 2 * v2 - ic2, i + 1);
+	return flt_out(v2, v1 * k, x - k * v1 - v2, mo, mph);
+}
+
+// Transistor-Ladder 24 dB (PRD-Prinzip: keine Resonanzbegrenzung, kann selbst oszillieren).
+// soft = 1: Hybrid (SMP-Prinzip) mit weich begrenzter Rückkopplung und 18-dB-artigem Ausgang.
+// Zustände in d[i] .. d[i+3], letzter Ausgang in d[i+4].
+ladder(x, G, kfb, d, i, mo, soft, mph) {
+	fb = peek(d, i + 4);
+	if (soft > 0.5) {
+		fb = tanh(fb * 1.5) / 1.5;
+	}
+	u = tanh(x - kfb * fb);
+	y1 = op1(u, G, d, i);
+	y2 = op1(y1, G, d, i + 1);
+	y3 = op1(y2, G, d, i + 2);
+	y4 = op1(y3, G, d, i + 3);
+	poke(d, y4, i + 4);
+	lp = y4 * (1 + kfb * 0.15);
+	hp = u - 4 * y1 + 6 * y2 - 4 * y3 + y4;
+	bp = 4 * (y2 - 2 * y3 + y4);
+	if (soft > 0.5) {
+		lp = 0.5 * (y2 + y4) * (1 + kfb * 0.1);
+		hp = 0.5 * ((u - 2 * y1 + y2) + hp);
+	}
+	return flt_out(lp, bp, hp, mo, mph);
+}
+
 // Weiche Diodenkennlinie: sperrt unter ~0.2, dann quadratischer Übergang, dann linear
 diode(v) {
 	u = v - 0.2;
@@ -161,11 +241,15 @@ Param seed(1, min=0, max=999);        // Charakter dieser Instanz
 Param quality(1, min=0, max=2);       // Oversampling 1x / 2x / 4x
 
 // ---------- Parameter: Filter ----------
-Param flt_type(0, min=0, max=4);      // 0 Off, 1 LP, 2 BP, 3 HP, 4 Notch
+Param flt_type(0, min=0, max=5);      // 0 Off, 1 LP, 2 BP, 3 HP, 4 Notch, 5 Morph
 Param cutoff(2000, min=20, max=18000); // Hz
 Param reso(0.2, min=0, max=1);
 Param flt_env(0, min=-1, max=1);      // Mod-Hüllkurve -> Cutoff, ±6 Oktaven
 Param key_trk(0, min=0, max=1);       // Cutoff folgt der Tonhöhe (1 = 100 %)
+Param flt_circ(0, min=0, max=4);      // 0 Clean, 1 OSR, 2 MS2, 3 SMP, 4 PRD
+Param flt_slope(0, min=0, max=1);     // nur Clean: 0 = 12 dB, 1 = 24 dB
+Param flt_drive(0, min=0, max=1);     // Pegel in die Filterschaltung
+Param flt_morph(0, min=0, max=1);     // Filtertyp Morph: LP -> BP -> HP -> Notch -> LP
 
 // ---------- Parameter: Mod-Hüllkurve ----------
 Param menv_atk(2, min=0.1, max=500);  // ms
@@ -278,6 +362,7 @@ Data fq(8);
 Data slc(8);    // Slew-Koeffizient pro Oszillator     // Frequenz-Faktor pro Oszillator (Toleranz, Drift, Jitter)
 Data tol(40);   // Toleranzen: [i] Cent, [8+i] PW, [16+i] DC, [24+i] Slew, [32+j] Moden/Filter
 Data st(26);    // Filterzustände
+Data fst(12);   // Zustände des Multimode-Filters
 
 // ---------- Clock ----------
 spb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat
@@ -561,6 +646,19 @@ fold_g = 1 + fold_e * 5;
 flt_fc = cutoff * pow(2, flt_env * 6 * me_v + key_trk * (hit_note - 60) / 12) * (1 + an * 0.05 * peek(tol, 38));
 flt_q = 0.5 + reso * reso * 24;
 ft = floor(flt_type + 0.5);
+fcirc = floor(flt_circ + 0.5);
+flt_dg = 1 + flt_drive * 6;
+flt_dgc = 1 / (1 + flt_drive * 3);
+// Begrenzte Schaltungen vertragen mehr Resonanz
+flt_qc = flt_q;
+if (fcirc > 0.5) {
+	flt_qc = 0.5 + reso * reso * 60;
+}
+flt_lim = selector(fcirc + 1, 0, 1, 2, 0, 0);
+flt_sat = ota;
+if (fcirc > 0.5) {
+	flt_sat = 0;
+}
 dg = 1 + drive * 12;
 ab = asym * 0.3;
 
@@ -673,11 +771,17 @@ for (o = 0; o < osf; o += 1) {
 	// ---------- Multimode-Filter (vor Fold und Drive) ----------
 	if (ft > 0.5) {
 		fcl = clamp(flt_fc, 20, nyq);
-		if (ft > 3.5) {
-			voice = voice - svf(voice, fcl, flt_q, sr2, st, 24, 1, ota);
+		g_f = tan(pi * fcl / sr2);
+		xin = voice * flt_dg;
+		if (fcirc > 2.5) {
+			yf = ladder(xin, g_f / (1 + g_f), reso * 4.3, fst, 4, ft, fcirc < 3.5, flt_morph);
 		} else {
-			voice = svf(voice, fcl, flt_q, sr2, st, 24, ft - 1, ota);
+			yf = svf_lim(xin, g_f, 1 / flt_qc, fst, 0, ft, flt_lim, flt_morph, flt_sat);
+			if (fcirc < 0.5 && flt_slope > 0.5) {
+				yf = svf_lim(yf, g_f, 1 / 0.7071, fst, 2, ft, 0, flt_morph, 0);
+			}
 		}
+		voice = yf * flt_dgc * selector(fcirc + 1, 1, 0.62, 1, 2.6, 2.4);  // Pegelangleich je Schaltung
 	}
 
 	// ---------- Wavefolder + asymmetrische Sättigung ----------

@@ -26,6 +26,13 @@ SECTIONS = [
         ("seq138_mid", "Mid: Plonks über das Lowpass-Gate, 14 Steps, D2"),
         ("seq138_high", "High: metallische Ticks aus der Oszillator-Bank, 15 Steps, G4"),
     ]),
+    ("Analoge Filter-Schaltungen", "#4fb3ff", [
+        ("18_filter_circuits_clean_osr_ms2_smp_prd", "Dieselbe Sequenz je 2 Takte durch Clean, OSR, MS2, SMP und PRD"),
+        ("19_filter_morph_sweep", "Morph-Filter wandert pro Takt von LP über BP, HP und Notch zurück zu LP"),
+        ("20_filter_drive_ms2", "MS2 mit Filter-Drive 0, 0.5 und 1: Die Resonanz wird mit Drive weicher"),
+        ("16_filter_env_acid_metal", "Tiefpass mit Resonanz, von der Mod-Hüllkurve geöffnet"),
+        ("17_env_loop_pitch_fold", "Geloopte Mod-Hüllkurve auf Pitch, Fold und Bandpass"),
+    ]),
     ("Analog vs. Digital", "#7bd88f", [
         ("14_ab_digital_then_analog", "Dasselbe Pattern erst komplett digital, nach kurzer Pause mit allen Analog-Bausteinen"),
         ("11_lpg_vactrol_fm_plonk", "Lowpass-Gate mit Vactrol: schnell auf, langsam zu"),
@@ -34,8 +41,6 @@ SECTIONS = [
     ]),
     ("Presets", "#ffad38", [
         ("15_retrig_rolls_138", "Retrig-Rolls bei 138 BPM: Steps 7, 15, 16 mit x4-Retrig, Velocity fällt ab"),
-        ("16_filter_env_acid_metal", "Tiefpass mit Resonanz, von der Mod-Hüllkurve geöffnet, Key-Tracking"),
-        ("17_env_loop_pitch_fold", "Geloopte Mod-Hüllkurve auf Pitch, Fold und Bandpass"),
         ("09_lowmid_fm_metal", "Low/Mid FM Metal im Pattern, G Phrygian"),
         ("10_lowmid_fm_metal_hits_G1_D2_G2", "Low/Mid FM Metal als Einzelschläge auf G1, D2, G2"),
     ]),
@@ -239,6 +244,11 @@ def export_presets():
     presets["Mord Main Layer – Offbeat (145)"] = entry(MORD.PARAMS, MORD.STEPS_ON, MORD.STEPS_VEL, MORD.STEPS_PITCH)
     for name, seq in S138.SEQUENCES.items():
         presets[f"Hypnotic 138 – {name.title()}"] = entry(seq["params"], seq["on"], seq["vel"], seq["pitch"])
+    import render_js_previews as JSP
+    for c, circ in enumerate(["Clean", "OSR", "MS2", "SMP", "PRD"]):
+        base = {k: v for k, v in JSP.FILTER_BASE.items() if k != "clock_mode"}
+        presets[f"Filter Acid – {circ}"] = entry(dict(base, flt_circ=c), JSP.PATTERN["on"], JSP.PATTERN["vel"],
+                                                 JSP.PATTERN["pitch"])
     for key, p in R.PRESETS.items():
         on, vel, pitch = p["pattern"]
         presets[key.split("_", 1)[1].replace("_", " ").title()] = entry(p["params"], on, vel, pitch, p.get("rtrg"))

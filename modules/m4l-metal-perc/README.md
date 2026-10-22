@@ -27,6 +27,7 @@ Die Farben sind fest gesetzt und folgen nicht dem Live-Theme.
 | `src/metal_perc.genexpr.in` | **Quelle** des DSP-Codes. Hier editieren, dann `python3 build.py` |
 | `build.py` | Erzeugt `.genexpr`, `.maxpat` und `.amxd` (16 Steps, UI, Verkabelung) |
 | `tools/build_site.py` | Baut die Preview-Seite für GitHub Pages |
+| `tools/render_js_previews.py` | Rendert Hörproben mit dem DSP des Devices (gen~ → JS, Node) |
 | `tools/genexpr_to_js.py` | Übersetzt den gen~-Code nach JavaScript für den Browser-Player |
 | `web/` | Browser-Player: AudioWorklet-Vorlage und Oberfläche (`player.js`) |
 | `reference/metal_perc_ref.py` | Python-Nachbau des DSP für Hörproben ohne Max |
@@ -153,7 +154,10 @@ Multimode-Filter nach der Klangerzeugung, vor Fold und Drive, dazu eine eigene M
 
 | Regler | Wirkung |
 |---|---|
-| **Filter** | *Off* (Standard, alte Presets klingen unverändert), *LP*, *BP*, *HP*, *Notch* |
+| **Filter** | *Off* (Standard, alte Presets klingen unverändert), *LP*, *BP*, *HP*, *Ntch*, *Mrph* (stufenlos LP → BP → HP → Notch → LP über **Morph**) |
+| **Circuit** | Analoge Schaltung, siehe unten |
+| **Slope** | nur *Clean*: 12 oder 24 dB/Oktave |
+| **Flt Drive** | Pegel in die Filterschaltung. Bei OSR und MS2 begrenzt Drive die Resonanz, bei SMP und PRD sättigt die Ladder |
 | **Cutoff** | 20 Hz – 18 kHz, logarithmisch |
 | **Reso** | Resonanz bis kurz vor Selbstoszillation. Mit Analog > 0 sättigt die Filter-Eingangsstufe wie bei einem OTA-Filter |
 | **Flt Env** | Mod-Hüllkurve → Cutoff, ±6 Oktaven (negativ schließt das Filter beim Schlag) |
@@ -164,6 +168,21 @@ Multimode-Filter nach der Klangerzeugung, vor Fold und Drive, dazu eine eigene M
 | **Env Pitch** | Mod-Hüllkurve → Tonhöhe, ±24 Halbtöne (zusätzlich zum Sweep) |
 | **Env FM** | Mod-Hüllkurve → FM-Index (±) |
 | **Env Fold** | Mod-Hüllkurve → Wavefolder |
+
+**Circuit-Typen** nach den Schaltungsprinzipien, die Ableton für die Circuits im Auto Filter beschreibt. Es sind eigene
+Implementierungen, kein Code von Ableton:
+
+| Circuit | Prinzip | Klang |
+|---|---|---|
+| **Clean** | State-Variable-Filter, mit Analog > 0 leichte OTA-Sättigung | neutral, präzise, 12/24 dB |
+| **OSR** | State-Variable, Resonanz durch eine harte Diode begrenzt (Vorbild: britischer Monosynth) | bissig, Resonanz kippt hart |
+| **MS2** | Resonanz weich begrenzt, wie beim Sallen-Key-Filter des MS-20 | rau, singend, mit Drive dreckig |
+| **SMP** | Hybrid aus MS2 und PRD: Ladder mit weich begrenzter Rückkopplung, ~18 dB | rund, kontrollierte Selbstoszillation |
+| **PRD** | Transistor-Ladder 24 dB ohne Resonanzbegrenzung (Vorbild: US-Monosynth) | fett, Bass sinkt mit Resonanz, oszilliert bei Reso 1 selbst |
+
+Bei SMP und PRD mit Reso 1 schwingt das Filter selbst weiter, auch wenn der Ton verklungen ist. Das ist gewollt.
+Die Python-Referenz bildet die Circuit-Typen nicht nach. Hörproben dazu rendert `tools/render_js_previews.py` mit
+dem DSP des Devices.
 
 Die Mod-Hüllkurve wird mit der Velocity skaliert (50–100 %). Die Lautstärke steuern weiterhin Attack und Decay in VOICE.
 
@@ -228,6 +247,9 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `11_lpg_vactrol_fm_plonk` | Low/Mid FM Metal mit Lowpass-Gate (Vactrol) |
 | `12_bridged_t_808_toms` | Resonator im Bridged-T-Modus: 808-artige Metall-Toms |
 | `13_wavefolder_exp_fm` | Exponentielle FM und Wavefolder |
+| `18_filter_circuits_clean_osr_ms2_smp_prd` | Dieselbe Sequenz je 2 Takte durch Clean, OSR, MS2, SMP, PRD (mit Device-DSP gerendert) |
+| `19_filter_morph_sweep` | Morph-Filter von LP über BP, HP, Notch zurück zu LP |
+| `20_filter_drive_ms2` | MS2 mit Filter-Drive 0, 0.5, 1 |
 | `16_filter_env_acid_metal` | Tiefpass mit Resonanz, von der Mod-Hüllkurve geöffnet, Key-Tracking |
 | `17_env_loop_pitch_fold` | Geloopte Mod-Hüllkurve auf Pitch, Fold und Bandpass |
 | `15_retrig_rolls_138` | Retrig-Rolls bei 138 BPM: Steps 7, 15, 16 mit x4-Retrig, Velocity fällt ab |
@@ -322,6 +344,6 @@ jeder mit eigener Note. Alle anderen Einstellungen und die Automation bleiben gl
 - **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 136 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 140 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.
