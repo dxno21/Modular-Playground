@@ -35,3 +35,9 @@ Herstellerhandbuch geprüft werden (in der App als „ungeprüft“ markiert). N
 
 ## Nicht im MVP
 KI-Recherche, VCV-Export, Accounts/Cloud-Sync, Preis-Scraping.
+
+## Deployment (GitHub Pages)
+`.github/workflows/pages.yml` testet, baut und veröffentlicht `app/dist` bei jedem Push auf
+`claude/hardware-planer` oder den Default-Branch (oder manuell über „Run workflow“).
+Einmalig nötig: Repo → Settings → Pages → Source „GitHub Actions“. Für private Repos braucht GitHub Pages einen
+bezahlten Plan (Pro); im Gratis-Plan muss das Repo öffentlich sein.

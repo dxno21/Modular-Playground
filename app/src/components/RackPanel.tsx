@@ -1,5 +1,6 @@
 import { RAILS, maxDepth, powerStatus, totalPrice } from '../lib/power';
 import { usedHpPerRow } from '../lib/layout';
+import { CASE_PRESETS } from '../lib/cases';
 import type { CaseConfig, ModuleDb, Rack } from '../lib/types';
 
 interface Props {
@@ -20,6 +21,19 @@ export function RackPanel({ rack, db, onCaseChange }: Props) {
   return (
     <section className="panel-box">
       <h2>Case</h2>
+      <select
+        className="preset"
+        value=""
+        onChange={(e) => {
+          const preset = CASE_PRESETS.find((c) => c.id === e.target.value);
+          if (preset) onCaseChange(structuredClone(preset.config));
+        }}
+      >
+        <option value="">Vorlage übernehmen …</option>
+        {CASE_PRESETS.map((c) => (
+          <option key={c.id} value={c.id}>{c.label}</option>
+        ))}
+      </select>
       <div className="form-grid">
         <label>
           Reihen
