@@ -138,7 +138,7 @@ DEFAULTS = dict(
     wfold=0.0, asym=0.25, amp_mode=0, lpg_color=0.6, reso_mode=0,
     analog=0.5, age=0.3, sag=0.25, hum=0.0, hum_hz=0, seed=1, quality=1,
     qmode=1, scale_sel=1, root=0,
-    seq_on=1, bpm=130, clock_div=1, seq_len=16,
+    seq_on=1, bpm=130, clock_div=1, seq_len=16, rtrg_rate=1, rtrg_len=1.0, rtrg_vel=-0.5,
     live_steps=0, live_vel=0, live_pitch=0,
     density=0.6, vel_range=0.5, pitch_range=7,
 )
@@ -151,6 +151,12 @@ class MetalPerc:
         self.steps_on = [1] * 16
         self.steps_vel = [1.0] * 16
         self.steps_pitch = [0.0] * 16
+        self.steps_rtrg = [0] * 16
+        self.rt_arm = False
+        self.rt_on = False
+        self.rt_cnt = self.rt_next = self.rt_total = self.rt_int = 0.0
+        self.rt_vel, self.rt_note = 1.0, p["tune"]
+        self.started = False
         self.int_phase = 0.0
         self.last_step = -1
         self.env = 0.0
@@ -180,8 +186,9 @@ class MetalPerc:
                     + [rnd_hash(sd, j + 32) * 2 - 1 for j in range(8)])
 
     # Ein Trigger vom Sequencer / MIDI: Tonhöhe bestimmen, mit Jitter starten
-    def trigger(self, vel, pitch):
+    def trigger(self, vel, pitch, rtrg=False):
         p = self.p
+        self.rt_arm = rtrg
         note = p["tune"] + pitch
         if p["qmode"] > 0.5:
             note = quant(note, p["root"], SCALE_MASKS[int(p["scale_sel"])])
@@ -191,8 +198,22 @@ class MetalPerc:
         else:
             self.pend, self.p_note, self.p_vel = jit, note, vel
 
-    def start(self, note, vel):
+    def start(self, note, vel, from_retrig=False):
         p = self.p
+        self.started = True
+        if not from_retrig:
+            # Retrig (Elektron-Prinzip): Wiederholungen pro Step, rtrg_len Steps lang, mit Velocity-Verlauf
+            self.rt_on = False
+            if self.rt_arm:
+                spb = [2, 4, 8, 3, 6][int(p["clock_div"])]
+                step_samps = SR * 60 / (p["bpm"] * spb)
+                self.rt_on = True
+                self.rt_cnt = 0
+                self.rt_int = step_samps / [2, 3, 4, 6, 8][int(math.floor(p["rtrg_rate"] + 0.5))]
+                self.rt_next = self.rt_int
+                self.rt_total = p["rtrg_len"] * step_samps
+                self.rt_vel, self.rt_note = vel, note
+            self.rt_arm = False
         self.hit_note = note
         self.hit_vel = vel
         t = 0.01 * 250 ** p["decay"]
@@ -223,17 +244,26 @@ class MetalPerc:
                     vel *= 1 - p["vel_range"] * random.random()
                 if p["live_pitch"] > 0.5:
                     pitch += p["pitch_range"] * noise()
-                self.trigger(vel, pitch)
+                self.trigger(vel, pitch, bool(self.steps_rtrg[cur]))
                 return True
         return False
 
     def tick(self, use_seq=True):
         p = self.p
+        self.started = False
         fired = self.clock() if use_seq else False
         if not fired and self.pend > 0:
             self.pend -= 1
             if self.pend < 0.5:
                 self.start(self.p_note, self.p_vel)
+        if not self.started and self.rt_on:
+            self.rt_cnt += 1
+            if self.rt_cnt >= self.rt_total:
+                self.rt_on = False
+            elif self.rt_cnt >= self.rt_next:
+                self.rt_next += self.rt_int
+                v = clamp(self.rt_vel * (1 + p["rtrg_vel"] * self.rt_cnt / self.rt_total), 0, 1)
+                self.start(self.rt_note, v, from_retrig=True)
 
         an, ag = p["analog"], p["age"]
         d_a = 1 - math.exp(-2 * math.pi * (0.4 + ag * 0.8) / SR)
@@ -468,6 +498,11 @@ PRESETS = {
         params=dict(LOWMID_FM_METAL, fm_mode=1, fm_amt=0.7, wfold=0.6, drive=0.35, decay=0.3, tune=41),
         pattern=seq("1001 0010 0100 1010"),
     ),
+    "15_retrig_rolls_138": dict(
+        params=dict(LOWMID_FM_METAL, bpm=138, tune=45, decay=0.2, rtrg_rate=2, rtrg_len=1.0, rtrg_vel=-0.7),
+        pattern=seq("1001 0010 1001 0111", pitch=[0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0, 0, 0, -2, 0, 5]),
+        rtrg=[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    ),
     "09_lowmid_fm_metal": dict(
         params=dict(LOWMID_FM_METAL),
         pattern=seq("1001 0010 0100 1010",
@@ -484,6 +519,7 @@ def render_presets(out_dir, bars=2):
     for name, preset in PRESETS.items():
         v = MetalPerc(**preset["params"])
         v.steps_on, v.steps_vel, v.steps_pitch = preset["pattern"]
+        v.steps_rtrg = list(preset.get("rtrg", [0] * 16))
         secs = bars * 4 * 60 / v.p["bpm"]
         audio = v.render(secs)
         peak = write_wav(out_dir / f"{name}.wav", audio, normalize_to=0.89)

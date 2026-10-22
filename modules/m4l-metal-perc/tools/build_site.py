@@ -33,6 +33,7 @@ SECTIONS = [
         ("13_wavefolder_exp_fm", "Exponentielle FM und Wavefolder"),
     ]),
     ("Presets", "#ffad38", [
+        ("15_retrig_rolls_138", "Retrig-Rolls bei 138 BPM: Steps 7, 15, 16 mit x4-Retrig, Velocity fällt ab"),
         ("09_lowmid_fm_metal", "Low/Mid FM Metal im Pattern, G Phrygian"),
         ("10_lowmid_fm_metal_hits_G1_D2_G2", "Low/Mid FM Metal als Einzelschläge auf G1, D2, G2"),
     ]),
@@ -219,13 +220,14 @@ def export_presets():
     import sequence_mord_main as MORD
     import sequences_138 as S138
 
-    def entry(params, on, vel, pitch):
+    def entry(params, on, vel, pitch, rtrg=None):
         on = [int(c) for c in on.replace(" ", "")] if isinstance(on, str) else list(on)
         n = len(on)
         params = {k: float(v) for k, v in params.items()}
         params.setdefault("bpm", 130.0)
         return {"params": params, "on": on + [0] * (16 - n),
-                "vel": [float(v) for v in vel] + [1.0] * (16 - n), "pitch": [float(v) for v in pitch] + [0.0] * (16 - n)}
+                "vel": [float(v) for v in vel] + [1.0] * (16 - n), "pitch": [float(v) for v in pitch] + [0.0] * (16 - n),
+                "rtrg": [int(v) for v in (rtrg or [])] + [0] * (16 - len(rtrg or []))}
 
     presets = {"Init": entry({}, "1" * 16, [1] * 16, [0] * 16)}
     presets["Mord Main Layer – alle Steps (145)"] = entry(MORD.PARAMS, MORD.ALL_ON, MORD.ALL_VEL, MORD.ALL_PITCH)
@@ -234,7 +236,7 @@ def export_presets():
         presets[f"Hypnotic 138 – {name.title()}"] = entry(seq["params"], seq["on"], seq["vel"], seq["pitch"])
     for key, p in R.PRESETS.items():
         on, vel, pitch = p["pattern"]
-        presets[key.split("_", 1)[1].replace("_", " ").title()] = entry(p["params"], on, vel, pitch)
+        presets[key.split("_", 1)[1].replace("_", " ").title()] = entry(p["params"], on, vel, pitch, p.get("rtrg"))
     return presets
 
 

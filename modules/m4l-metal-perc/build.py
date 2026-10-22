@@ -14,7 +14,8 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 1736
+DEVICE_WIDTH = 1836
+SEQ_SHIFT = 100  # Breite, um die die SEQ-Sektion gewachsen ist (alles rechts davon rückt nach)
 DEVICE_HEIGHT = 169
 
 
@@ -23,7 +24,7 @@ def build_genexpr():
     src = (HERE / "src" / "metal_perc.genexpr.in").read_text()
     params = "\n".join(
         f"Param s{i}_on(1, min=0, max=1); Param s{i}_vel(1, min=0, max=1); "
-        f"Param s{i}_pitch(0, min=-24, max=24);"
+        f"Param s{i}_pitch(0, min=-24, max=24); Param s{i}_rtrg(0, min=0, max=1);"
         for i in range(1, STEPS + 1)
     )
 
@@ -35,8 +36,9 @@ def build_genexpr():
                .replace("@SEL_ON@", sel("on"))
                .replace("@SEL_VEL@", sel("vel"))
                .replace("@SEL_PITCH@", sel("pitch"))
+               .replace("@SEL_RTRG@", sel("rtrg"))
                .replace("@SCALE_MASKS@", ", ".join(str(m) for m in SCALE_MASKS)))
-    leftover = [tok for tok in ("@STEP_PARAMS@", "@SEL_ON@", "@SEL_VEL@", "@SEL_PITCH@", "@SCALE_MASKS@")
+    leftover = [tok for tok in ("@STEP_PARAMS@", "@SEL_ON@", "@SEL_VEL@", "@SEL_PITCH@", "@SEL_RTRG@", "@SCALE_MASKS@")
                 if tok in code]
     assert not leftover, leftover
     return code
@@ -181,16 +183,16 @@ THEME = {
 # Akzentfarbe je Sektion, Zuordnung über die x-Position in der Presentation-Ansicht
 SECTIONS = [
     # (Name, x von, x bis, Akzent)
-    ("SEQ", 0, 440, rgb("#2ed3c4")),
-    ("RANDOM", 440, 540, rgb("#ff5c93")),
-    ("OSC", 540, 832, rgb("#9d86ff")),
-    ("VOICE", 832, 1242, rgb("#ffad38")),
-    ("CIRCUIT", 1242, 1486, rgb("#ff6b4a")),
-    ("ANALOG", 1486, 1678, rgb("#7bd88f")),
-    ("OUT", 1678, DEVICE_WIDTH, rgb("#d4d7dd")),
+    ("SEQ", 0, 540, rgb("#2ed3c4")),
+    ("RANDOM", 540, 640, rgb("#ff5c93")),
+    ("OSC", 640, 932, rgb("#9d86ff")),
+    ("VOICE", 932, 1342, rgb("#ffad38")),
+    ("CIRCUIT", 1342, 1586, rgb("#ff6b4a")),
+    ("ANALOG", 1586, 1778, rgb("#7bd88f")),
+    ("OUT", 1778, DEVICE_WIDTH, rgb("#d4d7dd")),
 ]
-CARDS = [[2, 2, 436, 165], [442, 2, 94, 165], [540, 2, 290, 165], [834, 2, 406, 165],
-         [1244, 2, 240, 165], [1488, 2, 188, 165], [1680, 2, 54, 165]]
+CARDS = [[2, 2, 536, 165], [542, 2, 94, 165], [640, 2, 290, 165], [934, 2, 406, 165],
+         [1344, 2, 240, 165], [1588, 2, 188, 165], [1780, 2, 54, 165]]
 
 
 def accent_for(x):
@@ -255,7 +257,7 @@ def add_panels(p):
     for rect in CARDS:
         panel(rect, THEME["card"], THEME["card_border"], rounded=6)
     for g in (0, 2):  # Beat 1 und 3 leicht hervorheben
-        panel([46 + g * 96, 18, 96, 82], THEME["stripe"], rounded=3)
+        panel([46 + g * 96, 18, 96, 86], THEME["stripe"], rounded=3)
     for i, wrapper in enumerate(panels):
         wrapper["box"]["id"] = f"panel-{i + 1}"
     p.boxes[:0] = panels
@@ -311,14 +313,17 @@ def build_maxpat(code):
     # ---------------- Sequencer
     p.comment("SEQ", [8, 3, 40, 14], header=True)
     p.comment("STEP", [8, 21, 38, 14])
-    p.comment("VEL", [8, 47, 38, 14])
-    p.comment("PITCH", [8, 79, 38, 14])
+    p.comment("RTRG", [8, 36, 38, 14])
+    p.comment("VEL", [8, 57, 38, 14])
+    p.comment("PITCH", [8, 83, 38, 14])
     for i in range(1, STEPS + 1):
         x = 48 + (i - 1) * 24
         on = toggle(p, f"s{i}_on", f"S{i} On", [x + 4, 20, 16, 16], 1)
-        vel = dial(p, f"s{i}_vel", f"S{i} Vel", f"Vel{i}", [x, 40, 24, 26], 0.0, 1.0, 1.0, small=True)
-        pit = dial(p, f"s{i}_pitch", f"S{i} Pitch", f"Pit{i}", [x, 72, 24, 26], -24.0, 24.0, 0.0,
+        rtg = toggle(p, f"s{i}_rtrg", f"S{i} Retrig", [x + 6, 38, 12, 11], 0)
+        vel = dial(p, f"s{i}_vel", f"S{i} Vel", f"Vel{i}", [x, 52, 24, 24], 0.0, 1.0, 1.0, small=True)
+        pit = dial(p, f"s{i}_pitch", f"S{i} Pitch", f"Pit{i}", [x, 78, 24, 24], -24.0, 24.0, 0.0,
                    unit=7, small=True)
+        to_gen(rtg, f"s{i}_rtrg", 40 + (i - 1) * 140, 1290)
         px = 40 + (i - 1) * 140
         to_gen(on, f"s{i}_on", px, 1200)
         to_gen(vel, f"s{i}_vel", px, 1230)
@@ -343,14 +348,14 @@ def build_maxpat(code):
     # ---------------- Randomizer
     js = p.obj("js seq_random.js", 40, 1400, 1, 0, [])
     p.comment("RANDOM", [446, 3, 80, 14], header=True)
-    p.comment("RND", [442, 100, 24, 12])
-    p.comment("RNG", [466, 100, 26, 12])
-    p.comment("LIVE", [496, 100, 30, 12])
-    p.comment("CLEAR", [464, 125, 40, 14])
+    p.comment("RND", [442, 104, 24, 12])
+    p.comment("RNG", [466, 104, 26, 12])
+    p.comment("LIVE", [496, 104, 30, 12])
+    p.comment("CLEAR", [464, 127, 40, 14])
     lanes = [
         ("steps", "density", "Density", "Dens", 0.0, 1.0, 0.6, 1, 20, "live_steps", "rand_steps"),
-        ("vel", "vel_range", "Vel Range", "VRng", 0.0, 1.0, 0.5, 1, 42, "live_vel", "rand_vel"),
-        ("pitch", "pitch_range", "Pitch Range", "PRng", 0, 24, 7, 7, 74, "live_pitch", "rand_pitch"),
+        ("vel", "vel_range", "Vel Range", "VRng", 0.0, 1.0, 0.5, 1, 51, "live_vel", "rand_vel"),
+        ("pitch", "pitch_range", "Pitch Range", "PRng", 0, 24, 7, 7, 77, "live_pitch", "rand_pitch"),
     ]
     for k, (lane, rvar, rlong, rshort, lo, hi, init, unit, y, live_var, fn) in enumerate(lanes):
         b = button(p, f"rand_{lane}", f"Rand {lane.title()}", [444, y + 2, 16, 16])
@@ -362,7 +367,7 @@ def build_maxpat(code):
                rvar, 200 + k * 140, 1440)
         to_gen(toggle(p, live_var, f"Live {lane.title()}", [500, y + 2, 16, 16], 0), live_var,
                200 + k * 140, 1470)
-    clr = button(p, "clear", "Clear Pattern", [444, 124, 16, 16])
+    clr = button(p, "clear", "Clear Pattern", [444, 126, 16, 16])
     clr_m = p.msg("clear_pattern", 620, 1400)
     p.line(clr, 0, clr_m, 0)
     p.line(clr_m, 0, js, 0)
@@ -444,6 +449,22 @@ def build_maxpat(code):
     to_gen(tab(p, "quality", "Quality", [1492, 132, 96, 16], ["1x", "2x", "4x"], 1), "quality", 40, 1870)
     p.comment("HUM HZ", [1600, 116, 60, 14])
     to_gen(tab(p, "hum_hz", "Hum Hz", [1600, 132, 68, 16], ["50", "60"], 0), "hum_hz", 200, 1870)
+
+    # Alles rechts der SEQ-Sektion um SEQ_SHIFT nach rechts schieben
+    for wrapper in p.boxes:
+        b = wrapper["box"]
+        if b.get("presentation") and b["presentation_rect"][0] >= 440:
+            b["presentation_rect"][0] += SEQ_SHIFT
+            b["patching_rect"][0] += SEQ_SHIFT
+
+    # ---------------- Retrig (in der vergrößerten SEQ-Sektion)
+    p.comment("RTRG RATE", [376, 106, 60, 14])
+    to_gen(menu(p, "rtrg_rate", "Retrig Rate", [376, 122, 52, 16], ["x2", "x3", "x4", "x6", "x8"], 1),
+           "rtrg_rate", 40, 1900)
+    to_gen(dial(p, "rtrg_len", "Retrig Length", "Rtrg Len", [434, 104, 44, 48], 0.25, 8.0, 1.0),
+           "rtrg_len", 200, 1900)
+    to_gen(dial(p, "rtrg_vel", "Retrig Velocity", "Rtrg Vel", [486, 104, 44, 48], -1.0, 1.0, -0.5),
+           "rtrg_vel", 360, 1900)
 
     apply_theme(p)
     add_panels(p)

@@ -66,10 +66,22 @@ GitHub Pages (`tools/build_site.py`). Einmalig unter *Settings → Pages → Sou
 
 ### Sequencer (links)
 - **STEP:** An/Aus pro Step. Darüber läuft die Positionsanzeige.
+- **RTRG:** Retrig pro Step. Der Step wird wiederholt, siehe *Retrig* unten.
 - **VEL / PITCH:** Velocity- und Pitch-Poti pro Step (Pitch ±24 Halbtöne).
 - **SEQ:** Sequencer an/aus. Bei *aus* spielt die Voice nur über MIDI-Noten oder den Ext-Trigger.
 - **CLOCK:** *Host* (Live-Transport), *Ext* (Clock-Signal an Eingang 2) oder *Int* (eigenes Tempo **BPM**).
-- **DIV:** 1/8, 1/16, 1/32, 1/8T, 1/16T. **LENGTH:** 1–16 Steps. **RESET:** zurück auf Step 1.
+- **DIV:** 1/8, 1/16, 1/32, 1/8T, 1/16T. **LENGTH:** Sequenzlänge 1–16 Steps, für Polymetrik zum Beispiel 14 oder 15.
+  **RESET:** zurück auf Step 1.
+- **BPM:** Tempo des internen Clocks. In Live gilt bei Clock *Host* das Live-Tempo, der Regler wirkt dann nur bei *Int*.
+  Im Browser-Player ist der Regler immer das Tempo und mit dem BPM-Feld gekoppelt.
+
+### Retrig (Elektron-Prinzip)
+- **RTRG** (Schalter pro Step): Dieser Step wird wiederholt.
+- **RTRG RATE:** Wiederholungen pro Step (x2, x3, x4, x6, x8). Bei 1/16 ist x2 = 1/32, x4 = 1/64, x3/x6 sind Triolen.
+- **Rtrg Len:** Wie lange wiederholt wird, in Steps (0.25–8). Ein neuer regulärer Schlag beendet die Wiederholung.
+- **Rtrg Vel:** Velocity-Verlauf über die Länge. −1 blendet aus, 0 bleibt gleich, +1 wird lauter.
+- Die Step-Länge wird je nach Clock gemessen: Host über die Beat-Phase, Ext über den Abstand der Clock-Pulse,
+  Int aus dem BPM-Wert.
 
 ### Randomizer (Mitte), eine Zeile je Spur (Steps / Velocity / Pitch)
 - **Rnd** (Knopf): würfelt die Step-Regler einmal neu. Das Ergebnis ist sichtbar, editierbar und wird gespeichert.
@@ -184,6 +196,7 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `11_lpg_vactrol_fm_plonk` | Low/Mid FM Metal mit Lowpass-Gate (Vactrol) |
 | `12_bridged_t_808_toms` | Resonator im Bridged-T-Modus: 808-artige Metall-Toms |
 | `13_wavefolder_exp_fm` | Exponentielle FM und Wavefolder |
+| `15_retrig_rolls_138` | Retrig-Rolls bei 138 BPM: Steps 7, 15, 16 mit x4-Retrig, Velocity fällt ab |
 | `14_ab_digital_then_analog` | A/B-Vergleich: dasselbe Pattern erst komplett digital, nach kurzer Pause mit allen Analog-Bausteinen |
 
 Alle Hörproben außer dem digitalen Teil von 14 laufen mit den Analog-Standardwerten (Analog 0.5, Age 0.3, Quality 2x). Die Hörproben sind normalisiert. Neu rendern mit `python3 reference/metal_perc_ref.py`.
@@ -275,6 +288,6 @@ jeder mit eigener Note. Alle anderen Einstellungen und die Automation bleiben gl
 - **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 105 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 124 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.

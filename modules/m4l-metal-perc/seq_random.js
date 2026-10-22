@@ -48,11 +48,12 @@ function rand_pitch() {
 	}
 }
 
-// Alles zurück: alle Steps an, Velocity 1, Pitch 0
+// Alles zurück: alle Steps an, Velocity 1, Pitch 0, kein Retrig
 function clear_pattern() {
 	for (var i = 1; i <= STEPS; i++) {
 		setv("s" + i + "_on", 1);
 		setv("s" + i + "_vel", 1);
 		setv("s" + i + "_pitch", 0);
+		setv("s" + i + "_rtrg", 0);
 	}
 }

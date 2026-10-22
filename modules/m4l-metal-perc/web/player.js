@@ -103,6 +103,13 @@ class Player {
       this.values[el.param] = c.value;
       this.post({ type: 'set', name: el.param, value: c.value });
     }
+    // Im Browser gibt es kein Live: der BPM-Regler im Device ist zugleich das Tempo für Clock = Host
+    if (el.param === 'bpm') {
+      this.bpm = c.value;
+      const f = document.getElementById('bpm');
+      if (f) f.value = Math.round(c.value);
+      this.post({ type: 'transport', playing: this.playing, bpm: this.bpm });
+    }
   }
 
   pressed(c) {
@@ -150,6 +157,7 @@ class Player {
       this.setControl(`s${i}_on`, 1);
       this.setControl(`s${i}_vel`, 1);
       this.setControl(`s${i}_pitch`, 0);
+      this.setControl(`s${i}_rtrg`, 0);
     }
   }
 
@@ -166,6 +174,7 @@ class Player {
     p.on.forEach((v, i) => this.setControl(`s${i + 1}_on`, v));
     p.vel.forEach((v, i) => this.setControl(`s${i + 1}_vel`, v));
     p.pitch.forEach((v, i) => this.setControl(`s${i + 1}_pitch`, v));
+    (p.rtrg || []).forEach((v, i) => this.setControl(`s${i + 1}_rtrg`, v));
     this.setControl('clock_mode', 0);
     if (p.params.bpm) this.setBpm(p.params.bpm);
   }
@@ -175,6 +184,8 @@ class Player {
     this.bpm = Math.max(40, Math.min(300, bpm));
     const f = document.getElementById('bpm');
     if (f) f.value = this.bpm;
+    if (this.controls.bpm) this.controls.bpm.set(this.bpm, false);
+    this.setParam('bpm', this.bpm);
     this.post({ type: 'transport', playing: this.playing, bpm: this.bpm });
   }
 
