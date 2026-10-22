@@ -112,7 +112,7 @@ def svf(x, fc, q, st, i, mode):
 
 
 DEFAULTS = dict(
-    tune=56, waveform=1, morph=0.0, inharm=0.5, decay=0.3, damp=0.5, bright=0.6,
+    tune=56, waveform=1, morph=0.0, inharm=0.5, attack=0.5, decay=0.3, damp=0.5, bright=0.6,
     drive=0.2, noise_mix=0.05, accent=0.5, level=0.8,
     voices=6, spread=1.0, detune=0.0, tilt=0.0, pw=0.5,
     fm_ratio=1.4142, fm_amt=0.36, fm_fb=0.0, ring=0.4, mod_wave=1,
@@ -133,6 +133,8 @@ class MetalPerc:
         self.int_phase = 0.0
         self.last_step = -1
         self.env = 0.0
+        self.att = False
+        self.target = 0.0
         self.coef = 0.999
         self.exc = 0.0
         self.pe = 0.0
@@ -153,7 +155,8 @@ class MetalPerc:
         t = 0.01 * 250 ** p["decay"]
         t *= 1 - p["accent"] * 0.5 + p["accent"] * vel
         self.coef = math.exp(-6.9078 / (t * SR))
-        self.env = max(self.env, vel)
+        self.target = max(self.env, vel)
+        self.att = True
         self.exc = 1.0
         self.pe = 1.0
         if p["retrig"] > 0.5:
@@ -183,7 +186,12 @@ class MetalPerc:
         p = self.p
         if use_seq:
             self.clock()
-        self.env *= self.coef
+        if self.att:
+            self.env += (self.target - self.env) * (1 - math.exp(-4.6 / (p["attack"] * 0.001 * SR)))
+            if self.env >= self.target * 0.99:
+                self.att = False
+        else:
+            self.env *= self.coef
         self.exc *= 0.992
         env = self.env
         self.pe *= math.exp(-6.9078 / (p["sweep_time"] * 0.001 * SR))
@@ -269,11 +277,12 @@ def seq(on, vel=None, pitch=None):
     return on, vel or [1.0] * 16, pitch or [0.0] * 16
 
 
-# Low/Mid-FM-Perc: reine Sinus-FM (Träger + Modulator), Grundton G1 (~98 Hz)
-LOWMID_FM_SINE = dict(
-    morph=0.5, waveform=0, mod_wave=0, fm_ratio=1.41, fm_amt=0.5, fm_fb=0.1, ring=0.1,
-    sweep=12, sweep_time=25, retrig=1, tune=43, decay=0.32, accent=0.6, drive=0.3, noise_mix=0.0,
-    scale_sel=2, root=7, level=0.8,
+# Low/Mid-FM-Metal: reine Sinus-FM (Träger + Modulator), Grundton G1 (~98 Hz),
+# Ratio 2.76 (Metallstab-Mode) für metallische Seitenbänder, weicher Anschlag gegen Klicks
+LOWMID_FM_METAL = dict(
+    morph=0.5, waveform=0, mod_wave=0, fm_ratio=2.76, fm_amt=0.9, fm_fb=0.25, ring=0.35,
+    sweep=5, sweep_time=40, retrig=0, attack=4, tune=43, decay=0.38, accent=0.6, drive=0.2,
+    noise_mix=0.0, scale_sel=2, root=7, level=0.8,
 )
 
 PRESETS = {
@@ -312,8 +321,8 @@ PRESETS = {
                     decay=0.45, bright=0.7, tune=58),
         pattern=seq("1101 1011 0110 1101"),
     ),
-    "09_lowmid_fm_sine": dict(
-        params=dict(LOWMID_FM_SINE),
+    "09_lowmid_fm_metal": dict(
+        params=dict(LOWMID_FM_METAL),
         pattern=seq("1001 0010 0100 1010",
                     vel=[1, 1, 1, .7, 1, 1, .8, 1, 1, .9, 1, 1, .75, 1, .85, 1],
                     pitch=[0, 0, 0, 1, 0, 0, 0, 0, 0, -2, 0, 0, 3, 0, 0, 0]),
@@ -340,14 +349,14 @@ def render_presets(out_dir, bars=2):
         audio += v.render(0.6, use_seq=False)
     peak = write_wav(out_dir / "06_waveforms_sine_square_saw_tri.wav", audio, normalize_to=0.89)
     report.append(("06_waveforms_sine_square_saw_tri", peak))
-    # Low/Mid-FM-Perc einzeln in drei Lagen: G1, D2, G2
+    # Low/Mid-FM-Metal einzeln in drei Lagen: G1, D2, G2
     audio = []
     for pitch in (0, 7, 12):
-        v = MetalPerc(**LOWMID_FM_SINE)
+        v = MetalPerc(**LOWMID_FM_METAL)
         v.trigger(1.0, pitch)
         audio += v.render(0.5, use_seq=False)
-    peak = write_wav(out_dir / "10_lowmid_fm_sine_hits_G1_D2_G2.wav", audio, normalize_to=0.89)
-    report.append(("10_lowmid_fm_sine_hits_G1_D2_G2", peak))
+    peak = write_wav(out_dir / "10_lowmid_fm_metal_hits_G1_D2_G2.wav", audio, normalize_to=0.89)
+    report.append(("10_lowmid_fm_metal_hits_G1_D2_G2", peak))
     return report
 
 

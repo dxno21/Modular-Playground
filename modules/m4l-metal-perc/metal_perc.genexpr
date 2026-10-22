@@ -107,6 +107,7 @@ Param tune(56, min=24, max=96);       // Basis-Note (MIDI)
 Param waveform(1, min=0, max=3);          // 0 Sine 1 Square 2 Saw 3 Tri
 Param morph(0, min=0, max=1);         // 0 Bank -> 0.5 FM/Ring -> 1 Resonator
 Param inharm(0.5, min=0, max=1);      // 0 harmonisch -> 0.5 808-Metall -> 1 Membran/Glocke
+Param attack(0.5, min=0.1, max=50);   // ms, weicher Anschlag gegen Klicks
 Param decay(0.3, min=0, max=1);       // 10 ms .. 2.5 s
 Param damp(0.5, min=0, max=1);        // Resonator-Dämpfung
 Param bright(0.6, min=0, max=1);      // Filter/FM-Index
@@ -187,6 +188,8 @@ History last_reset(0);
 History last_midi(0);
 History last_step(-1);
 History env(0);
+History att(0);
+History target(0);
 History coef(0.999);
 History exc(0);
 History pe(0);
@@ -307,7 +310,8 @@ if (fire > 0.5) {
 	t = 0.01 * pow(250, decay);
 	t = t * (1 - accent * 0.5 + accent * vel);
 	coef = exp(-6.9078 / (t * samplerate));
-	env = max(env, vel);
+	target = max(env, vel);
+	att = 1;
 	exc = 1;
 	pe = 1;
 	if (retrig > 0.5) {
@@ -319,7 +323,14 @@ if (fire > 0.5) {
 	gate_cnt = samplerate * 0.005;
 }
 
-env = env * coef;
+if (att > 0.5) {
+	env = env + (target - env) * (1 - exp(-4.6 / (attack * 0.001 * samplerate)));
+	if (env >= target * 0.99) {
+		att = 0;
+	}
+} else {
+	env = env * coef;
+}
 exc = exc * 0.992;
 if (gate_cnt > 0) {
 	gate_cnt = gate_cnt - 1;

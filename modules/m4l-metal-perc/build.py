@@ -14,7 +14,7 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 1265
+DEVICE_WIDTH = 1321
 
 
 # ---------------------------------------------------------------- gen~ Code
@@ -177,7 +177,7 @@ def build_maxpat(code):
     # ---------------- Signalfluss
     phasor = p.obj("plugphasor~", 40, 940, 1, 1, ["signal"])
     p.line(phasor, 0, gen, 0)
-    gain = p.ui("live.gain~", "out_gain", [1215, 4, 44, 160],
+    gain = p.ui("live.gain~", "out_gain", [1271, 4, 44, 160],
                 valueof("Output", "Output", 0, -70.0, 6.0, 0.0, unit=4), 2, 5,
                 ["signal", "signal", "", "float", "list"])
     p.line(gen, 0, gain, 0)
@@ -301,6 +301,7 @@ def build_maxpat(code):
         ("bright", "Bright", 0.0, 1.0, 0.6, 1),
     ]
     row2 = [
+        ("attack", "Attack", 0.1, 50.0, 0.5, 2),
         ("drive", "Drive", 0.0, 1.0, 0.2, 1),
         ("noise_mix", "Noise", 0.0, 1.0, 0.05, 1),
         ("accent", "Accent", 0.0, 1.0, 0.5, 1),
@@ -310,8 +311,8 @@ def build_maxpat(code):
         for c, (var, name, lo, hi, init, unit) in enumerate(row):
             d = dial(p, var, name, name, [870 + c * 56, y, 44, 48], lo, hi, init, unit=unit)
             to_gen(d, var, 40 + c * 140 + (0 if y == 14 else 70), 1520 if y == 14 else 1550)
-    p.comment("WAVE", [1096, 64, 60, 14])
-    to_gen(tab(p, "waveform", "Wave", [1096, 80, 112, 16], ["Sin", "Sqr", "Saw", "Tri"], 1), "waveform", 40, 1600)
+    p.comment("WAVE", [1152, 64, 60, 14])
+    to_gen(tab(p, "waveform", "Wave", [1152, 80, 112, 16], ["Sin", "Sqr", "Saw", "Tri"], 1), "waveform", 40, 1600)
     p.comment("PITCH MODE", [870, 116, 80, 14])
     to_gen(tab(p, "qmode", "Pitch Mode", [870, 132, 84, 16], ["Loose", "Scale"], 1), "qmode", 200, 1600)
     p.comment("SCALE", [962, 116, 60, 14])

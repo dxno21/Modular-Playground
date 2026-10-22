@@ -16,7 +16,7 @@
    900
   ],
   "openinpresentation": 1,
-  "devicewidth": 1265,
+  "devicewidth": 1321,
   "default_fontsize": 10.0,
   "boxes": [
    {
@@ -147,7 +147,7 @@
        {
         "box": {
          "maxclass": "codebox",
-         "code": "// =====================================================================\n// m4l-metal-perc – metallischer Percussion-Generator mit Step-Sequencer\n// gen~ Codebox (GenExpr). Diese Datei wird von build.py erzeugt:\n// Quelle ist src/metal_perc.genexpr.in – dort editieren, nicht hier.\n//\n// Eingänge  (Signal, Konvention: ±1.0 = ±5 V)\n//   in1  Host-Beat-Phase (plugphasor~, 0..1 pro Beat)\n//   in2  Ext Clock (steigende Flanke = 1 Step)\n//   in3  Ext Reset (steigende Flanke)\n//   in4  Pitch CV, 1 V/Oct (0.2 = 1 Oktave), wird beim Trigger gehalten\n//   in5  Ext Trigger (spielt die Voice direkt, unabhängig vom Sequencer)\n// Ausgänge\n//   out1 Audio\n//   out2 Hüllkurve (0..1)\n//   out3 aktueller Step (0..15)\n//   out4 Gate/Trigger-Out (5 ms)\n// =====================================================================\n\n// ---------- Hilfsfunktionen ----------\nblep(t, dt) {\n\tr = 0;\n\tif (t < dt) {\n\t\tx = t / dt;\n\t\tr = x + x - x * x - 1;\n\t} else if (t > 1 - dt) {\n\t\tx = (t - 1) / dt;\n\t\tr = x * x + x + x + 1;\n\t}\n\treturn r;\n}\n\n// w: 0 Sine, 1 Square/Pulse (Breite pw), 2 Saw, 3 Triangle (bandbegrenzt via polyBLEP)\nosc(p, dt, w, pw) {\n\ty = 0;\n\tif (w < 0.5) {\n\t\ty = sin(twopi * p);\n\t} else if (w < 1.5) {\n\t\tsq = 1;\n\t\tif (p >= pw) {\n\t\t\tsq = -1;\n\t\t}\n\t\ty = sq + blep(p, dt) - blep(fract(p + 1 - pw), dt) - (2 * pw - 1);\n\t} else if (w < 2.5) {\n\t\ty = 2 * p - 1 - blep(p, dt);\n\t} else {\n\t\ty = 4 * abs(p - 0.5) - 1;\n\t}\n\treturn y;\n}\n\n// Nächstliegende Note in der Skala (mask = 12-Bit-Maske ab Grundton)\nquant(n, root, mask) {\n\tbase = floor(n + 0.5);\n\tbest = base;\n\tbestd = 100;\n\tfor (k = -6; k <= 6; k += 1) {\n\t\tcand = base + k;\n\t\tdeg = cand - root;\n\t\tdeg = deg - floor(deg / 12) * 12;\n\t\tbit = floor(mask / pow(2, deg));\n\t\tbit = bit - floor(bit / 2) * 2;\n\t\td = abs(cand - n);\n\t\tif (bit > 0.5 && d < bestd) {\n\t\t\tbest = cand;\n\t\t\tbestd = d;\n\t\t}\n\t}\n\treturn best;\n}\n\n// TPT-State-Variable-Filter: liefert Bandpass (unity peak) bzw. Highpass,\n// Zustände liegen in Data st an Index i und i+1.\nsvf_bp(x, fc, q, st, i) {\n\tg = tan(pi * fc / samplerate);\n\tk = 1 / q;\n\ta1 = 1 / (1 + g * (g + k));\n\ta2 = g * a1;\n\ta3 = g * a2;\n\tic1 = peek(st, i);\n\tic2 = peek(st, i + 1);\n\tv3 = x - ic2;\n\tv1 = a1 * ic1 + a2 * v3;\n\tv2 = ic2 + a2 * ic1 + a3 * v3;\n\tpoke(st, 2 * v1 - ic1, i);\n\tpoke(st, 2 * v2 - ic2, i + 1);\n\treturn v1 * k;\n}\n\nsvf_hp(x, fc, q, st, i) {\n\tg = tan(pi * fc / samplerate);\n\tk = 1 / q;\n\ta1 = 1 / (1 + g * (g + k));\n\ta2 = g * a1;\n\ta3 = g * a2;\n\tic1 = peek(st, i);\n\tic2 = peek(st, i + 1);\n\tv3 = x - ic2;\n\tv1 = a1 * ic1 + a2 * v3;\n\tv2 = ic2 + a2 * ic1 + a3 * v3;\n\tpoke(st, 2 * v1 - ic1, i);\n\tpoke(st, 2 * v2 - ic2, i + 1);\n\treturn x - k * v1 - v2;\n}\n\n// ---------- Parameter: Voice ----------\nParam tune(56, min=24, max=96);       // Basis-Note (MIDI)\nParam waveform(1, min=0, max=3);          // 0 Sine 1 Square 2 Saw 3 Tri\nParam morph(0, min=0, max=1);         // 0 Bank -> 0.5 FM/Ring -> 1 Resonator\nParam inharm(0.5, min=0, max=1);      // 0 harmonisch -> 0.5 808-Metall -> 1 Membran/Glocke\nParam decay(0.3, min=0, max=1);       // 10 ms .. 2.5 s\nParam damp(0.5, min=0, max=1);        // Resonator-Dämpfung\nParam bright(0.6, min=0, max=1);      // Filter/FM-Index\nParam drive(0.2, min=0, max=1);\nParam noise_mix(0.05, min=0, max=1);\n\n// ---------- Parameter: Oszillatoren ----------\nParam voices(6, min=1, max=6);        // aktive Bank-Oszillatoren\nParam spread(1, min=0, max=2);        // Abstand der Verhältnisse (0 = alle auf f0)\nParam detune(0, min=0, max=50);       // Verstimmung der Bank in Cent\nParam tilt(0, min=-1, max=1);         // Pegel der oberen Partials (- dunkel, + hell)\nParam pw(0.5, min=0.05, max=0.95);    // Pulsbreite (Square)\nParam fm_ratio(1.4142, min=0.5, max=8);\nParam fm_amt(0.36, min=0, max=1);     // FM-Index\nParam fm_fb(0, min=0, max=1);         // Modulator-Feedback\nParam ring(0.4, min=0, max=1);        // Mischung FM-Träger <-> Ringmodulation\nParam mod_wave(1, min=0, max=3);      // Wellenform des Modulators\nParam sweep(0, min=-24, max=48);      // Pitch-Hüllkurve in Halbtönen\nParam sweep_time(30, min=1, max=500);   // ms\nParam retrig(0, min=0, max=1);        // 0 Phasen frei, 1 Reset bei jedem Schlag\nParam accent(0.5, min=0, max=1);      // Velocity -> Decay/Helligkeit\nParam level(0.8, min=0, max=1);\n\n// ---------- Parameter: Pitch / Quantizer ----------\nParam qmode(1, min=0, max=1);         // 0 Loose, 1 Scale\nParam scale_sel(1, min=0, max=7);\nParam root(0, min=0, max=11);\n\n// ---------- Parameter: Sequencer ----------\nParam seq_on(1, min=0, max=1);\nParam clock_mode(0, min=0, max=2);    // 0 Host, 1 Ext Clock, 2 Intern\nParam bpm(130, min=40, max=300);\nParam clock_div(1, min=0, max=4);           // 1/8, 1/16, 1/32, 1/8T, 1/16T\nParam seq_len(16, min=1, max=16);\nParam reset_id(0);\n\n// ---------- Parameter: Live-Randomisierung ----------\nParam live_steps(0, min=0, max=1);\nParam live_vel(0, min=0, max=1);\nParam live_pitch(0, min=0, max=1);\nParam density(0.6, min=0, max=1);\nParam vel_range(0.5, min=0, max=1);\nParam pitch_range(7, min=0, max=24);\n\n// ---------- Parameter: MIDI ----------\nParam midi_id(0);\nParam midi_note(60);\nParam midi_vel(0);\n\n// ---------- Parameter: Steps ----------\nParam s1_on(1, min=0, max=1); Param s1_vel(1, min=0, max=1); Param s1_pitch(0, min=-24, max=24);\nParam s2_on(1, min=0, max=1); Param s2_vel(1, min=0, max=1); Param s2_pitch(0, min=-24, max=24);\nParam s3_on(1, min=0, max=1); Param s3_vel(1, min=0, max=1); Param s3_pitch(0, min=-24, max=24);\nParam s4_on(1, min=0, max=1); Param s4_vel(1, min=0, max=1); Param s4_pitch(0, min=-24, max=24);\nParam s5_on(1, min=0, max=1); Param s5_vel(1, min=0, max=1); Param s5_pitch(0, min=-24, max=24);\nParam s6_on(1, min=0, max=1); Param s6_vel(1, min=0, max=1); Param s6_pitch(0, min=-24, max=24);\nParam s7_on(1, min=0, max=1); Param s7_vel(1, min=0, max=1); Param s7_pitch(0, min=-24, max=24);\nParam s8_on(1, min=0, max=1); Param s8_vel(1, min=0, max=1); Param s8_pitch(0, min=-24, max=24);\nParam s9_on(1, min=0, max=1); Param s9_vel(1, min=0, max=1); Param s9_pitch(0, min=-24, max=24);\nParam s10_on(1, min=0, max=1); Param s10_vel(1, min=0, max=1); Param s10_pitch(0, min=-24, max=24);\nParam s11_on(1, min=0, max=1); Param s11_vel(1, min=0, max=1); Param s11_pitch(0, min=-24, max=24);\nParam s12_on(1, min=0, max=1); Param s12_vel(1, min=0, max=1); Param s12_pitch(0, min=-24, max=24);\nParam s13_on(1, min=0, max=1); Param s13_vel(1, min=0, max=1); Param s13_pitch(0, min=-24, max=24);\nParam s14_on(1, min=0, max=1); Param s14_vel(1, min=0, max=1); Param s14_pitch(0, min=-24, max=24);\nParam s15_on(1, min=0, max=1); Param s15_vel(1, min=0, max=1); Param s15_pitch(0, min=-24, max=24);\nParam s16_on(1, min=0, max=1); Param s16_vel(1, min=0, max=1); Param s16_pitch(0, min=-24, max=24);\n\n// ---------- Zustand ----------\nHistory beats(0);\nHistory last_phase(-1);\nHistory still(0);\nHistory int_phase(0);\nHistory ext_count(0);\nHistory clk_prev(0);\nHistory rst_prev(0);\nHistory trg_prev(0);\nHistory last_reset(0);\nHistory last_midi(0);\nHistory last_step(-1);\nHistory env(0);\nHistory coef(0.999);\nHistory exc(0);\nHistory pe(0);\nHistory fb_prev(0);\nHistory hit_note(56);\nHistory hit_vel(1);\nHistory gate_cnt(0);\nHistory dc_x(0);\nHistory dc_y(0);\nData ph(8);     // Phasen: 0-5 Bank, 6 Träger, 7 Modulator\nData st(16);    // Filterzustände\n\n// ---------- Clock ----------\nspb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat\nlen = floor(seq_len);\n\nif (reset_id != last_reset) {\n\tlast_reset = reset_id;\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst = in3 > 0.1;\nif (rst && rst_prev < 0.5) {\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst_prev = rst;\n\nstep_abs = -1;\nif (clock_mode < 0.5) {\n\tphs = in1;\n\t// Transport-Stopp erkennen: Phase steht > 50 ms -> beim Weiterlaufen neu ab Step 1\n\tif (phs == last_phase) {\n\t\tstill = still + 1;\n\t} else {\n\t\tif (still > samplerate * 0.05) {\n\t\t\tbeats = 0;\n\t\t\tlast_step = -1;\n\t\t} else if (phs < last_phase - 0.5) {\n\t\t\tbeats = beats + 1;\n\t\t}\n\t\tstill = 0;\n\t}\n\tlast_phase = phs;\n\tif (still < samplerate * 0.05) {\n\t\tstep_abs = floor((beats + phs) * spb);\n\t} else {\n\t\tstep_abs = last_step;\n\t}\n} else if (clock_mode < 1.5) {\n\tc = in2 > 0.1;\n\tif (c && clk_prev < 0.5) {\n\t\text_count = ext_count + 1;\n\t}\n\tclk_prev = c;\n\tstep_abs = ext_count - 1;\n} else {\n\tint_phase = int_phase + bpm / 60 / samplerate;\n\tstep_abs = floor(int_phase * spb);\n}\n\ncur_step = last_step;\nfire = 0;\nvel = 1;\npitch = 0;\nif (step_abs >= 0) {\n\tcur = step_abs - floor(step_abs / len) * len;\n\tif (cur != last_step) {\n\t\tlast_step = cur;\n\t\tcur_step = cur;\n\t\ton = selector(cur + 1, s1_on, s2_on, s3_on, s4_on, s5_on, s6_on, s7_on, s8_on, s9_on, s10_on, s11_on, s12_on, s13_on, s14_on, s15_on, s16_on);\n\t\tif (seq_on > 0.5 && on > 0.5) {\n\t\t\tif (live_steps < 0.5 || (noise() * 0.5 + 0.5) < density) {\n\t\t\t\tfire = 1;\n\t\t\t\tvel = selector(cur + 1, s1_vel, s2_vel, s3_vel, s4_vel, s5_vel, s6_vel, s7_vel, s8_vel, s9_vel, s10_vel, s11_vel, s12_vel, s13_vel, s14_vel, s15_vel, s16_vel);\n\t\t\t\tpitch = selector(cur + 1, s1_pitch, s2_pitch, s3_pitch, s4_pitch, s5_pitch, s6_pitch, s7_pitch, s8_pitch, s9_pitch, s10_pitch, s11_pitch, s12_pitch, s13_pitch, s14_pitch, s15_pitch, s16_pitch);\n\t\t\t\tif (live_vel > 0.5) {\n\t\t\t\t\tvel = vel * (1 - vel_range * (noise() * 0.5 + 0.5));\n\t\t\t\t}\n\t\t\t\tif (live_pitch > 0.5) {\n\t\t\t\t\tpitch = pitch + pitch_range * noise();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n\n// MIDI-Noten (aus Live-Clips) und Ext Trigger spielen die Voice direkt\nif (midi_id != last_midi) {\n\tlast_midi = midi_id;\n\tif (midi_vel > 0) {\n\t\tfire = 1;\n\t\tvel = midi_vel / 127;\n\t\tpitch = midi_note - 60;\n\t}\n}\ntr = in5 > 0.1;\nif (tr && trg_prev < 0.5) {\n\tfire = 1;\n\tvel = 1;\n\tpitch = 0;\n}\ntrg_prev = tr;\n\n// ---------- Trigger -> Voice ----------\nif (fire > 0.5) {\n\tnote = tune + pitch + in4 * 60;\n\tif (qmode > 0.5) {\n\t\tmask = selector(floor(scale_sel) + 1, 4095, 1453, 1451, 2477, 1193, 1709, 1459, 397);\n\t\tnote = quant(note, root, mask);\n\t}\n\thit_note = note;\n\thit_vel = vel;\n\tt = 0.01 * pow(250, decay);\n\tt = t * (1 - accent * 0.5 + accent * vel);\n\tcoef = exp(-6.9078 / (t * samplerate));\n\tenv = max(env, vel);\n\texc = 1;\n\tpe = 1;\n\tif (retrig > 0.5) {\n\t\tfor (r = 0; r < 8; r += 1) {\n\t\t\tpoke(ph, 0, r);\n\t\t}\n\t\tfb_prev = 0;\n\t}\n\tgate_cnt = samplerate * 0.005;\n}\n\nenv = env * coef;\nexc = exc * 0.992;\nif (gate_cnt > 0) {\n\tgate_cnt = gate_cnt - 1;\n}\n\npe = pe * exp(-6.9078 / (sweep_time * 0.001 * samplerate));\nf0 = mtof(hit_note + sweep * pe);\nnyq = samplerate * 0.45;\nw = floor(waveform + 0.5);\nacc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);\n\n// ---------- Engine A: Oszillator-Bank (6 Oszillatoren) ----------\nta = clamp(inharm * 2, 0, 1);\ntb = clamp(inharm * 2 - 1, 0, 1);\nnv = floor(voices + 0.5);\nbank = 0;\nasum = 0;\nfor (i = 0; i < 6; i += 1) {\n\trh = i + 1;\n\trm = selector(i + 1, 1, 1.483, 1.8, 2.546, 2.63, 3.897);\n\tre = selector(i + 1, 1, 1.593, 2.135, 2.296, 2.917, 3.598);\n\tratio = mix(mix(rh, rm, ta), re, tb);\n\tratio = 1 + (ratio - 1) * spread;\n\tratio = ratio * pow(2, detune * selector(i + 1, 0, 0.7, -0.4, 1, -0.9, 0.3) / 1200);\n\tinc = min(f0 * ratio / samplerate, 0.45);\n\tp = peek(ph, i);\n\tif (i < nv) {\n\t\tamp = pow(i + 1, tilt);\n\t\tbank = bank + osc(p, inc, w, pw) * amp;\n\t\tasum = asum + amp;\n\t}\n\tpoke(ph, fract(p + inc), i);\n}\nbank = bank / asum;\nfca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * sqrt(env)), nyq);\neng_a = 1.8 * svf_bp(bank, fca, 1.5, st, 0) + 1.8 * svf_hp(bank, fca, 0.7, st, 2);\n\n// ---------- Engine B: FM / Ringmodulation ----------\ninc_c = min(f0 / samplerate, 0.45);\ninc_m = min(f0 * fm_ratio / samplerate, 0.45);\npc = peek(ph, 6);\npm = peek(ph, 7);\nmods = osc(wrap(pm + fm_fb * 0.5 * fb_prev, 0, 1), inc_m, floor(mod_wave + 0.5), pw);\nfb_prev = mods;\nidx = fm_amt * 2 * env * (1 - accent * 0.4 + accent * 0.4 * hit_vel);\ncar = osc(wrap(pc + idx * mods, 0, 1), inc_c, w, pw);\nrsig = osc(pc, inc_c, w, pw) * mods;\npoke(ph, fract(pc + inc_c), 6);\npoke(ph, fract(pm + inc_m), 7);\neng_b = 1.2 * (car * (1 - ring) + rsig * ring);\n\n// ---------- Engine C: Resonator-Bank (4 Moden, angeregt durch Rauschimpuls) ----------\nex = noise() * exc * exc * (0.4 + 0.6 * acc_b) * hit_vel;\nq = mix(400, 12, damp);\nres = 0;\nfor (j = 0; j < 4; j += 1) {\n\tmh = j + 1;\n\tmb = selector(j + 1, 1, 2.756, 5.404, 8.933);\n\tmp = selector(j + 1, 1, 1.594, 2.136, 2.653);\n\tmr = mix(mix(mh, mb, ta), mp, tb);\n\tfr = min(f0 * mr, nyq);\n\tres = res + svf_bp(ex, fr, q, st, 4 + j * 2) * sqrt(1000 / fr) / (j + 1);\n}\neng_c = res * sqrt(q) * 15 * min(1, env * 4);\n\n// ---------- Morph, Noise, Drive ----------\nva = eng_a * env;\nvb = eng_b * env;\nm = morph * 2;\nvoice = 0;\nif (m < 1) {\n\tvoice = va * cos(m * pi * 0.5) + vb * sin(m * pi * 0.5);\n} else {\n\tm = m - 1;\n\tvoice = vb * cos(m * pi * 0.5) + eng_c * sin(m * pi * 0.5);\n}\nnz = svf_hp(noise(), min(f0 * 8, nyq), 0.7, st, 12) * env * noise_mix;\nx = voice + nz;\n\ng = 1 + drive * 12;\ny = tanh(x * g) / sqrt(g);\n\n// DC-Blocker\ndc_y = y - dc_x + 0.995 * dc_y;\ndc_x = y;\n\nout1 = dc_y * level;\nout2 = env;\nout3 = max(cur_step, 0);\nout4 = gate_cnt > 0;\n",
+         "code": "// =====================================================================\n// m4l-metal-perc – metallischer Percussion-Generator mit Step-Sequencer\n// gen~ Codebox (GenExpr). Diese Datei wird von build.py erzeugt:\n// Quelle ist src/metal_perc.genexpr.in – dort editieren, nicht hier.\n//\n// Eingänge  (Signal, Konvention: ±1.0 = ±5 V)\n//   in1  Host-Beat-Phase (plugphasor~, 0..1 pro Beat)\n//   in2  Ext Clock (steigende Flanke = 1 Step)\n//   in3  Ext Reset (steigende Flanke)\n//   in4  Pitch CV, 1 V/Oct (0.2 = 1 Oktave), wird beim Trigger gehalten\n//   in5  Ext Trigger (spielt die Voice direkt, unabhängig vom Sequencer)\n// Ausgänge\n//   out1 Audio\n//   out2 Hüllkurve (0..1)\n//   out3 aktueller Step (0..15)\n//   out4 Gate/Trigger-Out (5 ms)\n// =====================================================================\n\n// ---------- Hilfsfunktionen ----------\nblep(t, dt) {\n\tr = 0;\n\tif (t < dt) {\n\t\tx = t / dt;\n\t\tr = x + x - x * x - 1;\n\t} else if (t > 1 - dt) {\n\t\tx = (t - 1) / dt;\n\t\tr = x * x + x + x + 1;\n\t}\n\treturn r;\n}\n\n// w: 0 Sine, 1 Square/Pulse (Breite pw), 2 Saw, 3 Triangle (bandbegrenzt via polyBLEP)\nosc(p, dt, w, pw) {\n\ty = 0;\n\tif (w < 0.5) {\n\t\ty = sin(twopi * p);\n\t} else if (w < 1.5) {\n\t\tsq = 1;\n\t\tif (p >= pw) {\n\t\t\tsq = -1;\n\t\t}\n\t\ty = sq + blep(p, dt) - blep(fract(p + 1 - pw), dt) - (2 * pw - 1);\n\t} else if (w < 2.5) {\n\t\ty = 2 * p - 1 - blep(p, dt);\n\t} else {\n\t\ty = 4 * abs(p - 0.5) - 1;\n\t}\n\treturn y;\n}\n\n// Nächstliegende Note in der Skala (mask = 12-Bit-Maske ab Grundton)\nquant(n, root, mask) {\n\tbase = floor(n + 0.5);\n\tbest = base;\n\tbestd = 100;\n\tfor (k = -6; k <= 6; k += 1) {\n\t\tcand = base + k;\n\t\tdeg = cand - root;\n\t\tdeg = deg - floor(deg / 12) * 12;\n\t\tbit = floor(mask / pow(2, deg));\n\t\tbit = bit - floor(bit / 2) * 2;\n\t\td = abs(cand - n);\n\t\tif (bit > 0.5 && d < bestd) {\n\t\t\tbest = cand;\n\t\t\tbestd = d;\n\t\t}\n\t}\n\treturn best;\n}\n\n// TPT-State-Variable-Filter: liefert Bandpass (unity peak) bzw. Highpass,\n// Zustände liegen in Data st an Index i und i+1.\nsvf_bp(x, fc, q, st, i) {\n\tg = tan(pi * fc / samplerate);\n\tk = 1 / q;\n\ta1 = 1 / (1 + g * (g + k));\n\ta2 = g * a1;\n\ta3 = g * a2;\n\tic1 = peek(st, i);\n\tic2 = peek(st, i + 1);\n\tv3 = x - ic2;\n\tv1 = a1 * ic1 + a2 * v3;\n\tv2 = ic2 + a2 * ic1 + a3 * v3;\n\tpoke(st, 2 * v1 - ic1, i);\n\tpoke(st, 2 * v2 - ic2, i + 1);\n\treturn v1 * k;\n}\n\nsvf_hp(x, fc, q, st, i) {\n\tg = tan(pi * fc / samplerate);\n\tk = 1 / q;\n\ta1 = 1 / (1 + g * (g + k));\n\ta2 = g * a1;\n\ta3 = g * a2;\n\tic1 = peek(st, i);\n\tic2 = peek(st, i + 1);\n\tv3 = x - ic2;\n\tv1 = a1 * ic1 + a2 * v3;\n\tv2 = ic2 + a2 * ic1 + a3 * v3;\n\tpoke(st, 2 * v1 - ic1, i);\n\tpoke(st, 2 * v2 - ic2, i + 1);\n\treturn x - k * v1 - v2;\n}\n\n// ---------- Parameter: Voice ----------\nParam tune(56, min=24, max=96);       // Basis-Note (MIDI)\nParam waveform(1, min=0, max=3);          // 0 Sine 1 Square 2 Saw 3 Tri\nParam morph(0, min=0, max=1);         // 0 Bank -> 0.5 FM/Ring -> 1 Resonator\nParam inharm(0.5, min=0, max=1);      // 0 harmonisch -> 0.5 808-Metall -> 1 Membran/Glocke\nParam attack(0.5, min=0.1, max=50);   // ms, weicher Anschlag gegen Klicks\nParam decay(0.3, min=0, max=1);       // 10 ms .. 2.5 s\nParam damp(0.5, min=0, max=1);        // Resonator-Dämpfung\nParam bright(0.6, min=0, max=1);      // Filter/FM-Index\nParam drive(0.2, min=0, max=1);\nParam noise_mix(0.05, min=0, max=1);\n\n// ---------- Parameter: Oszillatoren ----------\nParam voices(6, min=1, max=6);        // aktive Bank-Oszillatoren\nParam spread(1, min=0, max=2);        // Abstand der Verhältnisse (0 = alle auf f0)\nParam detune(0, min=0, max=50);       // Verstimmung der Bank in Cent\nParam tilt(0, min=-1, max=1);         // Pegel der oberen Partials (- dunkel, + hell)\nParam pw(0.5, min=0.05, max=0.95);    // Pulsbreite (Square)\nParam fm_ratio(1.4142, min=0.5, max=8);\nParam fm_amt(0.36, min=0, max=1);     // FM-Index\nParam fm_fb(0, min=0, max=1);         // Modulator-Feedback\nParam ring(0.4, min=0, max=1);        // Mischung FM-Träger <-> Ringmodulation\nParam mod_wave(1, min=0, max=3);      // Wellenform des Modulators\nParam sweep(0, min=-24, max=48);      // Pitch-Hüllkurve in Halbtönen\nParam sweep_time(30, min=1, max=500);   // ms\nParam retrig(0, min=0, max=1);        // 0 Phasen frei, 1 Reset bei jedem Schlag\nParam accent(0.5, min=0, max=1);      // Velocity -> Decay/Helligkeit\nParam level(0.8, min=0, max=1);\n\n// ---------- Parameter: Pitch / Quantizer ----------\nParam qmode(1, min=0, max=1);         // 0 Loose, 1 Scale\nParam scale_sel(1, min=0, max=7);\nParam root(0, min=0, max=11);\n\n// ---------- Parameter: Sequencer ----------\nParam seq_on(1, min=0, max=1);\nParam clock_mode(0, min=0, max=2);    // 0 Host, 1 Ext Clock, 2 Intern\nParam bpm(130, min=40, max=300);\nParam clock_div(1, min=0, max=4);           // 1/8, 1/16, 1/32, 1/8T, 1/16T\nParam seq_len(16, min=1, max=16);\nParam reset_id(0);\n\n// ---------- Parameter: Live-Randomisierung ----------\nParam live_steps(0, min=0, max=1);\nParam live_vel(0, min=0, max=1);\nParam live_pitch(0, min=0, max=1);\nParam density(0.6, min=0, max=1);\nParam vel_range(0.5, min=0, max=1);\nParam pitch_range(7, min=0, max=24);\n\n// ---------- Parameter: MIDI ----------\nParam midi_id(0);\nParam midi_note(60);\nParam midi_vel(0);\n\n// ---------- Parameter: Steps ----------\nParam s1_on(1, min=0, max=1); Param s1_vel(1, min=0, max=1); Param s1_pitch(0, min=-24, max=24);\nParam s2_on(1, min=0, max=1); Param s2_vel(1, min=0, max=1); Param s2_pitch(0, min=-24, max=24);\nParam s3_on(1, min=0, max=1); Param s3_vel(1, min=0, max=1); Param s3_pitch(0, min=-24, max=24);\nParam s4_on(1, min=0, max=1); Param s4_vel(1, min=0, max=1); Param s4_pitch(0, min=-24, max=24);\nParam s5_on(1, min=0, max=1); Param s5_vel(1, min=0, max=1); Param s5_pitch(0, min=-24, max=24);\nParam s6_on(1, min=0, max=1); Param s6_vel(1, min=0, max=1); Param s6_pitch(0, min=-24, max=24);\nParam s7_on(1, min=0, max=1); Param s7_vel(1, min=0, max=1); Param s7_pitch(0, min=-24, max=24);\nParam s8_on(1, min=0, max=1); Param s8_vel(1, min=0, max=1); Param s8_pitch(0, min=-24, max=24);\nParam s9_on(1, min=0, max=1); Param s9_vel(1, min=0, max=1); Param s9_pitch(0, min=-24, max=24);\nParam s10_on(1, min=0, max=1); Param s10_vel(1, min=0, max=1); Param s10_pitch(0, min=-24, max=24);\nParam s11_on(1, min=0, max=1); Param s11_vel(1, min=0, max=1); Param s11_pitch(0, min=-24, max=24);\nParam s12_on(1, min=0, max=1); Param s12_vel(1, min=0, max=1); Param s12_pitch(0, min=-24, max=24);\nParam s13_on(1, min=0, max=1); Param s13_vel(1, min=0, max=1); Param s13_pitch(0, min=-24, max=24);\nParam s14_on(1, min=0, max=1); Param s14_vel(1, min=0, max=1); Param s14_pitch(0, min=-24, max=24);\nParam s15_on(1, min=0, max=1); Param s15_vel(1, min=0, max=1); Param s15_pitch(0, min=-24, max=24);\nParam s16_on(1, min=0, max=1); Param s16_vel(1, min=0, max=1); Param s16_pitch(0, min=-24, max=24);\n\n// ---------- Zustand ----------\nHistory beats(0);\nHistory last_phase(-1);\nHistory still(0);\nHistory int_phase(0);\nHistory ext_count(0);\nHistory clk_prev(0);\nHistory rst_prev(0);\nHistory trg_prev(0);\nHistory last_reset(0);\nHistory last_midi(0);\nHistory last_step(-1);\nHistory env(0);\nHistory att(0);\nHistory target(0);\nHistory coef(0.999);\nHistory exc(0);\nHistory pe(0);\nHistory fb_prev(0);\nHistory hit_note(56);\nHistory hit_vel(1);\nHistory gate_cnt(0);\nHistory dc_x(0);\nHistory dc_y(0);\nData ph(8);     // Phasen: 0-5 Bank, 6 Träger, 7 Modulator\nData st(16);    // Filterzustände\n\n// ---------- Clock ----------\nspb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat\nlen = floor(seq_len);\n\nif (reset_id != last_reset) {\n\tlast_reset = reset_id;\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst = in3 > 0.1;\nif (rst && rst_prev < 0.5) {\n\tbeats = 0;\n\tint_phase = 0;\n\text_count = 0;\n\tlast_step = -1;\n}\nrst_prev = rst;\n\nstep_abs = -1;\nif (clock_mode < 0.5) {\n\tphs = in1;\n\t// Transport-Stopp erkennen: Phase steht > 50 ms -> beim Weiterlaufen neu ab Step 1\n\tif (phs == last_phase) {\n\t\tstill = still + 1;\n\t} else {\n\t\tif (still > samplerate * 0.05) {\n\t\t\tbeats = 0;\n\t\t\tlast_step = -1;\n\t\t} else if (phs < last_phase - 0.5) {\n\t\t\tbeats = beats + 1;\n\t\t}\n\t\tstill = 0;\n\t}\n\tlast_phase = phs;\n\tif (still < samplerate * 0.05) {\n\t\tstep_abs = floor((beats + phs) * spb);\n\t} else {\n\t\tstep_abs = last_step;\n\t}\n} else if (clock_mode < 1.5) {\n\tc = in2 > 0.1;\n\tif (c && clk_prev < 0.5) {\n\t\text_count = ext_count + 1;\n\t}\n\tclk_prev = c;\n\tstep_abs = ext_count - 1;\n} else {\n\tint_phase = int_phase + bpm / 60 / samplerate;\n\tstep_abs = floor(int_phase * spb);\n}\n\ncur_step = last_step;\nfire = 0;\nvel = 1;\npitch = 0;\nif (step_abs >= 0) {\n\tcur = step_abs - floor(step_abs / len) * len;\n\tif (cur != last_step) {\n\t\tlast_step = cur;\n\t\tcur_step = cur;\n\t\ton = selector(cur + 1, s1_on, s2_on, s3_on, s4_on, s5_on, s6_on, s7_on, s8_on, s9_on, s10_on, s11_on, s12_on, s13_on, s14_on, s15_on, s16_on);\n\t\tif (seq_on > 0.5 && on > 0.5) {\n\t\t\tif (live_steps < 0.5 || (noise() * 0.5 + 0.5) < density) {\n\t\t\t\tfire = 1;\n\t\t\t\tvel = selector(cur + 1, s1_vel, s2_vel, s3_vel, s4_vel, s5_vel, s6_vel, s7_vel, s8_vel, s9_vel, s10_vel, s11_vel, s12_vel, s13_vel, s14_vel, s15_vel, s16_vel);\n\t\t\t\tpitch = selector(cur + 1, s1_pitch, s2_pitch, s3_pitch, s4_pitch, s5_pitch, s6_pitch, s7_pitch, s8_pitch, s9_pitch, s10_pitch, s11_pitch, s12_pitch, s13_pitch, s14_pitch, s15_pitch, s16_pitch);\n\t\t\t\tif (live_vel > 0.5) {\n\t\t\t\t\tvel = vel * (1 - vel_range * (noise() * 0.5 + 0.5));\n\t\t\t\t}\n\t\t\t\tif (live_pitch > 0.5) {\n\t\t\t\t\tpitch = pitch + pitch_range * noise();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n\n// MIDI-Noten (aus Live-Clips) und Ext Trigger spielen die Voice direkt\nif (midi_id != last_midi) {\n\tlast_midi = midi_id;\n\tif (midi_vel > 0) {\n\t\tfire = 1;\n\t\tvel = midi_vel / 127;\n\t\tpitch = midi_note - 60;\n\t}\n}\ntr = in5 > 0.1;\nif (tr && trg_prev < 0.5) {\n\tfire = 1;\n\tvel = 1;\n\tpitch = 0;\n}\ntrg_prev = tr;\n\n// ---------- Trigger -> Voice ----------\nif (fire > 0.5) {\n\tnote = tune + pitch + in4 * 60;\n\tif (qmode > 0.5) {\n\t\tmask = selector(floor(scale_sel) + 1, 4095, 1453, 1451, 2477, 1193, 1709, 1459, 397);\n\t\tnote = quant(note, root, mask);\n\t}\n\thit_note = note;\n\thit_vel = vel;\n\tt = 0.01 * pow(250, decay);\n\tt = t * (1 - accent * 0.5 + accent * vel);\n\tcoef = exp(-6.9078 / (t * samplerate));\n\ttarget = max(env, vel);\n\tatt = 1;\n\texc = 1;\n\tpe = 1;\n\tif (retrig > 0.5) {\n\t\tfor (r = 0; r < 8; r += 1) {\n\t\t\tpoke(ph, 0, r);\n\t\t}\n\t\tfb_prev = 0;\n\t}\n\tgate_cnt = samplerate * 0.005;\n}\n\nif (att > 0.5) {\n\tenv = env + (target - env) * (1 - exp(-4.6 / (attack * 0.001 * samplerate)));\n\tif (env >= target * 0.99) {\n\t\tatt = 0;\n\t}\n} else {\n\tenv = env * coef;\n}\nexc = exc * 0.992;\nif (gate_cnt > 0) {\n\tgate_cnt = gate_cnt - 1;\n}\n\npe = pe * exp(-6.9078 / (sweep_time * 0.001 * samplerate));\nf0 = mtof(hit_note + sweep * pe);\nnyq = samplerate * 0.45;\nw = floor(waveform + 0.5);\nacc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);\n\n// ---------- Engine A: Oszillator-Bank (6 Oszillatoren) ----------\nta = clamp(inharm * 2, 0, 1);\ntb = clamp(inharm * 2 - 1, 0, 1);\nnv = floor(voices + 0.5);\nbank = 0;\nasum = 0;\nfor (i = 0; i < 6; i += 1) {\n\trh = i + 1;\n\trm = selector(i + 1, 1, 1.483, 1.8, 2.546, 2.63, 3.897);\n\tre = selector(i + 1, 1, 1.593, 2.135, 2.296, 2.917, 3.598);\n\tratio = mix(mix(rh, rm, ta), re, tb);\n\tratio = 1 + (ratio - 1) * spread;\n\tratio = ratio * pow(2, detune * selector(i + 1, 0, 0.7, -0.4, 1, -0.9, 0.3) / 1200);\n\tinc = min(f0 * ratio / samplerate, 0.45);\n\tp = peek(ph, i);\n\tif (i < nv) {\n\t\tamp = pow(i + 1, tilt);\n\t\tbank = bank + osc(p, inc, w, pw) * amp;\n\t\tasum = asum + amp;\n\t}\n\tpoke(ph, fract(p + inc), i);\n}\nbank = bank / asum;\nfca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * sqrt(env)), nyq);\neng_a = 1.8 * svf_bp(bank, fca, 1.5, st, 0) + 1.8 * svf_hp(bank, fca, 0.7, st, 2);\n\n// ---------- Engine B: FM / Ringmodulation ----------\ninc_c = min(f0 / samplerate, 0.45);\ninc_m = min(f0 * fm_ratio / samplerate, 0.45);\npc = peek(ph, 6);\npm = peek(ph, 7);\nmods = osc(wrap(pm + fm_fb * 0.5 * fb_prev, 0, 1), inc_m, floor(mod_wave + 0.5), pw);\nfb_prev = mods;\nidx = fm_amt * 2 * env * (1 - accent * 0.4 + accent * 0.4 * hit_vel);\ncar = osc(wrap(pc + idx * mods, 0, 1), inc_c, w, pw);\nrsig = osc(pc, inc_c, w, pw) * mods;\npoke(ph, fract(pc + inc_c), 6);\npoke(ph, fract(pm + inc_m), 7);\neng_b = 1.2 * (car * (1 - ring) + rsig * ring);\n\n// ---------- Engine C: Resonator-Bank (4 Moden, angeregt durch Rauschimpuls) ----------\nex = noise() * exc * exc * (0.4 + 0.6 * acc_b) * hit_vel;\nq = mix(400, 12, damp);\nres = 0;\nfor (j = 0; j < 4; j += 1) {\n\tmh = j + 1;\n\tmb = selector(j + 1, 1, 2.756, 5.404, 8.933);\n\tmp = selector(j + 1, 1, 1.594, 2.136, 2.653);\n\tmr = mix(mix(mh, mb, ta), mp, tb);\n\tfr = min(f0 * mr, nyq);\n\tres = res + svf_bp(ex, fr, q, st, 4 + j * 2) * sqrt(1000 / fr) / (j + 1);\n}\neng_c = res * sqrt(q) * 15 * min(1, env * 4);\n\n// ---------- Morph, Noise, Drive ----------\nva = eng_a * env;\nvb = eng_b * env;\nm = morph * 2;\nvoice = 0;\nif (m < 1) {\n\tvoice = va * cos(m * pi * 0.5) + vb * sin(m * pi * 0.5);\n} else {\n\tm = m - 1;\n\tvoice = vb * cos(m * pi * 0.5) + eng_c * sin(m * pi * 0.5);\n}\nnz = svf_hp(noise(), min(f0 * 8, nyq), 0.7, st, 12) * env * noise_mix;\nx = voice + nz;\n\ng = 1 + drive * 12;\ny = tanh(x * g) / sqrt(g);\n\n// DC-Blocker\ndc_y = y - dc_x + 0.995 * dc_y;\ndc_x = y;\n\nout1 = dc_y * level;\nout2 = env;\nout3 = max(cur_step, 0);\nout4 = gate_cnt > 0;\n",
          "fontface": 0,
          "fontname": "<Monospaced>",
          "fontsize": 12,
@@ -376,14 +376,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1215,
+      1271,
       404,
       44,
       160
      ],
      "presentation": 1,
      "presentation_rect": [
-      1215,
+      1271,
       4,
       44,
       160
@@ -6179,7 +6179,7 @@
    {
     "box": {
      "maxclass": "live.dial",
-     "varname": "drive",
+     "varname": "attack",
      "numinlets": 1,
      "numoutlets": 2,
      "outlettype": [
@@ -6196,6 +6196,66 @@
      "presentation": 1,
      "presentation_rect": [
       870,
+      64,
+      44,
+      48
+     ],
+     "saved_attribute_attributes": {
+      "valueof": {
+       "parameter_longname": "Attack",
+       "parameter_shortname": "Attack",
+       "parameter_type": 0,
+       "parameter_initial": [
+        0.5
+       ],
+       "parameter_initial_enable": 1,
+       "parameter_invisible": 0,
+       "parameter_mmin": 0.1,
+       "parameter_mmax": 50.0,
+       "parameter_unitstyle": 2
+      }
+     },
+     "id": "obj-200"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "newobj",
+     "text": "prepend attack",
+     "numinlets": 1,
+     "numoutlets": 1,
+     "outlettype": [
+      ""
+     ],
+     "patching_rect": [
+      110,
+      1550,
+      110,
+      22
+     ],
+     "id": "obj-201"
+    }
+   },
+   {
+    "box": {
+     "maxclass": "live.dial",
+     "varname": "drive",
+     "numinlets": 1,
+     "numoutlets": 2,
+     "outlettype": [
+      "",
+      "float"
+     ],
+     "parameter_enable": 1,
+     "patching_rect": [
+      926,
+      464,
+      44,
+      48
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      926,
       64,
       44,
       48
@@ -6215,7 +6275,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-200"
+     "id": "obj-202"
     }
    },
    {
@@ -6228,12 +6288,12 @@
       ""
      ],
      "patching_rect": [
-      110,
+      250,
       1550,
       103,
       22
      ],
-     "id": "obj-201"
+     "id": "obj-203"
     }
    },
    {
@@ -6248,14 +6308,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      926,
+      982,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      926,
+      982,
       64,
       44,
       48
@@ -6275,7 +6335,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-202"
+     "id": "obj-204"
     }
    },
    {
@@ -6288,12 +6348,12 @@
       ""
      ],
      "patching_rect": [
-      250,
+      390,
       1550,
       131,
       22
      ],
-     "id": "obj-203"
+     "id": "obj-205"
     }
    },
    {
@@ -6308,14 +6368,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      982,
+      1038,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      982,
+      1038,
       64,
       44,
       48
@@ -6335,7 +6395,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-204"
+     "id": "obj-206"
     }
    },
    {
@@ -6348,12 +6408,12 @@
       ""
      ],
      "patching_rect": [
-      390,
+      530,
       1550,
       110,
       22
      ],
-     "id": "obj-205"
+     "id": "obj-207"
     }
    },
    {
@@ -6368,14 +6428,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1038,
+      1094,
       464,
       44,
       48
      ],
      "presentation": 1,
      "presentation_rect": [
-      1038,
+      1094,
       64,
       44,
       48
@@ -6395,7 +6455,7 @@
        "parameter_unitstyle": 1
       }
      },
-     "id": "obj-206"
+     "id": "obj-208"
     }
    },
    {
@@ -6408,12 +6468,12 @@
       ""
      ],
      "patching_rect": [
-      530,
+      670,
       1550,
       103,
       22
      ],
-     "id": "obj-207"
+     "id": "obj-209"
     }
    },
    {
@@ -6424,19 +6484,19 @@
      "numoutlets": 0,
      "fontsize": 9.5,
      "patching_rect": [
-      1096,
+      1152,
       464,
       60,
       14
      ],
      "presentation": 1,
      "presentation_rect": [
-      1096,
+      1152,
       64,
       60,
       14
      ],
-     "id": "obj-208"
+     "id": "obj-210"
     }
    },
    {
@@ -6452,14 +6512,14 @@
      ],
      "parameter_enable": 1,
      "patching_rect": [
-      1096,
+      1152,
       480,
       112,
       16
      ],
      "presentation": 1,
      "presentation_rect": [
-      1096,
+      1152,
       80,
       112,
       16
@@ -6485,7 +6545,7 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-209"
+     "id": "obj-211"
     }
    },
    {
@@ -6503,7 +6563,7 @@
       124,
       22
      ],
-     "id": "obj-210"
+     "id": "obj-212"
     }
    },
    {
@@ -6526,7 +6586,7 @@
       80,
       14
      ],
-     "id": "obj-211"
+     "id": "obj-213"
     }
    },
    {
@@ -6573,7 +6633,7 @@
      },
      "num_lines_presentation": 1,
      "num_lines_patching": 1,
-     "id": "obj-212"
+     "id": "obj-214"
     }
    },
    {
@@ -6591,7 +6651,7 @@
       103,
       22
      ],
-     "id": "obj-213"
+     "id": "obj-215"
     }
    },
    {
@@ -6614,7 +6674,7 @@
       60,
       14
      ],
-     "id": "obj-214"
+     "id": "obj-216"
     }
    },
    {
@@ -6665,7 +6725,7 @@
        "parameter_mmax": 7
       }
      },
-     "id": "obj-215"
+     "id": "obj-217"
     }
    },
    {
@@ -6683,7 +6743,7 @@
       131,
       22
      ],
-     "id": "obj-216"
+     "id": "obj-218"
     }
    },
    {
@@ -6706,7 +6766,7 @@
       40,
       14
      ],
-     "id": "obj-217"
+     "id": "obj-219"
     }
    },
    {
@@ -6761,7 +6821,7 @@
        "parameter_mmax": 11
       }
      },
-     "id": "obj-218"
+     "id": "obj-220"
     }
    },
    {
@@ -6779,7 +6839,7 @@
       96,
       22
      ],
-     "id": "obj-219"
+     "id": "obj-221"
     }
    }
   ],
@@ -9115,11 +9175,11 @@
    {
     "patchline": {
      "source": [
-      "obj-209",
+      "obj-208",
       0
      ],
      "destination": [
-      "obj-210",
+      "obj-209",
       0
      ]
     }
@@ -9127,11 +9187,23 @@
    {
     "patchline": {
      "source": [
-      "obj-210",
+      "obj-209",
       0
      ],
      "destination": [
       "obj-1",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-211",
+      0
+     ],
+     "destination": [
+      "obj-212",
       0
      ]
     }
@@ -9143,7 +9215,7 @@
       0
      ],
      "destination": [
-      "obj-213",
+      "obj-1",
       0
      ]
     }
@@ -9151,11 +9223,11 @@
    {
     "patchline": {
      "source": [
-      "obj-213",
+      "obj-214",
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-215",
       0
      ]
     }
@@ -9167,7 +9239,7 @@
       0
      ],
      "destination": [
-      "obj-216",
+      "obj-1",
       0
      ]
     }
@@ -9175,11 +9247,11 @@
    {
     "patchline": {
      "source": [
-      "obj-216",
+      "obj-217",
       0
      ],
      "destination": [
-      "obj-1",
+      "obj-218",
       0
      ]
     }
@@ -9191,7 +9263,7 @@
       0
      ],
      "destination": [
-      "obj-219",
+      "obj-1",
       0
      ]
     }
@@ -9199,7 +9271,19 @@
    {
     "patchline": {
      "source": [
-      "obj-219",
+      "obj-220",
+      0
+     ],
+     "destination": [
+      "obj-221",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-221",
       0
      ],
      "destination": [

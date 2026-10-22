@@ -83,6 +83,7 @@ drei Klang-Engines, vier Wellenformen, einem 1-V/Oct-Quantizer und einem eingeba
 | **Wave** | Sine / Square / Saw / Triangle für die Bank und den FM-Träger (Modulator: *Mod Wave*). Square und Saw sind polyBLEP-bandbegrenzt |
 | **Morph** | 0 = **Bank** (6 Oszillatoren, 808-Cymbal-Prinzip) → 0.5 = **FM/Ring** → 1 = **Resonator** (4 Moden, Rauschimpuls) |
 | **Inharm** | 0 harmonisch → 0.5 808-Metall-Verhältnisse → 1 Membran/Glocke |
+| **Attack** | Anstiegszeit der Hüllkurve, 0.1–50 ms. Kleine Werte klingen hart und klickend, 3–10 ms weicher |
 | **Decay** | 10 ms bis 2.5 s |
 | **Damp** | Dämpfung der Resonator-Moden (nur Morph Richtung 1) |
 | **Bright** | Filteröffnung der Bank und Helligkeit der Resonator-Anregung |
@@ -125,32 +126,40 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `06_waveforms_sine_square_saw_tri` | Derselbe Schlag nacheinander mit allen 4 Wellenformen |
 | `07_osc_sweep_feedback_pulse` | FM mit Pulse (PW 0.2), Saw-Modulator, viel Feedback, Pitch-Sweep +36, Phase Reset |
 | `08_osc_bank_voices_spread_detune` | Bank mit 3 Oszillatoren, Spread 1.6, Detune 25 Cent, Tilt hell, PW 0.3 |
-| `09_lowmid_fm_sine` | Preset *Low/Mid FM Sine* im Pattern (G Phrygian) |
-| `10_lowmid_fm_sine_hits_G1_D2_G2` | Preset *Low/Mid FM Sine* als Einzelschläge auf G1, D2, G2 |
+| `09_lowmid_fm_metal` | Preset *Low/Mid FM Metal* im Pattern (G Phrygian) |
+| `10_lowmid_fm_metal_hits_G1_D2_G2` | Preset *Low/Mid FM Metal* als Einzelschläge auf G1, D2, G2 |
 
 Die Hörproben sind normalisiert. Neu rendern mit `python3 reference/metal_perc_ref.py`.
 
-## Preset: Low/Mid FM Sine
+## Preset: Low/Mid FM Metal
 
-Tiefe bis mittlere FM-Percussion, nur aus Sinus-Oszillatoren: Ein Sinus-Modulator verbiegt einen Sinus-Träger.
-Etwa 95 % der Energie liegen unter 1 kHz. Der Grundton ist G1 (~98 Hz).
+Tiefe bis mittlere FM-Percussion aus zwei Sinus-Oszillatoren: Ein Sinus-Modulator verbiegt einen Sinus-Träger.
+Die FM Ratio 2.76 entspricht dem Obertonverhältnis eines schwingenden Metallstabs. Dadurch entstehen unharmonische,
+metallische Seitenbänder über einem Grundton von G1 (~98 Hz). Etwa 60 % der Energie liegen unter 1 kHz.
 
 | Bereich | Einstellung |
 |---|---|
-| Voice | Tune **43** (G1) · Morph **0.50** (reine FM) · Wave **Sin** · Decay **0.32** · Accent **0.60** · Drive **0.30** · Noise **0** · Level 0.80 |
-| OSC | Mod Wave **Sin** · FM Ratio **1.41** · FM Amt **0.50** · FM FB **0.10** · Ring **0.10** · Sweep **+12 st** · Sw Time **25 ms** · Phase **Reset** |
+| Voice | Tune **43** (G1) · Morph **0.50** (reine FM) · Wave **Sin** · Attack **4 ms** · Decay **0.38** · Accent **0.60** · Drive **0.20** · Noise **0** · Level 0.80 |
+| OSC | Mod Wave **Sin** · FM Ratio **2.76** · FM Amt **0.90** · FM FB **0.25** · Ring **0.35** · Sweep **+5 st** · Sw Time **40 ms** · Phase **Free** |
 | Pitch | Mode **Scale** · Scale **Phrygian** · Root **G** |
 | Pattern | Steps `1001 0010 0100 1010` · Pitch +1 auf Step 4, −2 auf Step 10, +3 auf Step 13 · Velocity leicht akzentuiert |
 
+**Gegen Klicks:**
+- **Attack** 3–6 ms statt eines sofortigen Sprungs.
+- **Phase Free**: Mit *Reset* springen die Phasen in einen noch klingenden Ausklang, das klickt.
+- **Kürzerer Sweep**: wenig Halbtöne, langsam.
+
+Gemessen (Transienten-Spitze über 5 kHz gegenüber dem Ausklang): vorher +21 dB, jetzt etwa 0 dB.
+
 Varianten:
-- **FM Ratio 1.0 oder 2.0** klingt runder und tonaler, eher Tom/Bass.
-- **FM Ratio 2.76** klingt hohler und metallischer.
-- **FM Amt höher** (0.7) gibt mehr Biss im Anschlag, der Klang wandert aber Richtung Mitten.
-- **Live Pitch** mit Range 3–5 ergibt eine hypnotische, wechselnde Tonfolge.
+- **FM Ratio 3.53** klingt noch metallischer und glockiger.
+- **FM Ratio 1.73** klingt tiefer und tonaler.
+- **FM FB 0.4+** gibt mehr Rauheit.
+- **Attack 6–10 ms** macht den Anschlag noch weicher, eher Mallet-artig.
 
 ## Bekannte Grenzen
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 90 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 91 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.
