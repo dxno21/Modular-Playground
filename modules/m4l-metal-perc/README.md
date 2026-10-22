@@ -234,6 +234,15 @@ im Track-Aufbau. Quelle: `reference/sequence_mord_main.py`. Hörproben: `preview
 | Analog | Analog **0.70**, Age **0.50**, Sag **0.60**, Quality 2x |
 | Automation | Fold, FM Amt und Decay linear über 16 Takte von Start- auf Endwert |
 
+**Variante „alle Steps“** (`previews/mord_main_all_steps.wav`, ohne Kick): Alle 16 Steps sind aktiv,
+jeder mit eigener Note. Alle anderen Einstellungen und die Automation bleiben gleich.
+
+| Step | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Pitch (st) | 0 | +12 | +1 | 0 | −2 | 0 | +3 | +1 | 0 | +12 | +1 | 0 | −5 | −2 | +3 | +7 |
+| Note | Bb2 | Bb3 | B2 | Bb2 | Ab2 | Bb2 | Db3 | B2 | Bb2 | Bb3 | B2 | Bb2 | F2 | Ab2 | Db3 | F3 |
+| Vel | .8 | .5 | 1 | .6 | .75 | .5 | 1 | .65 | .8 | .5 | 1 | .55 | .75 | .7 | 1 | .5 |
+
 Energie (Spektrum, solo): etwa 20 % unter 120 Hz, 62 % zwischen 120 Hz und 1 kHz, 15–17 % zwischen 1 und 5 kHz.
 Die Mitten tragen den Sound, und unten bleibt Platz für Kick und Rumble.
 
