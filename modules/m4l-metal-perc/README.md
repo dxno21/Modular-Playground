@@ -125,8 +125,28 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `06_waveforms_sine_square_saw_tri` | Derselbe Schlag nacheinander mit allen 4 Wellenformen |
 | `07_osc_sweep_feedback_pulse` | FM mit Pulse (PW 0.2), Saw-Modulator, viel Feedback, Pitch-Sweep +36, Phase Reset |
 | `08_osc_bank_voices_spread_detune` | Bank mit 3 Oszillatoren, Spread 1.6, Detune 25 Cent, Tilt hell, PW 0.3 |
+| `09_lowmid_fm_sine` | Preset *Low/Mid FM Sine* im Pattern (G Phrygian) |
+| `10_lowmid_fm_sine_hits_G1_D2_G2` | Preset *Low/Mid FM Sine* als Einzelschläge auf G1, D2, G2 |
 
 Die Hörproben sind normalisiert. Neu rendern mit `python3 reference/metal_perc_ref.py`.
+
+## Preset: Low/Mid FM Sine
+
+Tiefe bis mittlere FM-Percussion, nur aus Sinus-Oszillatoren: Ein Sinus-Modulator verbiegt einen Sinus-Träger.
+Etwa 95 % der Energie liegen unter 1 kHz. Der Grundton ist G1 (~98 Hz).
+
+| Bereich | Einstellung |
+|---|---|
+| Voice | Tune **43** (G1) · Morph **0.50** (reine FM) · Wave **Sin** · Decay **0.32** · Accent **0.60** · Drive **0.30** · Noise **0** · Level 0.80 |
+| OSC | Mod Wave **Sin** · FM Ratio **1.41** · FM Amt **0.50** · FM FB **0.10** · Ring **0.10** · Sweep **+12 st** · Sw Time **25 ms** · Phase **Reset** |
+| Pitch | Mode **Scale** · Scale **Phrygian** · Root **G** |
+| Pattern | Steps `1001 0010 0100 1010` · Pitch +1 auf Step 4, −2 auf Step 10, +3 auf Step 13 · Velocity leicht akzentuiert |
+
+Varianten:
+- **FM Ratio 1.0 oder 2.0** klingt runder und tonaler, eher Tom/Bass.
+- **FM Ratio 2.76** klingt hohler und metallischer.
+- **FM Amt höher** (0.7) gibt mehr Biss im Anschlag, der Klang wandert aber Richtung Mitten.
+- **Live Pitch** mit Range 3–5 ergibt eine hypnotische, wechselnde Tonfolge.
 
 ## Bekannte Grenzen
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt

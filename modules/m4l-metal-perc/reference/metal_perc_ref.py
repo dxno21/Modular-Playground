@@ -269,6 +269,13 @@ def seq(on, vel=None, pitch=None):
     return on, vel or [1.0] * 16, pitch or [0.0] * 16
 
 
+# Low/Mid-FM-Perc: reine Sinus-FM (Träger + Modulator), Grundton G1 (~98 Hz)
+LOWMID_FM_SINE = dict(
+    morph=0.5, waveform=0, mod_wave=0, fm_ratio=1.41, fm_amt=0.5, fm_fb=0.1, ring=0.1,
+    sweep=12, sweep_time=25, retrig=1, tune=43, decay=0.32, accent=0.6, drive=0.3, noise_mix=0.0,
+    scale_sel=2, root=7, level=0.8,
+)
+
 PRESETS = {
     "01_bank_hats_square": dict(
         params=dict(morph=0.0, waveform=1, inharm=0.5, decay=0.12, bright=0.8, tune=60, noise_mix=0.25),
@@ -305,6 +312,12 @@ PRESETS = {
                     decay=0.45, bright=0.7, tune=58),
         pattern=seq("1101 1011 0110 1101"),
     ),
+    "09_lowmid_fm_sine": dict(
+        params=dict(LOWMID_FM_SINE),
+        pattern=seq("1001 0010 0100 1010",
+                    vel=[1, 1, 1, .7, 1, 1, .8, 1, 1, .9, 1, 1, .75, 1, .85, 1],
+                    pitch=[0, 0, 0, 1, 0, 0, 0, 0, 0, -2, 0, 0, 3, 0, 0, 0]),
+    ),
 }
 
 
@@ -327,6 +340,14 @@ def render_presets(out_dir, bars=2):
         audio += v.render(0.6, use_seq=False)
     peak = write_wav(out_dir / "06_waveforms_sine_square_saw_tri.wav", audio, normalize_to=0.89)
     report.append(("06_waveforms_sine_square_saw_tri", peak))
+    # Low/Mid-FM-Perc einzeln in drei Lagen: G1, D2, G2
+    audio = []
+    for pitch in (0, 7, 12):
+        v = MetalPerc(**LOWMID_FM_SINE)
+        v.trigger(1.0, pitch)
+        audio += v.render(0.5, use_seq=False)
+    peak = write_wav(out_dir / "10_lowmid_fm_sine_hits_G1_D2_G2.wav", audio, normalize_to=0.89)
+    report.append(("10_lowmid_fm_sine_hits_G1_D2_G2", peak))
     return report
 
 
