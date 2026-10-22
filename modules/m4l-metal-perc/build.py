@@ -468,6 +468,8 @@ def main():
     (HERE / "metal_perc.genexpr").write_text(code)
     patch = build_maxpat(code)
     (HERE / "metal_perc.maxpat").write_text(json.dumps(patch, indent=1, ensure_ascii=False))
+    from tools.make_amxd import make_amxd
+    (HERE / "Metal Perc.amxd").write_bytes(make_amxd((HERE / "metal_perc.maxpat").read_bytes()))
     print(f"metal_perc.genexpr: {len(code.splitlines())} Zeilen")
     print(f"metal_perc.maxpat:  {len(patch['patcher']['boxes'])} Objekte, {len(patch['patcher']['lines'])} Verbindungen")
 

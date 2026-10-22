@@ -1,0 +1,174 @@
+"""Baut die Preview-Seite für GitHub Pages: Layout, Hörproben und Downloads.
+
+    python3 modules/m4l-metal-perc/tools/build_site.py _site
+
+Der Workflow .github/workflows/pages.yml ruft das bei jedem Push auf und veröffentlicht _site.
+"""
+import html
+import shutil
+import sys
+from pathlib import Path
+
+MODULE = Path(__file__).resolve().parent.parent
+
+SECTIONS = [
+    ("Main Layer im Mord-Stil · 145 BPM", "#ff6b4a", [
+        ("mord_main_all_steps", "Alle 16 Steps mit eigener Note, Bb Phrygian, Drive steigt über 16 Takte auf 1.0"),
+        ("mord_main_layer", "Rollende 16tel zwischen den Kick-Positionen, Akzente auf den Offbeats"),
+        ("mord_main_with_ref_kick", "Derselbe Layer mit einfacher Referenz-Kick zur Orientierung"),
+    ]),
+    ("Hypnotische Sequenzen · 138 BPM · Pitch Loose", "#2ed3c4", [
+        ("seq138_mix_low_mid_high", "Alle drei Spuren polymetrisch (16 / 14 / 15 Steps), 8 Takte"),
+        ("seq138_low", "Low: FM-Metal, rollend und offbeat, D1"),
+        ("seq138_mid", "Mid: Plonks über das Lowpass-Gate, 14 Steps, D2"),
+        ("seq138_high", "High: metallische Ticks aus der Oszillator-Bank, 15 Steps, G4"),
+    ]),
+    ("Analog vs. Digital", "#7bd88f", [
+        ("14_ab_digital_then_analog", "Dasselbe Pattern erst komplett digital, nach kurzer Pause mit allen Analog-Bausteinen"),
+        ("11_lpg_vactrol_fm_plonk", "Lowpass-Gate mit Vactrol: schnell auf, langsam zu"),
+        ("12_bridged_t_808_toms", "Resonator im Bridged-T-Modus (808-Prinzip)"),
+        ("13_wavefolder_exp_fm", "Exponentielle FM und Wavefolder"),
+    ]),
+    ("Presets", "#ffad38", [
+        ("09_lowmid_fm_metal", "Low/Mid FM Metal im Pattern, G Phrygian"),
+        ("10_lowmid_fm_metal_hits_G1_D2_G2", "Low/Mid FM Metal als Einzelschläge auf G1, D2, G2"),
+    ]),
+    ("Klang-Engines und Oszillatoren", "#9d86ff", [
+        ("01_bank_hats_square", "Oszillator-Bank, Square, kurze Decay: metallische Hats"),
+        ("02_fm_clank_saw", "FM/Ring, Saw, Pitch-Steps: Industrial-Clank"),
+        ("03_resonator_pipes_phrygian", "Resonator mit Live-Pitch in D Phrygian: Rohre und Bleche"),
+        ("04_industrial_drive_tri", "Bank → FM, Triangle, viel Drive und Noise"),
+        ("05_hypnotic_random_sine", "FM → Resonator, Sine, Live-Steps und Live-Pitch"),
+        ("06_waveforms_sine_square_saw_tri", "Ein Schlag nacheinander mit Sine, Square, Saw, Triangle"),
+        ("07_osc_sweep_feedback_pulse", "Pulse-FM mit Feedback, Pitch-Sweep und Phase Reset"),
+        ("08_osc_bank_voices_spread_detune", "Bank mit 3 Oszillatoren, Spread, Detune und Tilt"),
+    ]),
+]
+
+DOWNLOADS = [
+    ("Metal Perc.amxd", "Max-for-Live-Instrument (experimentell, nicht eingefroren)"),
+    ("seq_random.js", "Randomizer, gehört in denselben Ordner wie das Device"),
+    ("metal_perc.maxpat", "Patch zum Einfügen in ein leeres Max Instrument (Fallback)"),
+    ("metal_perc.genexpr", "gen~-DSP-Code zum Lesen"),
+]
+
+PAGE = """<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metal Perc</title>
+<meta name="description" content="Metallischer Percussion-Generator für Max for Live: Hörproben, Layout und Downloads.">
+<style>
+:root {{
+  color-scheme: dark;
+  --bg: #0f1012; --card: #1a1c20; --border: #2a2d33; --text: #d9dce2; --dim: #8a8f99;
+  --accent: #ffad38;
+}}
+* {{ box-sizing: border-box; }}
+body {{ margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif; }}
+main {{ max-width: 980px; margin: 0 auto; padding: 40px 16px 80px; }}
+header h1 {{ margin: 0; font-size: 34px; letter-spacing: -.01em; }}
+header p {{ margin: 8px 0 0; color: var(--dim); max-width: 680px; }}
+.chips {{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }}
+.chip {{ font-size: 12px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--dim); }}
+.layout {{ margin: 28px 0 8px; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; background: #0b0b0d; }}
+.layout img {{ display: block; height: 180px; width: auto; max-width: none; }}
+.note {{ color: var(--dim); font-size: 13px; margin: 0 0 32px; }}
+h2 {{ font-size: 13px; letter-spacing: .1em; text-transform: uppercase; margin: 40px 0 12px; color: var(--c); }}
+.grid {{ display: grid; gap: 10px; }}
+.track {{ background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--c);
+  border-radius: 8px; padding: 12px 14px; }}
+.track .name {{ font-weight: 600; font-size: 14px; }}
+.track .desc {{ color: var(--dim); font-size: 13px; margin: 2px 0 8px; }}
+audio {{ width: 100%; height: 36px; }}
+.steps {{ background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 22px; }}
+.steps li {{ margin: 8px 0; }}
+code {{ background: #26282d; padding: 1px 6px; border-radius: 4px; font-size: 13px; }}
+.dl {{ display: grid; gap: 8px; }}
+.dl a {{ display: flex; justify-content: space-between; gap: 16px; text-decoration: none; color: var(--text);
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }}
+.dl a:hover {{ border-color: var(--accent); }}
+.dl span {{ color: var(--dim); font-size: 13px; text-align: right; }}
+footer {{ margin-top: 48px; color: var(--dim); font-size: 13px; }}
+footer a {{ color: var(--dim); }}
+@media (max-width: 600px) {{ .dl a {{ flex-direction: column; }} .dl span {{ text-align: left; }} }}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Metal Perc</h1>
+  <p>Metallischer Percussion-Generator für Max for Live: drei Klang-Engines (Oszillator-Bank, FM/Ring, Resonator),
+     16-Step-Sequencer mit Randomizer, 1-V/Oct-Quantizer und analoge Schaltungsmodelle.</p>
+  <div class="chips"><span class="chip">Max for Live</span><span class="chip">gen~</span>
+    <span class="chip">Hypnotic / Industrial Techno</span><span class="chip">Eurorack-Konzept</span></div>
+</header>
+
+<div class="layout"><img src="layout.png" alt="Layout des Devices mit den Sektionen SEQ, RANDOM, OSC, VOICE, CIRCUIT, ANALOG und OUT"></div>
+<p class="note">Layout-Vorschau aus dem Patch gerendert. Die Hörproben stammen aus der Python-Referenz des DSP-Codes,
+nicht aus Max.</p>
+
+{sections}
+
+<h2 style="--c: var(--accent)">In Ableton laden</h2>
+<ol class="steps">
+  <li><code>Metal Perc.amxd</code> und <code>seq_random.js</code> herunterladen und in <b>denselben Ordner</b> legen,
+      zum Beispiel <code>User Library/Presets/Instruments/Max Instrument/</code>.</li>
+  <li>Die <code>.amxd</code> aus dem Live-Browser auf eine MIDI-Spur ziehen.</li>
+  <li>Einmal <b>Edit</b> öffnen und <b>Freeze Device</b> klicken, dann ist das JS eingebettet.</li>
+  <li>Falls die <code>.amxd</code> nicht lädt: eine leere <i>Max Instrument</i>-Spur anlegen, im Editor die
+      Standard-Objekte löschen und den Inhalt von <code>metal_perc.maxpat</code> hineinkopieren.</li>
+</ol>
+
+<h2 style="--c: var(--accent)">Downloads</h2>
+<div class="dl">
+{downloads}
+</div>
+
+<footer>Quellcode und Dokumentation:
+  <a href="https://github.com/dxno21/Modular-Playground/tree/claude/eurorack-techno-modules-itxsmm/modules/m4l-metal-perc">
+  github.com/dxno21/Modular-Playground</a></footer>
+</main>
+</body>
+</html>
+"""
+
+
+def build(out: Path):
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "audio").mkdir(exist_ok=True)
+    (out / "files").mkdir(exist_ok=True)
+    shutil.copy(MODULE / "layout.png", out / "layout.png")
+
+    parts = []
+    for title, color, tracks in SECTIONS:
+        items = []
+        for name, desc in tracks:
+            wav = MODULE / "previews" / f"{name}.wav"
+            if not wav.exists():
+                continue
+            shutil.copy(wav, out / "audio" / wav.name)
+            items.append(f'<div class="track"><div class="name">{html.escape(name)}</div>'
+                         f'<div class="desc">{html.escape(desc)}</div>'
+                         f'<audio controls preload="none" src="audio/{wav.name}"></audio></div>')
+        if items:
+            parts.append(f'<h2 style="--c: {color}">{html.escape(title)}</h2>\n<div class="grid" style="--c: {color}">'
+                         + "\n".join(items) + "</div>")
+
+    downloads = []
+    for fname, desc in DOWNLOADS:
+        src = MODULE / fname
+        if src.exists():
+            shutil.copy(src, out / "files" / fname)
+            downloads.append(f'<a href="files/{html.escape(fname)}" download>{html.escape(fname)}'
+                             f'<span>{html.escape(desc)}</span></a>')
+
+    (out / "index.html").write_text(PAGE.format(sections="\n".join(parts), downloads="\n".join(downloads)))
+    (out / ".nojekyll").write_text("")
+    print(f"{out}/index.html: {len(parts)} Sektionen, {len(downloads)} Downloads")
+
+
+if __name__ == "__main__":
+    build(Path(sys.argv[1] if len(sys.argv) > 1 else "_site"))

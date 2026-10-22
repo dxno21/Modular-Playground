@@ -20,23 +20,40 @@ Die Farben sind fest gesetzt und folgen nicht dem Live-Theme.
 
 | Datei | Inhalt |
 |---|---|
+| `Metal Perc.amxd` | Max-for-Live-Instrument, direkt in Live ladbar (generiert, experimentell) |
 | `metal_perc.maxpat` | Fertiges Patch für das M4L-Device (generiert) |
 | `metal_perc.genexpr` | gen~-DSP-Code, im Patch bereits eingebettet (generiert, zum Lesen) |
 | `seq_random.js` | Randomizer, schreibt neue Werte in die Step-Regler |
 | `src/metal_perc.genexpr.in` | **Quelle** des DSP-Codes. Hier editieren, dann `python3 build.py` |
-| `build.py` | Erzeugt `.genexpr` und `.maxpat` (16 Steps, UI, Verkabelung) |
+| `build.py` | Erzeugt `.genexpr`, `.maxpat` und `.amxd` (16 Steps, UI, Verkabelung) |
+| `tools/build_site.py` | Baut die Preview-Seite für GitHub Pages |
 | `reference/metal_perc_ref.py` | Python-Nachbau des DSP für Hörproben ohne Max |
 | `previews/*.wav` | Hörproben (aus der Python-Referenz gerendert) |
 
 ## In Ableton Live laden
 
+**Variante A: fertiges Device (`Metal Perc.amxd`, experimentell)**
+1. `Metal Perc.amxd` und `seq_random.js` in **denselben Ordner** legen, zum Beispiel
+   `User Library/Presets/Instruments/Max Instrument/`.
+2. Die `.amxd` im Live-Browser auf eine MIDI-Spur ziehen.
+3. Einmal den Editor öffnen und **Freeze Device** klicken. Dann ist das JS eingebettet, und das Device läuft auch ohne
+   die separate Datei.
+
+Die `.amxd` erzeugt `build.py` aus dem Patch, sie ist nicht eingefroren. Weil ich sie nicht in Live testen konnte,
+gibt es Variante B als Fallback.
+
+**Variante B: Patch einfügen**
 1. In Live eine leere **Max Instrument**-Spur anlegen (*Max for Live → Max Instrument*) und den Editor öffnen.
 2. Im Device-Editor zuerst die Standard-Objekte des neuen Devices löschen (`midiin`, `midiout`, `plugout~`).
    Dann `metal_perc.maxpat` öffnen (*File → Open*), dort alles auswählen (Cmd/Strg+A), kopieren und in den
    Device-Editor einfügen. In den Patcher-Einstellungen *Open in Presentation* aktivieren.
-3. Das Device als `Metal Perc.amxd` speichern, und zwar **in denselben Ordner wie `seq_random.js`**.
-   Alternativ die JS-Datei in den Ordner des Devices kopieren. Danach *Freeze Device*, damit das JS eingebettet wird.
-4. Transport starten. Der Sequencer läuft synchron zu Live (Clock = *Host*).
+3. Das Device als `Metal Perc.amxd` speichern, und zwar **in denselben Ordner wie `seq_random.js`**. Danach
+   *Freeze Device*.
+
+Danach Transport starten. Der Sequencer läuft synchron zu Live (Clock = *Host*).
+
+**Preview-Seite:** Der Workflow `.github/workflows/pages.yml` veröffentlicht Layout, Hörproben und Downloads auf
+GitHub Pages (`tools/build_site.py`). Einmalig unter *Settings → Pages → Source* „GitHub Actions“ wählen.
 
 ## Bedienung
 
