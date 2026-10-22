@@ -191,6 +191,31 @@ Varianten:
 - **FM FB** ist die Hauptquelle von Rauschen. Für einen sauberen Klang auf 0 lassen, für Rauheit 0.2–0.4.
 - **Attack 6–10 ms** macht den Anschlag noch weicher, eher Mallet-artig.
 
+## Hypnotische Sequenzen 138 BPM (Low / Mid / High, Pitch Loose)
+
+Drei Spuren, je ein Metal-Perc-Device. Pitch Mode steht auf **Loose**, die Tonhöhen sind also nicht quantisiert
+(Mikro-Verstimmungen in Bruchteilen von Halbtönen). Die Spuren laufen **polymetrisch** mit 16, 14 und 15 Steps.
+Sie verschieben sich ständig gegeneinander und treffen sich erst nach 210 Steps wieder.
+Quelle: `reference/sequences_138.py`. Hörproben: `previews/seq138_low|mid|high.wav` (4 Takte) und
+`seq138_mix_low_mid_high.wav` (8 Takte, alle drei zusammen).
+
+Gemeinsam: Clock Host (Live auf 138 BPM), Div **1/16**, Pitch Mode **Loose**.
+
+| | Low | Mid | High |
+|---|---|---|---|
+| Basis | Preset *Low/Mid FM Metal* | Preset *Low/Mid FM Metal* | eigene Einstellung |
+| Tune | 38 (D1) | 50 (D2) | 79 (G4) |
+| Length | 16 | 14 | 15 |
+| Steps | `1000 0010 0010 1001` | `1010 0101 1001 01` | `1101 1011 1101 101` |
+| Velocity (aktive Steps) | 1 · .8 · .9 · .7 · .6 | 1 · .55 · .8 · .5 · .9 · .6 · .7 | 1 · .45 · .7 · .9 · .5 · .65 · 1 · .4 · .75 · .85 · .55 |
+| Pitch (aktive Steps, Halbtöne) | 0 · −0.7 · +0.35 · −1.3 · +0.5 | 0 · +2.5 · −1.2 · +4.3 · 0 · +1.7 · −2.6 | 0 · +0.4 · −0.6 · 0 · +1.1 · 0 · −0.3 · +0.8 · 0 · 0 · −1.0 |
+| Klang | FM Amt 0.8, Decay 0.36 | Amp **LPG** (Col 0.7), FM Ratio 3.1, FM Amt 0.75, Ring 0.6, Decay 0.24 | Morph 0.15 (Bank), Square, Voices 5, Spread 1.2, Detune 12, Tilt 0.4, PW 0.35, Decay 0.1, Attack 1 ms, Bright 0.8, Noise 0.08 |
+| Live-Random | Vel (Range 0.25), Pitch (Range 0.25) | Vel (0.35), Pitch (0.6) | Steps (Density 0.85), Vel (0.45), Pitch (1.5) |
+| Mix-Fader | 0.8 | 0.8 | 1.6 |
+
+Die Live-Randomisierung verändert Velocity und Tonhöhe bei jedem Schlag leicht. Das Pattern bleibt erkennbar,
+wiederholt sich aber nie exakt.
+
 ## Bekannte Grenzen
 - **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
