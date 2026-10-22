@@ -5,11 +5,14 @@
 Der Workflow .github/workflows/pages.yml ruft das bei jedem Push auf und veröffentlicht _site.
 """
 import html
+import json
 import shutil
 import sys
 from pathlib import Path
 
 MODULE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(MODULE / "reference"))
+sys.path.insert(0, str(MODULE / "tools"))
 
 SECTIONS = [
     ("Main Layer im Mord-Stil · 145 BPM", "#ff6b4a", [
@@ -91,6 +94,9 @@ code {{ background: #26282d; padding: 1px 6px; border-radius: 4px; font-size: 13
   background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }}
 .dl a:hover {{ border-color: var(--accent); }}
 .dl span {{ color: var(--dim); font-size: 13px; text-align: right; }}
+.cta {{ display: inline-block; margin-top: 24px; padding: 12px 20px; border-radius: 8px; background: var(--accent);
+  color: #111; font-weight: 700; text-decoration: none; }}
+.cta:hover {{ filter: brightness(1.1); }}
 footer {{ margin-top: 48px; color: var(--dim); font-size: 13px; }}
 footer a {{ color: var(--dim); }}
 @media (max-width: 600px) {{ .dl a {{ flex-direction: column; }} .dl span {{ text-align: left; }} }}
@@ -105,6 +111,8 @@ footer a {{ color: var(--dim); }}
   <div class="chips"><span class="chip">Max for Live</span><span class="chip">gen~</span>
     <span class="chip">Hypnotic / Industrial Techno</span><span class="chip">Eurorack-Konzept</span></div>
 </header>
+
+<a class="cta" href="play/">▶ Live im Browser spielen</a>
 
 <div class="layout"><img src="layout.png" alt="Layout des Devices mit den Sektionen SEQ, RANDOM, OSC, VOICE, CIRCUIT, ANALOG und OUT"></div>
 <p class="note">Layout-Vorschau aus dem Patch gerendert. Die Hörproben stammen aus der Python-Referenz des DSP-Codes,
@@ -167,7 +175,149 @@ def build(out: Path):
 
     (out / "index.html").write_text(PAGE.format(sections="\n".join(parts), downloads="\n".join(downloads)))
     (out / ".nojekyll").write_text("")
+    build_player(out / "play")
     print(f"{out}/index.html: {len(parts)} Sektionen, {len(downloads)} Downloads")
+
+
+# ---------------------------------------------------------------- Browser-Player
+UI_ATTRS = ["text", "fontname", "fontsize", "textcolor", "bgcolor", "bordercolor", "border", "rounded", "showname",
+            "activedialcolor", "activefgdialcolor", "activeneedlecolor", "activebgcolor", "activebgoncolor",
+            "activetextcolor", "activetextoncolor"]
+
+
+def export_ui(patch):
+    """Presentation-Ansicht des Patches als UI-Beschreibung; Parameter über die prepend-Verbindungen."""
+    boxes = {b["box"]["id"]: b["box"] for b in patch["boxes"]}
+    param_of = {}
+    for line in patch["lines"]:
+        src, dst = line["patchline"]["source"][0], line["patchline"]["destination"][0]
+        text = boxes.get(dst, {}).get("text", "")
+        if text.startswith("prepend ") and text != "prepend set":
+            param_of[src] = text.split()[1]
+    elements = []
+    for b in patch["boxes"]:
+        b = b["box"]
+        if not b.get("presentation"):
+            continue
+        el = {"cls": b["maxclass"], "rect": b["presentation_rect"]}
+        if b.get("varname"):
+            el["var"] = b["varname"]
+        if b["id"] in param_of:
+            el["param"] = param_of[b["id"]]
+        vo = b.get("saved_attribute_attributes", {}).get("valueof")
+        if vo:
+            el["vo"] = vo
+        for k in UI_ATTRS:
+            if k in b:
+                el[k] = b[k]
+        elements.append(el)
+    return {"width": patch["devicewidth"], "height": 169, "elements": elements}
+
+
+def export_presets():
+    import metal_perc_ref as R
+    import sequence_mord_main as MORD
+    import sequences_138 as S138
+
+    def entry(params, on, vel, pitch):
+        on = [int(c) for c in on.replace(" ", "")] if isinstance(on, str) else list(on)
+        n = len(on)
+        params = {k: float(v) for k, v in params.items()}
+        params.setdefault("bpm", 130.0)
+        return {"params": params, "on": on + [0] * (16 - n),
+                "vel": [float(v) for v in vel] + [1.0] * (16 - n), "pitch": [float(v) for v in pitch] + [0.0] * (16 - n)}
+
+    presets = {"Init": entry({}, "1" * 16, [1] * 16, [0] * 16)}
+    presets["Mord Main Layer – alle Steps (145)"] = entry(MORD.PARAMS, MORD.ALL_ON, MORD.ALL_VEL, MORD.ALL_PITCH)
+    presets["Mord Main Layer – Offbeat (145)"] = entry(MORD.PARAMS, MORD.STEPS_ON, MORD.STEPS_VEL, MORD.STEPS_PITCH)
+    for name, seq in S138.SEQUENCES.items():
+        presets[f"Hypnotic 138 – {name.title()}"] = entry(seq["params"], seq["on"], seq["vel"], seq["pitch"])
+    for key, p in R.PRESETS.items():
+        on, vel, pitch = p["pattern"]
+        presets[key.split("_", 1)[1].replace("_", " ").title()] = entry(p["params"], on, vel, pitch)
+    return presets
+
+
+PLAY_PAGE = """<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metal Perc Live</title>
+<meta name="description" content="Metal Perc im Browser spielen: derselbe DSP wie im Max-for-Live-Device, als AudioWorklet.">
+<style>
+:root { color-scheme: dark; --bg: #0f1012; --card: #1a1c20; --border: #2a2d33; --text: #d9dce2; --dim: #8a8f99; --accent: #ffad38; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.5 "Ableton Sans Medium", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif; }
+main { padding: 20px 16px 60px; max-width: 1800px; margin: 0 auto; }
+a { color: var(--dim); }
+h1 { font-size: 22px; margin: 0 0 4px; }
+.sub { color: var(--dim); margin: 0 0 16px; }
+.bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+button, select, input { font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 7px 12px; }
+button { cursor: pointer; }
+button.on, #play.on { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 700; }
+#play { min-width: 96px; font-weight: 700; }
+#bpm { width: 78px; }
+label { color: var(--dim); display: flex; gap: 6px; align-items: center; }
+#rack { overflow-x: auto; padding-bottom: 6px; }
+.device { position: relative; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px #000; user-select: none;
+  font-family: "Ableton Sans Medium", Inter, Helvetica, Arial, sans-serif; }
+.dev-hdr { height: 18px; background: #26282d; color: #d4d7dd; font-size: 11px; line-height: 18px; padding-left: 24px; position: relative; }
+.dev-hdr:before { content: ""; position: absolute; left: 7px; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: #ffad38; }
+.dev-body { position: relative; }
+.gm { position: absolute; bottom: 14px; top: 0; width: 8px; border-radius: 2px; background: #2b2e35; overflow: hidden; }
+.gm:nth-child(1) { left: 10px; } .gm:nth-child(2) { left: 22px; }
+.gl { position: absolute; bottom: 0; left: 0; right: 0; height: 0;
+  background: linear-gradient(to top, #2ed3c4 0 70%, #ffd34d 70% 90%, #ff5c5c 90% 100%); background-size: 100% 100%; }
+.gh { position: absolute; left: 4px; right: 4px; height: 2px; background: #d4d7dd; margin-bottom: 14px; }
+.gv { position: absolute; bottom: -2px; left: -6px; right: -6px; text-align: center; font-size: 8.5px; color: #8a8f99; }
+#status { color: var(--dim); font-size: 12px; min-height: 18px; margin-top: 6px; }
+.help { margin-top: 18px; color: var(--dim); font-size: 13px; max-width: 900px; }
+.help b { color: var(--text); }
+kbd { background: #26282d; border-radius: 4px; padding: 0 5px; font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Metal Perc · Live</h1>
+  <p class="sub">Derselbe DSP wie im Max-for-Live-Device, automatisch aus dem gen~-Code übersetzt und als AudioWorklet
+     im Browser. <a href="../">Zurück zur Übersicht</a></p>
+  <div class="bar">
+    <button id="play">▶ Play</button>
+    <label>BPM <input id="bpm" type="number" min="40" max="300" value="130"></label>
+    <label>Preset <select id="preset"><option value="">– wählen –</option></select></label>
+    <button id="midi">MIDI aktivieren</button>
+  </div>
+  <div id="rack"></div>
+  <div id="status">Regler ziehen (vertikal), <kbd>Shift</kbd> für fein, Doppelklick setzt zurück.</div>
+  <div class="help">
+    <p><b>Spielen:</b> <kbd>Leertaste</kbd> startet/stoppt den Sequencer (Clock <i>Host</i> folgt dem BPM-Feld).
+       Die Tasten <kbd>A W S E D F T G Y H U J K</kbd> spielen die Voice chromatisch ab C3, wie MIDI-Noten.
+       Mit „MIDI aktivieren“ spielt ein angeschlossenes Keyboard (Chrome/Edge).</p>
+    <p><b>CPU:</b> Wenn es knackst, unter ANALOG → QUALITY auf <i>1x</i> stellen.</p>
+  </div>
+</main>
+<script type="module" src="player.js"></script>
+</body>
+</html>
+"""
+
+
+def build_player(out: Path):
+    from genexpr_to_js import transpile
+    out.mkdir(parents=True, exist_ok=True)
+    patch = json.loads((MODULE / "metal_perc.maxpat").read_text())["patcher"]
+    (out / "ui.json").write_text(json.dumps(export_ui(patch)))
+    (out / "presets.json").write_text(json.dumps(export_presets(), ensure_ascii=False))
+    dsp = transpile((MODULE / "metal_perc.genexpr").read_text()).replace("export function", "function")
+    template = (MODULE / "web" / "worklet_template.js").read_text()
+    (out / "worklet.js").write_text(template.replace("/*DSP*/", dsp))
+    shutil.copy(MODULE / "web" / "player.js", out / "player.js")
+    (out / "index.html").write_text(PLAY_PAGE)
+    print(f"{out}/: Player mit {len(json.loads((out / 'presets.json').read_text()))} Presets")
 
 
 if __name__ == "__main__":

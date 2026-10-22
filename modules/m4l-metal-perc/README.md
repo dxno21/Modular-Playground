@@ -27,6 +27,8 @@ Die Farben sind fest gesetzt und folgen nicht dem Live-Theme.
 | `src/metal_perc.genexpr.in` | **Quelle** des DSP-Codes. Hier editieren, dann `python3 build.py` |
 | `build.py` | Erzeugt `.genexpr`, `.maxpat` und `.amxd` (16 Steps, UI, Verkabelung) |
 | `tools/build_site.py` | Baut die Preview-Seite für GitHub Pages |
+| `tools/genexpr_to_js.py` | Übersetzt den gen~-Code nach JavaScript für den Browser-Player |
+| `web/` | Browser-Player: AudioWorklet-Vorlage und Oberfläche (`player.js`) |
 | `reference/metal_perc_ref.py` | Python-Nachbau des DSP für Hörproben ohne Max |
 | `previews/*.wav` | Hörproben (aus der Python-Referenz gerendert) |
 
@@ -51,6 +53,11 @@ gibt es Variante B als Fallback.
    *Freeze Device*.
 
 Danach Transport starten. Der Sequencer läuft synchron zu Live (Clock = *Host*).
+
+**Im Browser spielen:** https://dxno21.github.io/Modular-Playground/play/ ist derselbe DSP, automatisch aus dem
+gen~-Code nach JavaScript übersetzt (`tools/genexpr_to_js.py`) und als AudioWorklet ausgeführt (`web/`). Die Oberfläche
+wird aus dem Patch erzeugt, alle Presets und Sequenzen sind wählbar. Bedienung: Leertaste = Play/Stop, Tasten
+`A W S E D F T G Y H U J K` = Noten ab C3, optional Web MIDI.
 
 **Preview-Seite:** Der Workflow `.github/workflows/pages.yml` veröffentlicht Layout, Hörproben und Downloads auf
 GitHub Pages (`tools/build_site.py`). Einmalig unter *Settings → Pages → Source* „GitHub Actions“ wählen.
