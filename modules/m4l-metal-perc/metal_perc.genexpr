@@ -68,10 +68,10 @@ quant(n, root, mask) {
 	return best;
 }
 
-// TPT-State-Variable-Filter: liefert Bandpass (unity peak) bzw. Highpass,
-// Zustände liegen in Data st an Index i und i+1.
-svf_bp(x, fc, q, st, i) {
-	g = tan(pi * fc / samplerate);
+// TPT-State-Variable-Filter mit optionaler OTA-Sättigung der Eingangsstufe (sat > 0).
+// mode 0 Lowpass, 1 Bandpass (unity peak), 2 Highpass. Zustände in Data st an i, i+1.
+svf(x, fc, q, sr, st, i, mode, sat) {
+	g = tan(pi * min(fc, sr * 0.49) / sr);
 	k = 1 / q;
 	a1 = 1 / (1 + g * (g + k));
 	a2 = g * a1;
@@ -79,27 +79,40 @@ svf_bp(x, fc, q, st, i) {
 	ic1 = peek(st, i);
 	ic2 = peek(st, i + 1);
 	v3 = x - ic2;
+	if (sat > 0.001) {
+		v3 = tanh(v3 * sat) / sat;
+	}
 	v1 = a1 * ic1 + a2 * v3;
 	v2 = ic2 + a2 * ic1 + a3 * v3;
 	poke(st, 2 * v1 - ic1, i);
 	poke(st, 2 * v2 - ic2, i + 1);
-	return v1 * k;
+	y = v2;
+	if (mode > 1.5) {
+		y = x - k * v1 - v2;
+	} else if (mode > 0.5) {
+		y = v1 * k;
+	}
+	return y;
 }
 
-svf_hp(x, fc, q, st, i) {
-	g = tan(pi * fc / samplerate);
-	k = 1 / q;
-	a1 = 1 / (1 + g * (g + k));
-	a2 = g * a1;
-	a3 = g * a2;
-	ic1 = peek(st, i);
-	ic2 = peek(st, i + 1);
-	v3 = x - ic2;
-	v1 = a1 * ic1 + a2 * v3;
-	v2 = ic2 + a2 * ic1 + a3 * v3;
-	poke(st, 2 * v1 - ic1, i);
-	poke(st, 2 * v2 - ic2, i + 1);
-	return x - k * v1 - v2;
+// Pseudozufall 0..1 aus Seed und Index (Bauteil-Toleranzen pro Device-Instanz)
+rnd_hash(sd, i) {
+	return wrap(sin(sd * 12.9898 + i * 78.233 + 0.5) * 43758.5453, 0, 1);
+}
+
+// Weiche Diodenkennlinie: sperrt unter ~0.2, dann quadratischer Übergang, dann linear
+diode(v) {
+	u = v - 0.2;
+	r = 0;
+	if (u > 0) {
+		r = u * u / (u + 0.2);
+	}
+	return r;
+}
+
+// Dioden-Ringmodulator (4 Dioden), skaliert auf ~c*m bei kleinen Pegeln
+diode_ring(c, m) {
+	return (diode(c + m) + diode(-c - m) - diode(c - m) - diode(m - c)) * 1.25;
 }
 
 // ---------- Parameter: Voice ----------
@@ -128,6 +141,24 @@ Param mod_wave(1, min=0, max=3);      // Wellenform des Modulators
 Param sweep(0, min=-24, max=48);      // Pitch-Hüllkurve in Halbtönen
 Param sweep_time(30, min=1, max=500);   // ms
 Param retrig(0, min=0, max=1);        // 0 Phasen frei, 1 Reset bei jedem Schlag
+Param fm_mode(0, min=0, max=1);       // 0 linear (Phasenmodulation), 1 exponentiell (analog)
+Param ring_bleed(0.15, min=0, max=1); // Durchschlag + Verzerrung des Dioden-Rings
+
+// ---------- Parameter: Circuit ----------
+Param wfold(0, min=0, max=1);          // Wavefolder
+Param asym(0.25, min=0, max=1);       // asymmetrische Sättigung (gerade Obertöne)
+Param amp_mode(0, min=0, max=1);      // 0 VCA, 1 Lowpass-Gate (Vactrol)
+Param lpg_color(0.6, min=0, max=1);   // Filteranteil des Lowpass-Gates
+Param reso_mode(0, min=0, max=1);     // 0 Modal, 1 Bridged-T (808-Prinzip)
+
+// ---------- Parameter: Analog ----------
+Param analog(0.5, min=0, max=1);      // Makro: Drift, Toleranz, Jitter, Bleed, Rauschen
+Param age(0.3, min=0, max=1);         // Clean -> Vintage -> Worn
+Param sag(0.25, min=0, max=1);        // Netzteil-Einbruch bei lauten Schlägen
+Param hum(0, min=0, max=1);           // Brumm
+Param hum_hz(0, min=0, max=1);        // 0 = 50 Hz, 1 = 60 Hz
+Param seed(1, min=0, max=999);        // Charakter dieser Instanz
+Param quality(1, min=0, max=2);       // Oversampling 1x / 2x / 4x
 Param accent(0.5, min=0, max=1);      // Velocity -> Decay/Helligkeit
 Param level(0.8, min=0, max=1);
 
@@ -199,8 +230,24 @@ History hit_vel(1);
 History gate_cnt(0);
 History dc_x(0);
 History dc_y(0);
+History pend(0);
+History p_note(56);
+History p_vel(1);
+History vac(0);
+History sagf(0);
+History bt_amp(0);
+History hum_ph(0);
+History pk0(0);
+History pk1(0);
+History pk2(0);
+History last_seed(-1);
 Data ph(8);     // Phasen: 0-5 Bank, 6 Träger, 7 Modulator
-Data st(16);    // Filterzustände
+Data osl(8);    // Slew-Zustände der Oszillatoren
+Data dr(9);     // Drift: 0-7 Oszillatoren, 8 global
+Data fq(8);
+Data slc(8);    // Slew-Koeffizient pro Oszillator     // Frequenz-Faktor pro Oszillator (Toleranz, Drift, Jitter)
+Data tol(40);   // Toleranzen: [i] Cent, [8+i] PW, [16+i] DC, [24+i] Slew, [32+j] Moden/Filter
+Data st(24);    // Filterzustände
 
 // ---------- Clock ----------
 spb = selector(floor(clock_div) + 1, 2, 4, 8, 3, 6);  // Steps pro Beat
@@ -298,19 +345,71 @@ if (tr && trg_prev < 0.5) {
 }
 trg_prev = tr;
 
-// ---------- Trigger -> Voice ----------
+// ---------- Analog-Charakter ----------
+an = analog;
+ag = age;
+if (seed != last_seed) {
+	last_seed = seed;
+	for (t_i = 0; t_i < 8; t_i += 1) {
+		poke(tol, rnd_hash(seed, t_i) * 2 - 1, t_i);
+		poke(tol, rnd_hash(seed, t_i + 8) - 0.5, t_i + 8);
+		poke(tol, rnd_hash(seed, t_i + 16) - 0.5, t_i + 16);
+		poke(tol, rnd_hash(seed, t_i + 24), t_i + 24);
+	}
+	for (t_j = 0; t_j < 8; t_j += 1) {
+		poke(tol, rnd_hash(seed, t_j + 32) * 2 - 1, t_j + 32);
+	}
+}
+// Drift: tiefpassgefiltertes Rauschen (~0.7 Hz), auf Standardabweichung 1 normiert
+d_a = 1 - exp(-twopi * (0.4 + ag * 0.8) / samplerate);
+d_norm = 1 / sqrt(d_a / (2 - d_a) / 3);
+for (d_i = 0; d_i < 9; d_i += 1) {
+	dv = peek(dr, d_i);
+	poke(dr, dv + (noise() - dv) * d_a, d_i);
+}
+drift_c = an * (2 + ag * 10);       // Cent (Standardabweichung)
+tol_c = an * (3 + ag * 5);          // Cent
+jit_c = an * (0.3 + ag);            // Cent, schnelles Pitch-Rauschen
+shape_ev = an * (0.04 + ag * 0.08); // gerade Obertöne in den Wellenformen
+bleed = an * (0.0003 + ag * 0.0015);
+ota = an * (0.4 + ag * 0.8);
+
+// ---------- Trigger -> Voice (mit Trigger-Jitter) ----------
+start = 0;
+s_note = 0;
+s_vel = 0;
 if (fire > 0.5) {
 	note = tune + pitch + in4 * 60;
 	if (qmode > 0.5) {
 		mask = selector(floor(scale_sel) + 1, 4095, 1453, 1451, 2477, 1193, 1709, 1459, 397);
 		note = quant(note, root, mask);
 	}
-	hit_note = note;
-	hit_vel = vel;
+	jit = floor((noise() * 0.5 + 0.5) * an * 0.0004 * samplerate);
+	if (jit < 1) {
+		start = 1;
+		s_note = note;
+		s_vel = vel;
+	} else {
+		pend = jit;
+		p_note = note;
+		p_vel = vel;
+	}
+} else if (pend > 0) {
+	pend = pend - 1;
+	if (pend < 0.5) {
+		start = 1;
+		s_note = p_note;
+		s_vel = p_vel;
+	}
+}
+
+if (start > 0.5) {
+	hit_note = s_note;
+	hit_vel = s_vel;
 	t = 0.01 * pow(250, decay);
-	t = t * (1 - accent * 0.5 + accent * vel);
+	t = t * (1 - accent * 0.5 + accent * s_vel);
 	coef = exp(-6.9078 / (t * samplerate));
-	target = max(env, vel);
+	target = max(env, s_vel);
 	att = 1;
 	exc = 1;
 	pe = 1;
@@ -323,101 +422,195 @@ if (fire > 0.5) {
 	gate_cnt = samplerate * 0.005;
 }
 
+// Hüllkurve: RC-Ladekurve mit Überschwing-Ziel, Ausklang mit leichter Krümmung
 if (att > 0.5) {
-	env = env + (target - env) * (1 - exp(-4.6 / (attack * 0.001 * samplerate)));
-	if (env >= target * 0.99) {
+	ov = 1.01 + 0.02 * an;
+	env = env + (target * ov - env) * (1 - exp(-4.6 / (attack * 0.001 * samplerate)));
+	if (env >= target) {
+		env = target;
 		att = 0;
 	}
 } else {
-	env = env * coef;
+	env = env * pow(coef, 1 - 0.3 * an * (1 - env));
 }
 exc = exc * 0.992;
 if (gate_cnt > 0) {
 	gate_cnt = gate_cnt - 1;
 }
 
-pe = pe * exp(-6.9078 / (sweep_time * 0.001 * samplerate));
-f0 = mtof(hit_note + sweep * pe);
-nyq = samplerate * 0.45;
-w = floor(waveform + 0.5);
-acc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);
+// Vactrol (Lowpass-Gate): schnell auf, langsam und nichtlinear zu
+if (env > vac) {
+	vac = vac + (env - vac) * (1 - exp(-1 / (0.002 * samplerate)));
+} else {
+	tau = 0.012 + 0.25 * (1 - vac) * (1 - vac);
+	vac = vac + (env - vac) * (1 - exp(-1 / (tau * samplerate)));
+}
 
-// ---------- Engine A: Oszillator-Bank (6 Oszillatoren) ----------
+pe = pe * exp(-6.9078 / (sweep_time * 0.001 * samplerate));
+gdrift = peek(dr, 8) * d_norm * drift_c * 0.5;
+f0 = mtof(hit_note + sweep * pe + gdrift * 0.01) * (1 - sag * 0.012 * sagf);
+w = floor(waveform + 0.5);
+mw = floor(mod_wave + 0.5);
+acc_b = bright * (1 - accent * 0.4 + accent * 0.4 * hit_vel);
 ta = clamp(inharm * 2, 0, 1);
 tb = clamp(inharm * 2 - 1, 0, 1);
 nv = floor(voices + 0.5);
-bank = 0;
-asum = 0;
-for (i = 0; i < 6; i += 1) {
-	rh = i + 1;
-	rm = selector(i + 1, 1, 1.483, 1.8, 2.546, 2.63, 3.897);
-	re = selector(i + 1, 1, 1.593, 2.135, 2.296, 2.917, 3.598);
-	ratio = mix(mix(rh, rm, ta), re, tb);
-	ratio = 1 + (ratio - 1) * spread;
-	ratio = ratio * pow(2, detune * selector(i + 1, 0, 0.7, -0.4, 1, -0.9, 0.3) / 1200);
-	inc = min(f0 * ratio / samplerate, 0.45);
-	p = peek(ph, i);
-	if (i < nv) {
-		amp = pow(i + 1, tilt);
-		bank = bank + osc(p, inc, w, pw) * amp;
-		asum = asum + amp;
-	}
-	poke(ph, fract(p + inc), i);
-}
-bank = bank / asum;
-fca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * sqrt(env)), nyq);
-eng_a = 1.8 * svf_bp(bank, fca, 1.5, st, 0) + 1.8 * svf_hp(bank, fca, 0.7, st, 2);
-
-// ---------- Engine B: FM / Ringmodulation ----------
-inc_c = min(f0 / samplerate, 0.45);
-inc_m = min(f0 * fm_ratio / samplerate, 0.45);
-pc = peek(ph, 6);
-pm = peek(ph, 7);
-mods = osc(wrap(pm + fm_fb * 0.5 * fb_prev, 0, 1), inc_m, floor(mod_wave + 0.5), pw);
-fb_prev = mods;
+osf = selector(floor(quality + 0.5) + 1, 1, 2, 4);
+sr2 = samplerate * osf;
+nyq = sr2 * 0.45;
 idx = fm_amt * 2 * env * (1 - accent * 0.4 + accent * 0.4 * hit_vel);
-car = osc(wrap(pc + idx * mods, 0, 1), inc_c, w, pw);
-rsig = osc(pc, inc_c, w, pw) * mods;
-poke(ph, fract(pc + inc_c), 6);
-poke(ph, fract(pm + inc_m), 7);
-eng_b = 1.2 * (car * (1 - ring) + rsig * ring);
-
-// ---------- Engine C: Resonator-Bank (4 Moden, angeregt durch Rauschimpuls) ----------
-ex = noise() * exc * exc * (0.4 + 0.6 * acc_b) * hit_vel;
+amp = env;
+if (amp_mode > 0.5) {
+	amp = pow(vac, 1.4);
+}
+amp_ab = amp + bleed;
+lpg_fc = mix(16000, 60 * pow(2, vac * 8.2), lpg_color);
 q = mix(400, 12, damp);
-res = 0;
-for (j = 0; j < 4; j += 1) {
-	mh = j + 1;
-	mb = selector(j + 1, 1, 2.756, 5.404, 8.933);
-	mp = selector(j + 1, 1, 1.594, 2.136, 2.653);
-	mr = mix(mix(mh, mb, ta), mp, tb);
-	fr = min(f0 * mr, nyq);
-	res = res + svf_bp(ex, fr, q, st, 4 + j * 2) * sqrt(1000 / fr) / (j + 1);
-}
-eng_c = res * sqrt(q) * 15 * min(1, env * 4);
+fold_g = 1 + wfold * 5;
+dg = 1 + drive * 12;
+ab = asym * 0.3;
 
-// ---------- Morph, Noise, Drive ----------
-va = eng_a * env;
-vb = eng_b * env;
-m = morph * 2;
-voice = 0;
-if (m < 1) {
-	voice = va * cos(m * pi * 0.5) + vb * sin(m * pi * 0.5);
-} else {
-	m = m - 1;
-	voice = vb * cos(m * pi * 0.5) + eng_c * sin(m * pi * 0.5);
+// Frequenz-Faktor pro Oszillator: Toleranz + Drift + Jitter (in Cent)
+for (c_i = 0; c_i < 8; c_i += 1) {
+	cents = peek(tol, c_i) * tol_c + peek(dr, c_i) * d_norm * drift_c + noise() * jit_c;
+	poke(fq, pow(2, cents / 1200), c_i);
+	fsl = mix(20000, 5000, an * ag) * (0.85 + 0.3 * peek(tol, c_i + 24));
+	poke(slc, 1 - exp(-twopi * min(fsl, nyq) / sr2), c_i);
 }
-nz = svf_hp(noise(), min(f0 * 8, nyq), 0.7, st, 12) * env * noise_mix;
-x = voice + nz;
 
-g = 1 + drive * 12;
-y = tanh(x * g) / sqrt(g);
+// =====================================================================
+// Audio-Kern, läuft osf-mal pro Sample (Oversampling) mit Samplerate sr2
+// =====================================================================
+out_os = 0;
+for (o = 0; o < osf; o += 1) {
+	// ---------- Engine A: Oszillator-Bank (6 Oszillatoren) ----------
+	bank = 0;
+	asum = 0;
+	for (i = 0; i < 6; i += 1) {
+		rh = i + 1;
+		rm = selector(i + 1, 1, 1.483, 1.8, 2.546, 2.63, 3.897);
+		re = selector(i + 1, 1, 1.593, 2.135, 2.296, 2.917, 3.598);
+		ratio = mix(mix(rh, rm, ta), re, tb);
+		ratio = 1 + (ratio - 1) * spread;
+		ratio = ratio * pow(2, detune * selector(i + 1, 0, 0.7, -0.4, 1, -0.9, 0.3) / 1200);
+		inc = min(f0 * ratio * peek(fq, i) / sr2, 0.45);
+		p = peek(ph, i);
+		if (i < nv) {
+			amp_i = pow(i + 1, tilt);
+			pw_i = clamp(pw + an * 0.08 * peek(tol, i + 8), 0.03, 0.97);
+			yo = osc(p, inc, w, pw_i);
+			yo = yo + shape_ev * (yo * yo - 0.5) + an * 0.06 * peek(tol, i + 16);
+			sl = peek(osl, i);
+			sl = sl + (yo - sl) * peek(slc, i);
+			poke(osl, sl, i);
+			bank = bank + sl * amp_i;
+			asum = asum + amp_i;
+		}
+		poke(ph, fract(p + inc), i);
+	}
+	bank = bank / asum;
+	fca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * sqrt(env)) * (1 + an * 0.04 * peek(tol, 32)), nyq);
+	eng_a = 1.8 * svf(bank, fca, 1.5, sr2, st, 0, 1, ota) + 1.8 * svf(bank, fca, 0.7, sr2, st, 2, 2, ota);
+
+	// ---------- Engine B: FM (linear/exponentiell) + Dioden-Ringmodulator ----------
+	pc = peek(ph, 6);
+	pm = peek(ph, 7);
+	inc_m = min(f0 * fm_ratio * peek(fq, 7) / sr2, 0.45);
+	mods = osc(wrap(pm + fm_fb * 0.5 * fb_prev, 0, 1), inc_m, mw, pw);
+	mods = mods + shape_ev * (mods * mods - 0.5) + an * 0.06 * peek(tol, 23);
+	fb_prev = mods;
+	inc_c = min(f0 * peek(fq, 6) / sr2, 0.45);
+	car = 0;
+	if (fm_mode > 0.5) {
+		inc_c = min(inc_c * pow(2, idx * 0.75 * mods), 0.45);
+		car = osc(pc, inc_c, w, pw);
+	} else {
+		car = osc(wrap(pc + idx * mods, 0, 1), inc_c, w, pw);
+	}
+	cplain = osc(pc, inc_c, w, pw);
+	rsig = mix(cplain * mods, diode_ring(cplain, mods), ring_bleed) + ring_bleed * (0.25 * cplain + 0.1 * mods);
+	poke(ph, fract(pc + inc_c), 6);
+	poke(ph, fract(pm + inc_m), 7);
+	eng_b = 1.2 * (car * (1 - ring) + rsig * ring);
+
+	// ---------- Engine C: Modal-Resonator oder Bridged-T (808) ----------
+	res = 0;
+	if (reso_mode > 0.5) {
+		// Bridged-T: kurzer Impuls regt gesättigte Schwingkreise an, Tonhöhe steigt mit der Amplitude
+		ex = exc * exc * exc * exc * hit_vel * 20;
+		qb = q * 0.5;
+		for (j = 0; j < 2; j += 1) {
+			mr = selector(j + 1, 1, mix(1.5, 2.3, inharm));
+			fr = min(f0 * mr * (1 + 0.08 * bt_amp) * (1 + an * 0.01 * peek(tol, 33 + j)), nyq);
+			res = res + svf(ex, fr, qb, sr2, st, 4 + j * 2, 1, 1.5) * qb / (j + 1);
+		}
+		bt_amp = bt_amp + (abs(res) - bt_amp) * 0.001;
+		res = res * 0.5;
+	} else {
+		ex = noise() * exc * exc * (0.4 + 0.6 * acc_b) * hit_vel;
+		for (j = 0; j < 4; j += 1) {
+			mh = j + 1;
+			mb = selector(j + 1, 1, 2.756, 5.404, 8.933);
+			mp = selector(j + 1, 1, 1.594, 2.136, 2.653);
+			mr = mix(mix(mh, mb, ta), mp, tb);
+			fr = min(f0 * mr * (1 + an * 0.01 * peek(tol, 33 + j)), nyq);
+			res = res + svf(ex, fr, q, sr2, st, 4 + j * 2, 1, 0) * sqrt(1000 / fr) / (j + 1);
+		}
+		res = res * sqrt(q) * 15 * pow(osf, 0.7);
+	}
+	eng_c = res * min(1, env * 4);
+
+	// ---------- Morph, Noise, Amp (VCA / LPG) ----------
+	va = eng_a * amp_ab;
+	vb = eng_b * amp_ab;
+	m = morph * 2;
+	voice = 0;
+	if (m < 1) {
+		voice = va * cos(m * pi * 0.5) + vb * sin(m * pi * 0.5);
+	} else {
+		m = m - 1;
+		voice = vb * cos(m * pi * 0.5) + eng_c * sin(m * pi * 0.5);
+	}
+	voice = voice + svf(noise(), min(f0 * 8, nyq), 0.7, sr2, st, 12, 2, 0) * env * noise_mix * sqrt(osf);
+	if (amp_mode > 0.5) {
+		voice = svf(voice, lpg_fc, 0.6, sr2, st, 14, 0, ota);
+	}
+
+	// ---------- Wavefolder + asymmetrische Sättigung ----------
+	if (wfold > 0.001) {
+		voice = mix(voice, sin(voice * fold_g * pi * 0.5), min(1, wfold * 3));
+	}
+	y = (tanh(dg * (voice + ab)) - tanh(dg * ab)) / sqrt(dg);
+
+	// ---------- Dezimation: Butterworth 6. Ordnung bei 0.42 * samplerate ----------
+	if (osf > 1) {
+		y = svf(y, samplerate * 0.42, 0.5176, sr2, st, 16, 0, 0);
+		y = svf(y, samplerate * 0.42, 0.7071, sr2, st, 18, 0, 0);
+		y = svf(y, samplerate * 0.42, 1.9319, sr2, st, 20, 0, 0);
+	}
+	out_os = y;
+}
+y = out_os;
 
 // DC-Blocker
 dc_y = y - dc_x + 0.995 * dc_y;
 dc_x = y;
 
-out1 = dc_y * level;
+// Netzteil-Einbruch: Hüllkurvenfolger auf den Ausgang
+sagf = sagf + (abs(dc_y) - sagf) * selector((abs(dc_y) > sagf) + 1, 0.0003, 0.02);
+y_out = dc_y * level * (1 - sag * 0.2 * min(1, sagf * 2));
+
+// Grundrauschen (pink) und Brumm
+wn = noise();
+pk0 = 0.99765 * pk0 + wn * 0.099046;
+pk1 = 0.963 * pk1 + wn * 0.2965164;
+pk2 = 0.57 * pk2 + wn * 1.0526913;
+pink = (pk0 + pk1 + pk2 + wn * 0.1848) * 0.2;
+hum_ph = wrap(hum_ph + selector(floor(hum_hz + 0.5) + 1, 50, 60) / samplerate, 0, 1);
+hz = sin(twopi * hum_ph) + 0.5 * sin(twopi * 3 * hum_ph) + 0.25 * sin(twopi * 5 * hum_ph);
+y_out = y_out + pink * an * (0.00005 + ag * 0.0003) + hz * hum * 0.003;
+
+out1 = y_out;
 out2 = env;
 out3 = max(cur_step, 0);
 out4 = gate_cnt > 0;

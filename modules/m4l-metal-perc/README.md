@@ -12,7 +12,7 @@ drei Klang-Engines, vier Wellenformen, einem 1-V/Oct-Quantizer und einem eingeba
 *Layout-Vorschau, aus den Positionen im Patch gerendert (`tools/render_layout.py`). Es ist kein echter Max-Screenshot, in Live sieht es ähnlich aus.*
 
 **Design:** Dark Mode mit einer Karte pro Sektion und einer Akzentfarbe je Bereich: SEQ Türkis, RANDOM Pink,
-OSC Violett, VOICE Amber. Im Sequencer sind die Beats 1 und 3 leicht hinterlegt. Alle Farben stehen zentral in
+OSC Violett, VOICE Amber, CIRCUIT Rot, ANALOG Grün. Im Sequencer sind die Beats 1 und 3 leicht hinterlegt. Alle Farben stehen zentral in
 `THEME` und `SECTIONS` in `build.py`. Dort ändern und `python3 build.py` ausführen, dann ist das ganze Device umgefärbt.
 Die Farben sind fest gesetzt und folgen nicht dem Live-Theme.
 
@@ -99,6 +99,30 @@ Die Farben sind fest gesetzt und folgen nicht dem Live-Theme.
 
 Im Resonator-Modus (Morph = 1) wirkt **Wave** nicht, weil die Moden durch Rauschen angeregt werden.
 
+### Circuit (Schaltungs-Modelle)
+| Regler | Wirkung |
+|---|---|
+| **Fold** | Wavefolder (West Coast): Die Welle faltet sich zurück, wenn sie zu laut wird. Erzeugt metallische Obertöne |
+| **Asym** | Asymmetrische Sättigung wie bei Transistor oder Röhre. Erzeugt gerade Obertöne und klingt dadurch wärmer |
+| **Bleed** | Dioden-Ringmodulator: Anteil der Diodenkennlinie und Durchschlag von Träger und Modulator |
+| **LPG Col** | Filteranteil des Lowpass-Gates (0 = fast nur Lautstärke, 1 = volles Tiefpassfilter) |
+| **Amp** | *VCA*: klassischer Verstärker. *LPG*: Buchla-artiges Lowpass-Gate mit Vactrol. Öffnet schnell, schließt langsam und nichtlinear: der typische „Plonk“ |
+| **FM** | *Lin*: lineare FM (Phasenmodulation, sauber und stimmstabil). *Exp*: exponentielle FM wie bei analogen VCOs. Die Tonhöhe verschiebt sich mit der FM-Stärke |
+| **Reso** | *Modal*: 4 Resonator-Moden, angeregt durch Rauschen. *Bridged-T*: das 808-Prinzip. Ein Impuls regt gesättigte Schwingkreise an, die Tonhöhe fällt mit der Amplitude („Boing“) |
+
+### Analog
+| Regler | Wirkung |
+|---|---|
+| **Analog** | Makro für alle Ungenauigkeiten: VCO-Drift, Bauteil-Toleranzen (Stimmung, PW, Gleichanteil, Flankensteilheit), Pitch-Jitter, gerade Obertöne in den Wellenformen, OTA-Sättigung der Filter, Toleranz der Filter-Cutoffs und Moden, Trigger-Jitter bis 0.4 ms, VCA-Bleed, Hüllkurven-Krümmung, Grundrauschen |
+| **Age** | *Clean → Vintage → Worn*: mehr und schnellere Drift, weichere Flanken, mehr Bleed und Rauschen |
+| **Sag** | Netzteil-Einbruch: Laute Schläge senken kurz Pegel und Tonhöhe. Ergibt einen natürlichen Pump-Effekt |
+| **Hum / Hum Hz** | Netzbrumm mit 50 oder 60 Hz plus Obertönen. Standard aus |
+| **Seed** | Charakter dieser Instanz. Jeder Wert ergibt andere Bauteil-Toleranzen, wie zwei Exemplare desselben Hardware-Moduls. Wird mit dem Set gespeichert |
+| **Quality** | Oversampling 1× / 2× / 4× gegen Aliasing bei FM, Drive und Fold. 2× halbiert das Aliasing (gemessen 4.3 % → 2.2 %, 4×: 1.8 %). 4× kostet etwa die vierfache CPU-Last |
+
+Bei Analog > 0 ist das Device nie ganz still: VCA-Bleed und Grundrauschen liegen bei etwa −67 dBFS, wie bei Hardware.
+Für einen komplett digitalen, sauberen Klang Analog, Sag, Asym und Bleed auf 0 und Quality auf 1x stellen.
+
 ### MIDI
 MIDI-Noten aus Live-Clips triggern die Voice direkt. C3 (60) = Tune, andere Noten transponieren relativ dazu.
 Die Velocity wird übernommen.
@@ -133,8 +157,12 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `08_osc_bank_voices_spread_detune` | Bank mit 3 Oszillatoren, Spread 1.6, Detune 25 Cent, Tilt hell, PW 0.3 |
 | `09_lowmid_fm_metal` | Preset *Low/Mid FM Metal* im Pattern (G Phrygian) |
 | `10_lowmid_fm_metal_hits_G1_D2_G2` | Preset *Low/Mid FM Metal* als Einzelschläge auf G1, D2, G2 |
+| `11_lpg_vactrol_fm_plonk` | Low/Mid FM Metal mit Lowpass-Gate (Vactrol) |
+| `12_bridged_t_808_toms` | Resonator im Bridged-T-Modus: 808-artige Metall-Toms |
+| `13_wavefolder_exp_fm` | Exponentielle FM und Wavefolder |
+| `14_ab_digital_then_analog` | A/B-Vergleich: dasselbe Pattern erst komplett digital, nach kurzer Pause mit allen Analog-Bausteinen |
 
-Die Hörproben sind normalisiert. Neu rendern mit `python3 reference/metal_perc_ref.py`.
+Alle Hörproben außer dem digitalen Teil von 14 laufen mit den Analog-Standardwerten (Analog 0.5, Age 0.3, Quality 2x). Die Hörproben sind normalisiert. Neu rendern mit `python3 reference/metal_perc_ref.py`.
 
 ## Preset: Low/Mid FM Metal
 
@@ -147,6 +175,7 @@ metallische Seitenbänder über einem Grundton von G1 (~98 Hz). Etwa 60 % der En
 | Voice | Tune **43** (G1) · Morph **0.50** (reine FM) · Wave **Sin** · Attack **4 ms** · Decay **0.38** · Accent **0.60** · Drive **0.20** · Noise **0** · Level 0.80 |
 | OSC | Mod Wave **Sin** · FM Ratio **2.76** · FM Amt **0.90** · FM FB **0** · Ring **0.70** · Sweep **+5 st** · Sw Time **40 ms** · Phase **Free** |
 | Pitch | Mode **Scale** · Scale **Phrygian** · Root **G** |
+| Circuit / Analog | Bleed **0.30** · Asym **0.30** · Analog **0.60** · Age **0.35** · Sag **0.30** · Quality 2x |
 | Pattern | Steps `1001 0010 0100 1010` · Pitch +1 auf Step 4, −2 auf Step 10, +3 auf Step 13 · Velocity leicht akzentuiert |
 
 **Gegen Klicks:**
@@ -163,8 +192,9 @@ Varianten:
 - **Attack 6–10 ms** macht den Anschlag noch weicher, eher Mallet-artig.
 
 ## Bekannte Grenzen
+- **CPU:** Durch Oversampling und Analog-Modelle rechnet der Kern deutlich mehr als vorher. Bei Bedarf Quality auf 1x stellen.
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 91 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 105 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.

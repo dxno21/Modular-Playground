@@ -14,7 +14,7 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 1300
+DEVICE_WIDTH = 1736
 DEVICE_HEIGHT = 169
 
 
@@ -184,10 +184,13 @@ SECTIONS = [
     ("SEQ", 0, 440, rgb("#2ed3c4")),
     ("RANDOM", 440, 540, rgb("#ff5c93")),
     ("OSC", 540, 832, rgb("#9d86ff")),
-    ("VOICE", 832, 1244, rgb("#ffad38")),
-    ("OUT", 1244, DEVICE_WIDTH, rgb("#d4d7dd")),
+    ("VOICE", 832, 1242, rgb("#ffad38")),
+    ("CIRCUIT", 1242, 1486, rgb("#ff6b4a")),
+    ("ANALOG", 1486, 1678, rgb("#7bd88f")),
+    ("OUT", 1678, DEVICE_WIDTH, rgb("#d4d7dd")),
 ]
-CARDS = [[2, 2, 436, 165], [442, 2, 94, 165], [540, 2, 290, 165], [834, 2, 406, 165], [1244, 2, 54, 165]]
+CARDS = [[2, 2, 436, 165], [442, 2, 94, 165], [540, 2, 290, 165], [834, 2, 406, 165],
+         [1244, 2, 240, 165], [1488, 2, 188, 165], [1680, 2, 54, 165]]
 
 
 def accent_for(x):
@@ -270,8 +273,8 @@ def build_maxpat(code):
     # ---------------- Signalfluss
     phasor = p.obj("plugphasor~", 40, 940, 1, 1, ["signal"])
     p.line(phasor, 0, gen, 0)
-    p.comment("OUT", [1250, 4, 44, 14], header=True)
-    gain = p.ui("live.gain~", "out_gain", [1252, 20, 40, 132],
+    p.comment("OUT", [1686, 3, 44, 14], header=True)
+    gain = p.ui("live.gain~", "out_gain", [1688, 20, 40, 132],
                 valueof("Output", "Output", 0, -70.0, 6.0, 0.0, unit=4), 2, 5,
                 ["signal", "signal", "", "float", "list"])
     p.line(gen, 0, gain, 0)
@@ -417,6 +420,30 @@ def build_maxpat(code):
     p.comment("ROOT", [1060, 116, 40, 14])
     to_gen(menu(p, "root", "Root", [1060, 132, 52, 16],
                 ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"], 0), "root", 520, 1600)
+
+    # ---------------- Circuit
+    p.comment("CIRCUIT", [1250, 3, 80, 14], header=True)
+    for c, (var, name, init) in enumerate([("wfold", "Fold", 0.0), ("asym", "Asym", 0.25),
+                                            ("ring_bleed", "Bleed", 0.15), ("lpg_color", "LPG Col", 0.6)]):
+        to_gen(dial(p, var, name, name, [1248 + c * 56, 14, 44, 48], 0.0, 1.0, init), var, 40 + c * 140, 1780)
+    p.comment("AMP", [1248, 66, 60, 14])
+    to_gen(tab(p, "amp_mode", "Amp Mode", [1248, 82, 104, 16], ["VCA", "LPG"], 0), "amp_mode", 40, 1810)
+    p.comment("FM", [1360, 66, 60, 14])
+    to_gen(tab(p, "fm_mode", "FM Mode", [1360, 82, 112, 16], ["Lin", "Exp"], 0), "fm_mode", 200, 1810)
+    p.comment("RESO", [1248, 116, 60, 14])
+    to_gen(tab(p, "reso_mode", "Reso Mode", [1248, 132, 140, 16], ["Modal", "Bridged-T"], 0), "reso_mode",
+           360, 1810)
+
+    # ---------------- Analog
+    p.comment("ANALOG", [1494, 3, 80, 14], header=True)
+    for c, (var, name, init) in enumerate([("analog", "Analog", 0.5), ("age", "Age", 0.3), ("sag", "Sag", 0.25)]):
+        to_gen(dial(p, var, name, name, [1492 + c * 56, 14, 44, 48], 0.0, 1.0, init), var, 40 + c * 140, 1840)
+    to_gen(dial(p, "hum", "Hum", "Hum", [1492, 64, 44, 48], 0.0, 1.0, 0.0), "hum", 460, 1840)
+    to_gen(dial(p, "seed", "Seed", "Seed", [1548, 64, 44, 48], 0, 999, 1, ptype=1, unit=0), "seed", 600, 1840)
+    p.comment("QUALITY", [1492, 116, 60, 14])
+    to_gen(tab(p, "quality", "Quality", [1492, 132, 96, 16], ["1x", "2x", "4x"], 1), "quality", 40, 1870)
+    p.comment("HUM HZ", [1600, 116, 60, 14])
+    to_gen(tab(p, "hum_hz", "Hum Hz", [1600, 132, 68, 16], ["50", "60"], 0), "hum_hz", 200, 1870)
 
     apply_theme(p)
     add_panels(p)

@@ -94,21 +94,38 @@ def quant(n, root, mask):
     return best
 
 
-def svf(x, fc, q, st, i, mode):
-    g = math.tan(math.pi * fc / SR)
+def svf(x, fc, q, sr, st, i, mode, sat=0.0):
+    """TPT-SVF, mode 0 LP, 1 BP (unity peak), 2 HP; sat > 0 = OTA-Sättigung der Eingangsstufe."""
+    g = math.tan(math.pi * min(fc, sr * 0.49) / sr)
     k = 1 / q
     a1 = 1 / (1 + g * (g + k))
     a2 = g * a1
     a3 = g * a2
     ic1, ic2 = st[i], st[i + 1]
     v3 = x - ic2
+    if sat > 0.001:
+        v3 = math.tanh(v3 * sat) / sat
     v1 = a1 * ic1 + a2 * v3
     v2 = ic2 + a2 * ic1 + a3 * v3
-    st[i] = 2 * v1 - ic1
-    st[i + 1] = 2 * v2 - ic2
-    if mode == "bp":
+    st[i], st[i + 1] = 2 * v1 - ic1, 2 * v2 - ic2
+    if mode > 1.5:
+        return x - k * v1 - v2
+    if mode > 0.5:
         return v1 * k
-    return x - k * v1 - v2
+    return v2
+
+
+def rnd_hash(sd, i):
+    return fract(math.sin(sd * 12.9898 + i * 78.233 + 0.5) * 43758.5453)
+
+
+def diode(v):
+    u = v - 0.2
+    return u * u / (u + 0.2) if u > 0 else 0.0
+
+
+def diode_ring(c, m):
+    return (diode(c + m) + diode(-c - m) - diode(c - m) - diode(m - c)) * 1.25
 
 
 DEFAULTS = dict(
@@ -117,6 +134,9 @@ DEFAULTS = dict(
     voices=6, spread=1.0, detune=0.0, tilt=0.0, pw=0.5,
     fm_ratio=1.4142, fm_amt=0.36, fm_fb=0.0, ring=0.4, mod_wave=1,
     sweep=0.0, sweep_time=30.0, retrig=0,
+    fm_mode=0, ring_bleed=0.15,
+    wfold=0.0, asym=0.25, amp_mode=0, lpg_color=0.6, reso_mode=0,
+    analog=0.5, age=0.3, sag=0.25, hum=0.0, hum_hz=0, seed=1, quality=1,
     qmode=1, scale_sel=1, root=0,
     seq_on=1, bpm=130, clock_div=1, seq_len=16,
     live_steps=0, live_vel=0, live_pitch=0,
@@ -127,6 +147,7 @@ DEFAULTS = dict(
 class MetalPerc:
     def __init__(self, **params):
         self.p = dict(DEFAULTS, **params)
+        p = self.p
         self.steps_on = [1] * 16
         self.steps_vel = [1.0] * 16
         self.steps_pitch = [0.0] * 16
@@ -139,17 +160,39 @@ class MetalPerc:
         self.exc = 0.0
         self.pe = 0.0
         self.fb_prev = 0.0
-        self.hit_note = self.p["tune"]
+        self.hit_note = p["tune"]
         self.hit_vel = 1.0
+        self.pend = 0
+        self.p_note, self.p_vel = p["tune"], 1.0
+        self.vac = 0.0
+        self.sagf = 0.0
+        self.bt_amp = 0.0
+        self.hum_ph = 0.0
+        self.pk = [0.0, 0.0, 0.0]
         self.ph = [0.0] * 8
-        self.st = [0.0] * 16
+        self.osl = [0.0] * 8
+        self.dr = [0.0] * 9
+        self.st = [0.0] * 24
         self.dc_x = self.dc_y = 0.0
+        sd = p["seed"]
+        self.tol = ([rnd_hash(sd, i) * 2 - 1 for i in range(8)] + [rnd_hash(sd, i + 8) - 0.5 for i in range(8)]
+                    + [rnd_hash(sd, i + 16) - 0.5 for i in range(8)] + [rnd_hash(sd, i + 24) for i in range(8)]
+                    + [rnd_hash(sd, j + 32) * 2 - 1 for j in range(8)])
 
+    # Ein Trigger vom Sequencer / MIDI: Tonhöhe bestimmen, mit Jitter starten
     def trigger(self, vel, pitch):
         p = self.p
         note = p["tune"] + pitch
         if p["qmode"] > 0.5:
             note = quant(note, p["root"], SCALE_MASKS[int(p["scale_sel"])])
+        jit = math.floor(random.random() * p["analog"] * 0.0004 * SR)
+        if jit < 1:
+            self.start(note, vel)
+        else:
+            self.pend, self.p_note, self.p_vel = jit, note, vel
+
+    def start(self, note, vel):
+        p = self.p
         self.hit_note = note
         self.hit_vel = vel
         t = 0.01 * 250 ** p["decay"]
@@ -170,7 +213,7 @@ class MetalPerc:
         self.int_phase += p["bpm"] / 60 / SR
         cur = math.floor(self.int_phase * spb) % length
         if cur == self.last_step:
-            return
+            return False
         self.last_step = cur
         if p["seq_on"] > 0.5 and self.steps_on[cur]:
             if p["live_steps"] < 0.5 or random.random() < p["density"]:
@@ -181,79 +224,167 @@ class MetalPerc:
                 if p["live_pitch"] > 0.5:
                     pitch += p["pitch_range"] * noise()
                 self.trigger(vel, pitch)
+                return True
+        return False
 
     def tick(self, use_seq=True):
         p = self.p
-        if use_seq:
-            self.clock()
+        fired = self.clock() if use_seq else False
+        if not fired and self.pend > 0:
+            self.pend -= 1
+            if self.pend < 0.5:
+                self.start(self.p_note, self.p_vel)
+
+        an, ag = p["analog"], p["age"]
+        d_a = 1 - math.exp(-2 * math.pi * (0.4 + ag * 0.8) / SR)
+        d_norm = 1 / math.sqrt(d_a / (2 - d_a) / 3)
+        for i in range(9):
+            self.dr[i] += (noise() - self.dr[i]) * d_a
+        drift_c = an * (2 + ag * 10)
+        tol_c = an * (3 + ag * 5)
+        jit_c = an * (0.3 + ag)
+        shape_ev = an * (0.04 + ag * 0.08)
+        bleed = an * (0.0003 + ag * 0.0015)
+        ota = an * (0.4 + ag * 0.8)
+        tol = self.tol
+
         if self.att:
-            self.env += (self.target - self.env) * (1 - math.exp(-4.6 / (p["attack"] * 0.001 * SR)))
-            if self.env >= self.target * 0.99:
+            ov = 1.01 + 0.02 * an
+            self.env += (self.target * ov - self.env) * (1 - math.exp(-4.6 / (p["attack"] * 0.001 * SR)))
+            if self.env >= self.target:
+                self.env = self.target
                 self.att = False
         else:
-            self.env *= self.coef
+            self.env *= self.coef ** (1 - 0.3 * an * (1 - self.env))
         self.exc *= 0.992
         env = self.env
+        if env > self.vac:
+            self.vac += (env - self.vac) * (1 - math.exp(-1 / (0.002 * SR)))
+        else:
+            tau = 0.012 + 0.25 * (1 - self.vac) ** 2
+            self.vac += (env - self.vac) * (1 - math.exp(-1 / (tau * SR)))
+        vac = self.vac
+
         self.pe *= math.exp(-6.9078 / (p["sweep_time"] * 0.001 * SR))
-        f0 = mtof(self.hit_note + p["sweep"] * self.pe)
-        nyq = SR * 0.45
+        gdrift = self.dr[8] * d_norm * drift_c * 0.5
+        f0 = mtof(self.hit_note + p["sweep"] * self.pe + gdrift * 0.01) * (1 - p["sag"] * 0.012 * self.sagf)
         w = math.floor(p["waveform"] + 0.5)
+        mw = math.floor(p["mod_wave"] + 0.5)
         acc_b = p["bright"] * (1 - p["accent"] * 0.4 + p["accent"] * 0.4 * self.hit_vel)
         ta = clamp(p["inharm"] * 2, 0, 1)
         tb = clamp(p["inharm"] * 2 - 1, 0, 1)
-
         nv = math.floor(p["voices"] + 0.5)
-        bank = asum = 0.0
-        for i in range(6):
-            ratio = mix(mix(BANK_H[i], BANK_M[i], ta), BANK_E[i], tb)
-            ratio = 1 + (ratio - 1) * p["spread"]
-            ratio *= 2 ** (p["detune"] * DETUNE[i] / 1200)
-            inc = min(f0 * ratio / SR, 0.45)
-            ph = self.ph[i]
-            if i < nv:
-                amp = (i + 1) ** p["tilt"]
-                bank += osc(ph, inc, w, p["pw"]) * amp
-                asum += amp
-            self.ph[i] = fract(ph + inc)
-        bank /= asum
-        fca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * math.sqrt(env)), nyq)
-        eng_a = 1.8 * svf(bank, fca, 1.5, self.st, 0, "bp") + 1.8 * svf(bank, fca, 0.7, self.st, 2, "hp")
-
-        inc_c = min(f0 / SR, 0.45)
-        inc_m = min(f0 * p["fm_ratio"] / SR, 0.45)
-        pc, pm = self.ph[6], self.ph[7]
-        mods = osc(fract(pm + p["fm_fb"] * 0.5 * self.fb_prev), inc_m, math.floor(p["mod_wave"] + 0.5), p["pw"])
-        self.fb_prev = mods
+        osf = [1, 2, 4][int(math.floor(p["quality"] + 0.5))]
+        sr2 = SR * osf
+        nyq = sr2 * 0.45
         idx = p["fm_amt"] * 2 * env * (1 - p["accent"] * 0.4 + p["accent"] * 0.4 * self.hit_vel)
-        car = osc(fract(pc + idx * mods), inc_c, w, p["pw"])
-        rsig = osc(pc, inc_c, w, p["pw"]) * mods
-        self.ph[6] = fract(pc + inc_c)
-        self.ph[7] = fract(pm + inc_m)
-        eng_b = 1.2 * (car * (1 - p["ring"]) + rsig * p["ring"])
-
-        ex = noise() * self.exc * self.exc * (0.4 + 0.6 * acc_b) * self.hit_vel
+        amp = vac ** 1.4 if p["amp_mode"] > 0.5 else env
+        amp_ab = amp + bleed
+        lpg_fc = mix(16000, 60 * 2 ** (vac * 8.2), p["lpg_color"])
         q = mix(400, 12, p["damp"])
-        res = 0.0
-        for j in range(4):
-            mr = mix(mix(MODE_H[j], MODE_B[j], ta), MODE_P[j], tb)
-            fr = min(f0 * mr, nyq)
-            res += svf(ex, fr, q, self.st, 4 + j * 2, "bp") * math.sqrt(1000 / fr) / (j + 1)
-        eng_c = res * math.sqrt(q) * 15 * min(1, env * 4)
+        fold_g = 1 + p["wfold"] * 5
+        dg = 1 + p["drive"] * 12
+        ab = p["asym"] * 0.3
+        fq, slc = [0.0] * 8, [0.0] * 8
+        for i in range(8):
+            cents = tol[i] * tol_c + self.dr[i] * d_norm * drift_c + noise() * jit_c
+            fq[i] = 2 ** (cents / 1200)
+            fsl = mix(20000, 5000, an * ag) * (0.85 + 0.3 * tol[i + 24])
+            slc[i] = 1 - math.exp(-2 * math.pi * min(fsl, nyq) / sr2)
 
-        va, vb = eng_a * env, eng_b * env
-        m = p["morph"] * 2
-        if m < 1:
-            voice = va * math.cos(m * math.pi / 2) + vb * math.sin(m * math.pi / 2)
-        else:
-            m -= 1
-            voice = vb * math.cos(m * math.pi / 2) + eng_c * math.sin(m * math.pi / 2)
-        nz = svf(noise(), min(f0 * 8, nyq), 0.7, self.st, 12, "hp") * env * p["noise_mix"]
-        x = voice + nz
-        g = 1 + p["drive"] * 12
-        y = math.tanh(x * g) / math.sqrt(g)
+        st, ph, osl = self.st, self.ph, self.osl
+        y = 0.0
+        for _ in range(osf):
+            bank = asum = 0.0
+            for i in range(6):
+                ratio = mix(mix(BANK_H[i], BANK_M[i], ta), BANK_E[i], tb)
+                ratio = 1 + (ratio - 1) * p["spread"]
+                ratio *= 2 ** (p["detune"] * DETUNE[i] / 1200)
+                inc = min(f0 * ratio * fq[i] / sr2, 0.45)
+                pp = ph[i]
+                if i < nv:
+                    amp_i = (i + 1) ** p["tilt"]
+                    pw_i = clamp(p["pw"] + an * 0.08 * tol[i + 8], 0.03, 0.97)
+                    yo = osc(pp, inc, w, pw_i)
+                    yo = yo + shape_ev * (yo * yo - 0.5) + an * 0.06 * tol[i + 16]
+                    osl[i] += (yo - osl[i]) * slc[i]
+                    bank += osl[i] * amp_i
+                    asum += amp_i
+                ph[i] = fract(pp + inc)
+            bank /= asum
+            fca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * math.sqrt(env)) * (1 + an * 0.04 * tol[32]), nyq)
+            eng_a = 1.8 * svf(bank, fca, 1.5, sr2, st, 0, 1, ota) + 1.8 * svf(bank, fca, 0.7, sr2, st, 2, 2, ota)
+
+            pc, pm = ph[6], ph[7]
+            inc_m = min(f0 * p["fm_ratio"] * fq[7] / sr2, 0.45)
+            mods = osc(fract(pm + p["fm_fb"] * 0.5 * self.fb_prev), inc_m, mw, p["pw"])
+            mods = mods + shape_ev * (mods * mods - 0.5) + an * 0.06 * tol[23]
+            self.fb_prev = mods
+            inc_c = min(f0 * fq[6] / sr2, 0.45)
+            if p["fm_mode"] > 0.5:
+                inc_c = min(inc_c * 2 ** (idx * 0.75 * mods), 0.45)
+                car = osc(pc, inc_c, w, p["pw"])
+            else:
+                car = osc(fract(pc + idx * mods), inc_c, w, p["pw"])
+            cplain = osc(pc, inc_c, w, p["pw"])
+            rb = p["ring_bleed"]
+            rsig = mix(cplain * mods, diode_ring(cplain, mods), rb) + rb * (0.25 * cplain + 0.1 * mods)
+            ph[6] = fract(pc + inc_c)
+            ph[7] = fract(pm + inc_m)
+            eng_b = 1.2 * (car * (1 - p["ring"]) + rsig * p["ring"])
+
+            res = 0.0
+            if p["reso_mode"] > 0.5:
+                ex = self.exc ** 4 * self.hit_vel * 20
+                qb = q * 0.5
+                for j in range(2):
+                    mr = 1 if j == 0 else mix(1.5, 2.3, p["inharm"])
+                    fr = min(f0 * mr * (1 + 0.08 * self.bt_amp) * (1 + an * 0.01 * tol[33 + j]), nyq)
+                    res += svf(ex, fr, qb, sr2, st, 4 + j * 2, 1, 1.5) * qb / (j + 1)
+                self.bt_amp += (abs(res) - self.bt_amp) * 0.001
+                res *= 0.5
+            else:
+                ex = noise() * self.exc * self.exc * (0.4 + 0.6 * acc_b) * self.hit_vel
+                for j in range(4):
+                    mr = mix(mix(MODE_H[j], MODE_B[j], ta), MODE_P[j], tb)
+                    fr = min(f0 * mr * (1 + an * 0.01 * tol[33 + j]), nyq)
+                    res += svf(ex, fr, q, sr2, st, 4 + j * 2, 1, 0) * math.sqrt(1000 / fr) / (j + 1)
+                res *= math.sqrt(q) * 15 * osf ** 0.7
+            eng_c = res * min(1, env * 4)
+
+            va, vb = eng_a * amp_ab, eng_b * amp_ab
+            m = p["morph"] * 2
+            if m < 1:
+                voice = va * math.cos(m * math.pi / 2) + vb * math.sin(m * math.pi / 2)
+            else:
+                m -= 1
+                voice = vb * math.cos(m * math.pi / 2) + eng_c * math.sin(m * math.pi / 2)
+            voice += svf(noise(), min(f0 * 8, nyq), 0.7, sr2, st, 12, 2, 0) * env * p["noise_mix"] * math.sqrt(osf)
+            if p["amp_mode"] > 0.5:
+                voice = svf(voice, lpg_fc, 0.6, sr2, st, 14, 0, ota)
+            if p["wfold"] > 0.001:
+                voice = mix(voice, math.sin(voice * fold_g * math.pi / 2), min(1, p["wfold"] * 3))
+            y = (math.tanh(dg * (voice + ab)) - math.tanh(dg * ab)) / math.sqrt(dg)
+            if osf > 1:
+                y = svf(y, SR * 0.42, 0.5176, sr2, st, 16, 0)
+                y = svf(y, SR * 0.42, 0.7071, sr2, st, 18, 0)
+                y = svf(y, SR * 0.42, 1.9319, sr2, st, 20, 0)
+
         self.dc_y = y - self.dc_x + 0.995 * self.dc_y
         self.dc_x = y
-        return self.dc_y * p["level"]
+        dcy = self.dc_y
+        self.sagf += (abs(dcy) - self.sagf) * (0.02 if abs(dcy) > self.sagf else 0.0003)
+        y_out = dcy * p["level"] * (1 - p["sag"] * 0.2 * min(1, self.sagf * 2))
+        wn = noise()
+        pk = self.pk
+        pk[0] = 0.99765 * pk[0] + wn * 0.099046
+        pk[1] = 0.963 * pk[1] + wn * 0.2965164
+        pk[2] = 0.57 * pk[2] + wn * 1.0526913
+        pink = (pk[0] + pk[1] + pk[2] + wn * 0.1848) * 0.2
+        self.hum_ph = fract(self.hum_ph + (60 if p["hum_hz"] > 0.5 else 50) / SR)
+        hz = (math.sin(2 * math.pi * self.hum_ph) + 0.5 * math.sin(6 * math.pi * self.hum_ph)
+              + 0.25 * math.sin(10 * math.pi * self.hum_ph))
+        return y_out + pink * an * (0.00005 + ag * 0.0003) + hz * p["hum"] * 0.003
 
     def render(self, seconds, use_seq=True):
         return [self.tick(use_seq) for _ in range(int(seconds * SR))]
@@ -283,7 +414,11 @@ LOWMID_FM_METAL = dict(
     morph=0.5, waveform=0, mod_wave=0, fm_ratio=2.76, fm_amt=0.9, fm_fb=0.0, ring=0.7,
     sweep=5, sweep_time=40, retrig=0, attack=4, tune=43, decay=0.38, accent=0.6, drive=0.2,
     noise_mix=0.0, scale_sel=2, root=7, level=0.8,
+    analog=0.6, age=0.35, ring_bleed=0.3, asym=0.3, sag=0.3,
 )
+
+# Komplett digital: alle Analog-Bausteine aus (zum A/B-Vergleich)
+DIGITAL = dict(analog=0.0, age=0.0, sag=0.0, asym=0.0, ring_bleed=0.0, quality=0)
 
 PRESETS = {
     "01_bank_hats_square": dict(
@@ -321,6 +456,20 @@ PRESETS = {
                     decay=0.45, bright=0.7, tune=58),
         pattern=seq("1101 1011 0110 1101"),
     ),
+    "11_lpg_vactrol_fm_plonk": dict(
+        params=dict(LOWMID_FM_METAL, amp_mode=1, lpg_color=0.75, decay=0.25, fm_amt=0.8, tune=48),
+        pattern=seq("1010 0110 1001 0101", vel=[1, .5, .8, .5, .6, 1, .5, .7, 1, .5, .6, .9, .5, .8, .6, 1],
+                    pitch=[0, 0, 3, 0, 0, 7, 0, 0, 0, 0, 1, 0, 0, 5, 0, 3]),
+    ),
+    "12_bridged_t_808_toms": dict(
+        params=dict(morph=1.0, reso_mode=1, damp=0.55, inharm=0.4, tune=45, decay=0.5, analog=0.6, age=0.4,
+                    noise_mix=0.0, qmode=1, scale_sel=2, root=9),
+        pattern=seq("1001 0010 1000 1010", pitch=[0, 0, 0, 0, 0, 0, 5, 0, 7, 0, 0, 0, 3, 0, 0, 0]),
+    ),
+    "13_wavefolder_exp_fm": dict(
+        params=dict(LOWMID_FM_METAL, fm_mode=1, fm_amt=0.7, wfold=0.6, drive=0.35, decay=0.3, tune=41),
+        pattern=seq("1001 0010 0100 1010"),
+    ),
     "09_lowmid_fm_metal": dict(
         params=dict(LOWMID_FM_METAL),
         pattern=seq("1001 0010 0100 1010",
@@ -349,6 +498,15 @@ def render_presets(out_dir, bars=2):
         audio += v.render(0.6, use_seq=False)
     peak = write_wav(out_dir / "06_waveforms_sine_square_saw_tri.wav", audio, normalize_to=0.89)
     report.append(("06_waveforms_sine_square_saw_tri", peak))
+    # A/B: dasselbe Pattern erst komplett digital, dann mit allen Analog-Bausteinen
+    pat = PRESETS["09_lowmid_fm_metal"]["pattern"]
+    audio = []
+    for extra in (DIGITAL, {}):
+        v = MetalPerc(**dict(LOWMID_FM_METAL, **extra))
+        v.steps_on, v.steps_vel, v.steps_pitch = pat
+        audio += v.render(2 * 4 * 60 / v.p["bpm"]) + [0.0] * int(0.4 * SR)
+    peak = write_wav(out_dir / "14_ab_digital_then_analog.wav", audio, normalize_to=0.89)
+    report.append(("14_ab_digital_then_analog", peak))
     # Low/Mid-FM-Metal einzeln in drei Lagen: G1, D2, G2
     audio = []
     for pitch in (0, 7, 12):
