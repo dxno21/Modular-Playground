@@ -1,0 +1,111 @@
+{
+  "id": "4ms-ensemble-oscillator",
+  "manufacturer": "4ms",
+  "name": "Ensemble Oscillator",
+  "category": [
+    "oscillator",
+    "voice"
+  ],
+  "tags": [
+    "drone",
+    "metallisch",
+    "akkorde",
+    "dunkel"
+  ],
+  "hp": 16,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 120,
+    "m12": 20,
+    "p5": 0
+  },
+  "price_eur": 400,
+  "status": "erhältlich",
+  "description": "16 Oszillatoren in Skalen gestimmt: Drones, Cluster, metallische Flächen.",
+  "jacks": [
+    {
+      "id": "pitch",
+      "label": "PITCH",
+      "dir": "in",
+      "type": "pitch"
+    },
+    {
+      "id": "root",
+      "label": "ROOT",
+      "dir": "in",
+      "type": "pitch"
+    },
+    {
+      "id": "scale",
+      "label": "SCALE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "spread",
+      "label": "SPREAD",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "balance",
+      "label": "BALANCE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "twist",
+      "label": "TWIST",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "warp",
+      "label": "WARP",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "cross_fm",
+      "label": "CROSS FM",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "freeze",
+      "label": "FREEZE",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "learn",
+      "label": "LEARN",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "out_a",
+      "label": "OUT A",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "out_b",
+      "label": "OUT B",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "4msCompany.EnOsc",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

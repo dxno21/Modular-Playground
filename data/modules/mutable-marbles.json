@@ -1,0 +1,134 @@
+{
+  "id": "mutable-marbles",
+  "manufacturer": "Mutable Instruments",
+  "name": "Marbles",
+  "category": [
+    "random",
+    "sequencer",
+    "clock"
+  ],
+  "tags": [
+    "generativ",
+    "hypnotisch",
+    "wahrscheinlichkeit"
+  ],
+  "hp": 18,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 85,
+    "m12": 5,
+    "p5": 0
+  },
+  "price_eur": 320,
+  "status": "eingestellt",
+  "description": "Zufallsgenerator für Gates (t) und Spannungen (X/Y) mit Déjà-vu-Loops.",
+  "jacks": [
+    {
+      "id": "t_bias",
+      "label": "T BIAS",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "t_rate",
+      "label": "T RATE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "t_jitter",
+      "label": "T JITTER",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "t_clock",
+      "label": "T CLOCK",
+      "dir": "in",
+      "type": "clock"
+    },
+    {
+      "id": "x_steps",
+      "label": "X STEPS",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "x_spread",
+      "label": "X SPREAD",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "x_bias",
+      "label": "X BIAS",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "x_clock",
+      "label": "X CLOCK",
+      "dir": "in",
+      "type": "clock"
+    },
+    {
+      "id": "t1",
+      "label": "T1",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "t2",
+      "label": "T2",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "t3",
+      "label": "T3",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "y",
+      "label": "Y",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "x1",
+      "label": "X1",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "x2",
+      "label": "X2",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "x3",
+      "label": "X3",
+      "dir": "out",
+      "type": "cv"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "AudibleInstruments.Marbles",
+      "match": "original"
+    },
+    {
+      "kind": "max-external",
+      "ref": "vb.mi.mrbls",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "befaco-spring-reverb",
+  "manufacturer": "Befaco",
+  "name": "Spring Reverb",
+  "category": [
+    "fx",
+    "reverb"
+  ],
+  "tags": [
+    "raum",
+    "industrial",
+    "metallisch"
+  ],
+  "hp": 8,
+  "depth_mm": 40,
+  "power_ma": {
+    "p12": 150,
+    "m12": 50,
+    "p5": 0
+  },
+  "price_eur": 150,
+  "status": "erhältlich",
+  "description": "Analoge Federhall-Steuerung; die Federwanne wird extern angeschlossen.",
+  "jacks": [
+    {
+      "id": "in1",
+      "label": "IN 1",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "in2",
+      "label": "IN 2",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "mix_cv",
+      "label": "MIX CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "wet",
+      "label": "WET",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "mix",
+      "label": "MIX",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "Befaco.SpringReverb",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

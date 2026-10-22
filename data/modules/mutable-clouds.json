@@ -1,0 +1,116 @@
+{
+  "id": "mutable-clouds",
+  "manufacturer": "Mutable Instruments",
+  "name": "Clouds",
+  "category": [
+    "granular",
+    "fx"
+  ],
+  "tags": [
+    "textur",
+    "granular",
+    "drone",
+    "raum"
+  ],
+  "hp": 18,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 100,
+    "m12": 10,
+    "p5": 0
+  },
+  "price_eur": 300,
+  "status": "eingestellt",
+  "description": "Granularer Texturprozessor. Nachfolger: Beads.",
+  "jacks": [
+    {
+      "id": "freeze",
+      "label": "FREEZE",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "trig",
+      "label": "TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "position",
+      "label": "POSITION",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "size",
+      "label": "SIZE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "pitch",
+      "label": "PITCH",
+      "dir": "in",
+      "type": "pitch"
+    },
+    {
+      "id": "blend",
+      "label": "BLEND",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "in_l",
+      "label": "IN L",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "in_r",
+      "label": "IN R",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "density",
+      "label": "DENSITY",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "texture",
+      "label": "TEXTURE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "out_l",
+      "label": "OUT L",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "out_r",
+      "label": "OUT R",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "AudibleInstruments.Clouds",
+      "match": "original"
+    },
+    {
+      "kind": "max-external",
+      "ref": "vb.mi.clds~",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

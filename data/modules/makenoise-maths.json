@@ -1,0 +1,179 @@
+{
+  "id": "makenoise-maths",
+  "manufacturer": "Make Noise",
+  "name": "Maths",
+  "category": [
+    "modulation",
+    "envelope",
+    "function-generator",
+    "utility"
+  ],
+  "tags": [
+    "hüllkurve",
+    "slew",
+    "lfo",
+    "mix"
+  ],
+  "hp": 20,
+  "depth_mm": 24,
+  "power_ma": {
+    "p12": 60,
+    "m12": 50,
+    "p5": 0
+  },
+  "price_eur": 280,
+  "status": "erhältlich",
+  "description": "Analoger Funktionsgenerator: Hüllkurven, LFOs, Slew, Mischer, Logik.",
+  "jacks": [
+    {
+      "id": "ch1_in",
+      "label": "CH1 IN",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch1_trig",
+      "label": "CH1 TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "ch1_rise",
+      "label": "CH1 RISE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch1_both",
+      "label": "CH1 BOTH",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch1_fall",
+      "label": "CH1 FALL",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch1_cycle",
+      "label": "CH1 CYCLE",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "ch2_in",
+      "label": "CH2 IN",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch3_in",
+      "label": "CH3 IN",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch4_in",
+      "label": "CH4 IN",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch4_trig",
+      "label": "CH4 TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "ch4_rise",
+      "label": "CH4 RISE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch4_both",
+      "label": "CH4 BOTH",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch4_fall",
+      "label": "CH4 FALL",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "ch4_cycle",
+      "label": "CH4 CYCLE",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "ch1_eor",
+      "label": "CH1 EOR",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "ch1_out",
+      "label": "CH1 OUT",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "ch2_out",
+      "label": "CH2 OUT",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "ch3_out",
+      "label": "CH3 OUT",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "ch4_out",
+      "label": "CH4 OUT",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "ch4_eoc",
+      "label": "CH4 EOC",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "sum",
+      "label": "SUM",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "inv",
+      "label": "INV",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "or",
+      "label": "OR",
+      "dir": "out",
+      "type": "cv"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "Befaco.Rampage",
+      "match": "ersatz"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

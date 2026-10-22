@@ -1,0 +1,117 @@
+{
+  "id": "mutable-tides",
+  "manufacturer": "Mutable Instruments",
+  "name": "Tides (2018)",
+  "category": [
+    "modulation",
+    "lfo",
+    "envelope",
+    "oscillator"
+  ],
+  "tags": [
+    "generativ",
+    "polyrhythmisch",
+    "hüllkurve"
+  ],
+  "hp": 12,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 70,
+    "m12": 5,
+    "p5": 0
+  },
+  "price_eur": 260,
+  "status": "eingestellt",
+  "description": "Tidal Modulator: LFO, Hüllkurve, Oszillator mit vier polyphonen/polyrhythmischen Ausgängen.",
+  "jacks": [
+    {
+      "id": "trig",
+      "label": "TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "clock",
+      "label": "CLOCK",
+      "dir": "in",
+      "type": "clock"
+    },
+    {
+      "id": "voct",
+      "label": "V/OCT",
+      "dir": "in",
+      "type": "pitch"
+    },
+    {
+      "id": "fm",
+      "label": "FM",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "slope",
+      "label": "SLOPE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "shape",
+      "label": "SHAPE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "smooth",
+      "label": "SMOOTH",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "shift",
+      "label": "SHIFT",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "out1",
+      "label": "OUT 1",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "out2",
+      "label": "OUT 2",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "out3",
+      "label": "OUT 3",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "out4",
+      "label": "OUT 4",
+      "dir": "out",
+      "type": "cv"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "AudibleInstruments.Tides2",
+      "match": "original"
+    },
+    {
+      "kind": "max-external",
+      "ref": "vb.mi.tds~",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

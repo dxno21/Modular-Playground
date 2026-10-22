@@ -1,0 +1,110 @@
+{
+  "id": "intellijel-quad-vca",
+  "manufacturer": "Intellijel",
+  "name": "Quad VCA",
+  "category": [
+    "vca",
+    "mixer",
+    "utility"
+  ],
+  "tags": [
+    "dynamik",
+    "mix"
+  ],
+  "hp": 12,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 80,
+    "m12": 70,
+    "p5": 0
+  },
+  "price_eur": 230,
+  "status": "erhältlich",
+  "description": "Vier VCAs mit Mix-Bus. Grundbaustein für Dynamik und Mischen.",
+  "jacks": [
+    {
+      "id": "in1",
+      "label": "IN 1",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "cv1",
+      "label": "CV 1",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "in2",
+      "label": "IN 2",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "cv2",
+      "label": "CV 2",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "in3",
+      "label": "IN 3",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "cv3",
+      "label": "CV 3",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "in4",
+      "label": "IN 4",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "cv4",
+      "label": "CV 4",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "out1",
+      "label": "OUT 1",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "out2",
+      "label": "OUT 2",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "out3",
+      "label": "OUT 3",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "out4",
+      "label": "OUT 4",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "Fundamental.VCA",
+      "match": "ersatz"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

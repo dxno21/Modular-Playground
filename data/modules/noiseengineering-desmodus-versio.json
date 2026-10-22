@@ -1,0 +1,104 @@
+{
+  "id": "noiseengineering-desmodus-versio",
+  "manufacturer": "Noise Engineering",
+  "name": "Desmodus Versio",
+  "category": [
+    "fx",
+    "reverb"
+  ],
+  "tags": [
+    "raum",
+    "dunkel",
+    "drone"
+  ],
+  "hp": 10,
+  "depth_mm": 30,
+  "power_ma": {
+    "p12": 150,
+    "m12": 10,
+    "p5": 0
+  },
+  "price_eur": 400,
+  "status": "erhältlich",
+  "description": "Dunkler Stereo-Hall mit Freeze (Versio-Plattform).",
+  "jacks": [
+    {
+      "id": "in_l",
+      "label": "IN L",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "in_r",
+      "label": "IN R",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "blend",
+      "label": "BLEND",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "time",
+      "label": "TIME",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "dense",
+      "label": "DENSE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "tone",
+      "label": "TONE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "size",
+      "label": "SIZE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "mod",
+      "label": "MOD",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "freeze",
+      "label": "FREEZE",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "out_l",
+      "label": "OUT L",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "out_r",
+      "label": "OUT R",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "Valley.Plateau",
+      "match": "ersatz"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

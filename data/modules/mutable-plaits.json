@@ -1,0 +1,106 @@
+{
+  "id": "mutable-plaits",
+  "manufacturer": "Mutable Instruments",
+  "name": "Plaits",
+  "category": [
+    "voice",
+    "oscillator",
+    "drum"
+  ],
+  "tags": [
+    "makro-oszillator",
+    "kick",
+    "perkussion",
+    "fm",
+    "noise"
+  ],
+  "hp": 12,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 60,
+    "m12": 5,
+    "p5": 0
+  },
+  "price_eur": 280,
+  "status": "eingestellt",
+  "description": "Makro-Oszillator mit 16 Modellen, inkl. Kick-, Snare- und Hihat-Modellen. Klone/Nachfolger verbreitet.",
+  "jacks": [
+    {
+      "id": "model",
+      "label": "MODEL",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "timbre",
+      "label": "TIMBRE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "fm",
+      "label": "FM",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "morph",
+      "label": "MORPH",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "harmo",
+      "label": "HARMO",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "trig",
+      "label": "TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "level",
+      "label": "LEVEL",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "voct",
+      "label": "V/OCT",
+      "dir": "in",
+      "type": "pitch"
+    },
+    {
+      "id": "out",
+      "label": "OUT",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "aux",
+      "label": "AUX",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "AudibleInstruments.Plaits",
+      "match": "original"
+    },
+    {
+      "kind": "max-external",
+      "ref": "vb.mi.plaits~",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

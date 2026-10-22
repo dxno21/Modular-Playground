@@ -1,0 +1,165 @@
+{
+  "id": "befaco-rampage",
+  "manufacturer": "Befaco",
+  "name": "Rampage",
+  "category": [
+    "modulation",
+    "envelope",
+    "function-generator"
+  ],
+  "tags": [
+    "hüllkurve",
+    "slew",
+    "lfo"
+  ],
+  "hp": 18,
+  "depth_mm": 30,
+  "power_ma": {
+    "p12": 80,
+    "m12": 80,
+    "p5": 0
+  },
+  "price_eur": 250,
+  "status": "erhältlich",
+  "description": "Doppelter Funktionsgenerator (Maths-artig) mit Comparator und Min/Max.",
+  "jacks": [
+    {
+      "id": "a_in",
+      "label": "A IN",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "a_trig",
+      "label": "A TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "a_rise",
+      "label": "A RISE CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "a_fall",
+      "label": "A FALL CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "a_exp",
+      "label": "A EXP CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "b_in",
+      "label": "B IN",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "b_trig",
+      "label": "B TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "b_rise",
+      "label": "B RISE CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "b_fall",
+      "label": "B FALL CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "b_exp",
+      "label": "B EXP CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "a_out",
+      "label": "A OUT",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "a_rising",
+      "label": "A RISING",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "a_falling",
+      "label": "A FALLING",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "a_eoc",
+      "label": "A EOC",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "b_out",
+      "label": "B OUT",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "b_rising",
+      "label": "B RISING",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "b_falling",
+      "label": "B FALLING",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "b_eoc",
+      "label": "B EOC",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "comp",
+      "label": "COMP",
+      "dir": "out",
+      "type": "gate"
+    },
+    {
+      "id": "min",
+      "label": "MIN",
+      "dir": "out",
+      "type": "cv"
+    },
+    {
+      "id": "max",
+      "label": "MAX",
+      "dir": "out",
+      "type": "cv"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "Befaco.Rampage",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

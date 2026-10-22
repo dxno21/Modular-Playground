@@ -1,0 +1,99 @@
+{
+  "id": "noiseengineering-basimilus-iteritas-alter",
+  "manufacturer": "Noise Engineering",
+  "name": "Basimilus Iteritas Alter",
+  "category": [
+    "voice",
+    "drum"
+  ],
+  "tags": [
+    "kick",
+    "perkussion",
+    "industrial",
+    "metallisch"
+  ],
+  "hp": 10,
+  "depth_mm": 30,
+  "power_ma": {
+    "p12": 100,
+    "m12": 10,
+    "p5": 0
+  },
+  "price_eur": 350,
+  "status": "erhältlich",
+  "description": "Additive/FM-Drum-Voice. Industrial-Kicks, metallische Toms, Noise-Hits.",
+  "jacks": [
+    {
+      "id": "trig",
+      "label": "TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "accent",
+      "label": "ACCENT",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "voct",
+      "label": "V/OCT",
+      "dir": "in",
+      "type": "pitch"
+    },
+    {
+      "id": "pitch",
+      "label": "PITCH",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "spread",
+      "label": "SPREAD",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "harm",
+      "label": "HARMONICS",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "morph",
+      "label": "MORPH",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "attack",
+      "label": "ATTACK",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "decay",
+      "label": "DECAY",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "out",
+      "label": "OUT",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "AudibleInstruments.Plaits",
+      "match": "ersatz"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

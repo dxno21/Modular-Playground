@@ -1,0 +1,103 @@
+{
+  "id": "mutable-rings",
+  "manufacturer": "Mutable Instruments",
+  "name": "Rings",
+  "category": [
+    "resonator",
+    "voice"
+  ],
+  "tags": [
+    "metallisch",
+    "resonant",
+    "physical-modeling"
+  ],
+  "hp": 14,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 120,
+    "m12": 5,
+    "p5": 0
+  },
+  "price_eur": 300,
+  "status": "eingestellt",
+  "description": "Resonator (Modal, Sympathetic Strings, Inharmonic String). Metallische Perkussion per STRUM.",
+  "jacks": [
+    {
+      "id": "strum",
+      "label": "STRUM",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "in",
+      "label": "IN",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "voct",
+      "label": "V/OCT",
+      "dir": "in",
+      "type": "pitch"
+    },
+    {
+      "id": "freq",
+      "label": "FREQ",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "struct",
+      "label": "STRUCTURE",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "bright",
+      "label": "BRIGHTNESS",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "damp",
+      "label": "DAMPING",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "pos",
+      "label": "POSITION",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "odd",
+      "label": "ODD",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "even",
+      "label": "EVEN",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "AudibleInstruments.Rings",
+      "match": "original"
+    },
+    {
+      "kind": "max-external",
+      "ref": "vb.mi.rngs~",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

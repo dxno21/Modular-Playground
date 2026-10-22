@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modular-playground/schema/module.schema.json",
+  "title": "Eurorack-Modul",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "manufacturer", "name", "category", "tags", "hp", "power_ma", "status", "jacks", "digital"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "manufacturer": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "category": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "description": { "type": "string" },
+    "hp": { "type": "integer", "minimum": 1, "maximum": 168 },
+    "depth_mm": { "type": "number", "minimum": 0 },
+    "power_ma": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["p12", "m12", "p5"],
+      "properties": {
+        "p12": { "type": "number", "minimum": 0 },
+        "m12": { "type": "number", "minimum": 0 },
+        "p5": { "type": "number", "minimum": 0 }
+      }
+    },
+    "price_eur": { "type": "number", "minimum": 0 },
+    "status": { "enum": ["erhältlich", "eingestellt", "gebraucht"] },
+    "verified": { "type": "boolean", "description": "true, sobald HP/Strom/Jacks gegen das Herstellerhandbuch geprüft wurden" },
+    "jacks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "dir", "type"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "label": { "type": "string" },
+          "dir": { "enum": ["in", "out"] },
+          "type": { "enum": ["audio", "cv", "gate", "trigger", "clock", "pitch"] }
+        }
+      }
+    },
+    "digital": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "ref", "match"],
+        "properties": {
+          "kind": { "enum": ["vcv", "plugin", "m4l", "max-external"] },
+          "ref": { "type": "string" },
+          "match": { "enum": ["original", "aehnlich", "ersatz"] }
+        }
+      }
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "manufacturer": { "type": "string" },
+        "manual": { "type": "string" }
+      }
+    }
+  }
+}

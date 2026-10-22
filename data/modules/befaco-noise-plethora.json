@@ -1,0 +1,99 @@
+{
+  "id": "befaco-noise-plethora",
+  "manufacturer": "Befaco",
+  "name": "Noise Plethora",
+  "category": [
+    "noise",
+    "voice",
+    "filter"
+  ],
+  "tags": [
+    "noise",
+    "industrial",
+    "textur"
+  ],
+  "hp": 14,
+  "depth_mm": 30,
+  "power_ma": {
+    "p12": 100,
+    "m12": 20,
+    "p5": 0
+  },
+  "price_eur": 260,
+  "status": "erhältlich",
+  "description": "Digitale Noise-Generatoren (A/B) und analoger Multimode-Filter (C).",
+  "jacks": [
+    {
+      "id": "a_x",
+      "label": "A X",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "a_y",
+      "label": "A Y",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "b_x",
+      "label": "B X",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "b_y",
+      "label": "B Y",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "c_in",
+      "label": "C IN",
+      "dir": "in",
+      "type": "audio"
+    },
+    {
+      "id": "c_cutoff",
+      "label": "C CUTOFF",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "c_res",
+      "label": "C RES",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "a_out",
+      "label": "A OUT",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "b_out",
+      "label": "B OUT",
+      "dir": "out",
+      "type": "audio"
+    },
+    {
+      "id": "c_out",
+      "label": "C OUT",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "Befaco.NoisePlethora",
+      "match": "original"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

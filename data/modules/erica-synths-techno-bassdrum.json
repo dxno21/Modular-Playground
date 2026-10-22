@@ -1,0 +1,68 @@
+{
+  "id": "erica-synths-techno-bassdrum",
+  "manufacturer": "Erica Synths",
+  "name": "Bassdrum (Techno-Serie)",
+  "category": [
+    "voice",
+    "drum"
+  ],
+  "tags": [
+    "kick",
+    "industrial",
+    "rumble"
+  ],
+  "hp": 10,
+  "depth_mm": 35,
+  "power_ma": {
+    "p12": 60,
+    "m12": 40,
+    "p5": 0
+  },
+  "price_eur": 200,
+  "status": "erhältlich",
+  "description": "Analoge Bassdrum aus der Erica-Synths-Techno-Serie. Modulbezeichnung und Jacks beim Befüllen prüfen.",
+  "jacks": [
+    {
+      "id": "trig",
+      "label": "TRIG",
+      "dir": "in",
+      "type": "trigger"
+    },
+    {
+      "id": "accent",
+      "label": "ACCENT",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "pitch",
+      "label": "PITCH CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "decay",
+      "label": "DECAY CV",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "out",
+      "label": "OUT",
+      "dir": "out",
+      "type": "audio"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "Befaco.Kickall",
+      "match": "ersatz"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}

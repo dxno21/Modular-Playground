@@ -1,0 +1,111 @@
+{
+  "id": "alm-pamelas-pro-workout",
+  "manufacturer": "ALM Busy Circuits",
+  "name": "Pamela's Pro Workout",
+  "category": [
+    "clock",
+    "sequencer",
+    "modulation"
+  ],
+  "tags": [
+    "euclid",
+    "polymetrisch",
+    "hypnotisch"
+  ],
+  "hp": 8,
+  "depth_mm": 25,
+  "power_ma": {
+    "p12": 80,
+    "m12": 10,
+    "p5": 0
+  },
+  "price_eur": 300,
+  "status": "erhältlich",
+  "description": "Master-Clock mit 8 Ausgängen: Teiler, Euclid, Wahrscheinlichkeit, LFOs.",
+  "jacks": [
+    {
+      "id": "clk_in",
+      "label": "CLK IN",
+      "dir": "in",
+      "type": "clock"
+    },
+    {
+      "id": "run",
+      "label": "RUN",
+      "dir": "in",
+      "type": "gate"
+    },
+    {
+      "id": "cv1",
+      "label": "CV1",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "cv2",
+      "label": "CV2",
+      "dir": "in",
+      "type": "cv"
+    },
+    {
+      "id": "out1",
+      "label": "OUT 1",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "out2",
+      "label": "OUT 2",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "out3",
+      "label": "OUT 3",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "out4",
+      "label": "OUT 4",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "out5",
+      "label": "OUT 5",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "out6",
+      "label": "OUT 6",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "out7",
+      "label": "OUT 7",
+      "dir": "out",
+      "type": "clock"
+    },
+    {
+      "id": "out8",
+      "label": "OUT 8",
+      "dir": "out",
+      "type": "clock"
+    }
+  ],
+  "digital": [
+    {
+      "kind": "vcv",
+      "ref": "ImpromptuModular.Clocked",
+      "match": "ersatz"
+    }
+  ],
+  "verified": false,
+  "links": {
+    "manufacturer": "",
+    "manual": ""
+  }
+}
