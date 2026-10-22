@@ -14,7 +14,7 @@ sys.path.insert(0, str(HERE / "reference"))
 from metal_perc_ref import SCALE_MASKS, SCALE_NAMES  # noqa: E402
 
 STEPS = 16
-DEVICE_WIDTH = 975
+DEVICE_WIDTH = 1265
 
 
 # ---------------------------------------------------------------- gen~ Code
@@ -177,7 +177,7 @@ def build_maxpat(code):
     # ---------------- Signalfluss
     phasor = p.obj("plugphasor~", 40, 940, 1, 1, ["signal"])
     p.line(phasor, 0, gen, 0)
-    gain = p.ui("live.gain~", "out_gain", [925, 4, 44, 160],
+    gain = p.ui("live.gain~", "out_gain", [1215, 4, 44, 160],
                 valueof("Output", "Output", 0, -70.0, 6.0, 0.0, unit=4), 2, 5,
                 ["signal", "signal", "", "float", "list"])
     p.line(gen, 0, gain, 0)
@@ -268,8 +268,30 @@ def build_maxpat(code):
     p.line(clr, 0, clr_m, 0)
     p.line(clr_m, 0, js, 0)
 
+    # ---------------- Oszillatoren
+    p.comment("OSC", [550, 2, 60, 14])
+    osc_rows = [
+        (14, [("voices", "Voices", 1, 6, 6, 0, 1), ("spread", "Spread", 0.0, 2.0, 1.0, 1, 0),
+              ("detune", "Detune", 0.0, 50.0, 0.0, 1, 0), ("tilt", "Tilt", -1.0, 1.0, 0.0, 1, 0),
+              ("pw", "PW", 0.05, 0.95, 0.5, 1, 0)]),
+        (64, [("fm_ratio", "FM Ratio", 0.5, 8.0, 1.4142, 1, 0), ("fm_amt", "FM Amt", 0.0, 1.0, 0.36, 1, 0),
+              ("fm_fb", "FM FB", 0.0, 1.0, 0.0, 1, 0), ("ring", "Ring", 0.0, 1.0, 0.4, 1, 0),
+              ("sweep", "Sweep", -24.0, 48.0, 0.0, 7, 0)]),
+    ]
+    for r, (y, row) in enumerate(osc_rows):
+        for c, (var, name, lo, hi, init, unit, ptype) in enumerate(row):
+            d = dial(p, var, name, name, [550 + c * 56, y, 44, 48], lo, hi, init, ptype=ptype, unit=unit)
+            to_gen(d, var, 40 + c * 140 + r * 70, 1660 + r * 30)
+    p.comment("MOD WAVE", [550, 116, 80, 14])
+    to_gen(tab(p, "mod_wave", "Mod Wave", [550, 132, 112, 16], ["Sin", "Sqr", "Saw", "Tri"], 1), "mod_wave",
+           40, 1720)
+    p.comment("PHASE", [670, 116, 60, 14])
+    to_gen(tab(p, "retrig", "Phase", [670, 132, 84, 16], ["Free", "Reset"], 0), "retrig", 200, 1720)
+    to_gen(dial(p, "sweep_time", "Sweep Time", "Sw Time", [774, 114, 44, 48], 1.0, 500.0, 30.0, unit=2),
+           "sweep_time", 360, 1720)
+
     # ---------------- Voice
-    p.comment("VOICE", [580, 2, 60, 14])
+    p.comment("VOICE", [870, 2, 60, 14])
     row1 = [
         ("tune", "Tune", 24.0, 96.0, 56.0, 8),
         ("morph", "Morph", 0.0, 1.0, 0.0, 1),
@@ -286,17 +308,17 @@ def build_maxpat(code):
     ]
     for row, y in ((row1, 14), (row2, 64)):
         for c, (var, name, lo, hi, init, unit) in enumerate(row):
-            d = dial(p, var, name, name, [580 + c * 56, y, 44, 48], lo, hi, init, unit=unit)
+            d = dial(p, var, name, name, [870 + c * 56, y, 44, 48], lo, hi, init, unit=unit)
             to_gen(d, var, 40 + c * 140 + (0 if y == 14 else 70), 1520 if y == 14 else 1550)
-    p.comment("WAVE", [806, 64, 60, 14])
-    to_gen(tab(p, "waveform", "Wave", [806, 80, 112, 16], ["Sin", "Sqr", "Saw", "Tri"], 1), "waveform", 40, 1600)
-    p.comment("PITCH MODE", [580, 116, 80, 14])
-    to_gen(tab(p, "qmode", "Pitch Mode", [580, 132, 84, 16], ["Loose", "Scale"], 1), "qmode", 200, 1600)
-    p.comment("SCALE", [672, 116, 60, 14])
-    to_gen(menu(p, "scale_sel", "Scale", [672, 132, 120, 16], [n.replace("_", " ").title() for n in SCALE_NAMES], 1),
+    p.comment("WAVE", [1096, 64, 60, 14])
+    to_gen(tab(p, "waveform", "Wave", [1096, 80, 112, 16], ["Sin", "Sqr", "Saw", "Tri"], 1), "waveform", 40, 1600)
+    p.comment("PITCH MODE", [870, 116, 80, 14])
+    to_gen(tab(p, "qmode", "Pitch Mode", [870, 132, 84, 16], ["Loose", "Scale"], 1), "qmode", 200, 1600)
+    p.comment("SCALE", [962, 116, 60, 14])
+    to_gen(menu(p, "scale_sel", "Scale", [962, 132, 120, 16], [n.replace("_", " ").title() for n in SCALE_NAMES], 1),
            "scale_sel", 360, 1600)
-    p.comment("ROOT", [800, 116, 40, 14])
-    to_gen(menu(p, "root", "Root", [800, 132, 52, 16],
+    p.comment("ROOT", [1090, 116, 40, 14])
+    to_gen(menu(p, "root", "Root", [1090, 132, 52, 16],
                 ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"], 0), "root", 520, 1600)
 
     return {

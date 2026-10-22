@@ -36,6 +36,7 @@ SCALE_MASKS = [scale_mask(SCALES[n]) for n in SCALE_NAMES]
 BANK_H = [1, 2, 3, 4, 5, 6]
 BANK_M = [1, 1.483, 1.8, 2.546, 2.63, 3.897]
 BANK_E = [1, 1.593, 2.135, 2.296, 2.917, 3.598]
+DETUNE = [0, 0.7, -0.4, 1, -0.9, 0.3]
 MODE_H = [1, 2, 3, 4]
 MODE_B = [1, 2.756, 5.404, 8.933]
 MODE_P = [1, 1.594, 2.136, 2.653]
@@ -71,12 +72,12 @@ def blep(t, dt):
     return 0.0
 
 
-def osc(p, dt, w):
+def osc(p, dt, w, pw=0.5):
     if w < 0.5:
         return math.sin(2 * math.pi * p)
     if w < 1.5:
-        sq = 1 if p < 0.5 else -1
-        return sq + blep(p, dt) - blep(fract(p + 0.5), dt)
+        sq = 1 if p < pw else -1
+        return sq + blep(p, dt) - blep(fract(p + 1 - pw), dt) - (2 * pw - 1)
     if w < 2.5:
         return 2 * p - 1 - blep(p, dt)
     return 4 * abs(p - 0.5) - 1
@@ -113,6 +114,9 @@ def svf(x, fc, q, st, i, mode):
 DEFAULTS = dict(
     tune=56, waveform=1, morph=0.0, inharm=0.5, decay=0.3, damp=0.5, bright=0.6,
     drive=0.2, noise_mix=0.05, accent=0.5, level=0.8,
+    voices=6, spread=1.0, detune=0.0, tilt=0.0, pw=0.5,
+    fm_ratio=1.4142, fm_amt=0.36, fm_fb=0.0, ring=0.4, mod_wave=1,
+    sweep=0.0, sweep_time=30.0, retrig=0,
     qmode=1, scale_sel=1, root=0,
     seq_on=1, bpm=130, clock_div=1, seq_len=16,
     live_steps=0, live_vel=0, live_pitch=0,
@@ -131,6 +135,8 @@ class MetalPerc:
         self.env = 0.0
         self.coef = 0.999
         self.exc = 0.0
+        self.pe = 0.0
+        self.fb_prev = 0.0
         self.hit_note = self.p["tune"]
         self.hit_vel = 1.0
         self.ph = [0.0] * 8
@@ -149,6 +155,10 @@ class MetalPerc:
         self.coef = math.exp(-6.9078 / (t * SR))
         self.env = max(self.env, vel)
         self.exc = 1.0
+        self.pe = 1.0
+        if p["retrig"] > 0.5:
+            self.ph = [0.0] * 8
+            self.fb_prev = 0.0
 
     def clock(self):
         p = self.p
@@ -176,35 +186,42 @@ class MetalPerc:
         self.env *= self.coef
         self.exc *= 0.992
         env = self.env
-        f0 = mtof(self.hit_note)
+        self.pe *= math.exp(-6.9078 / (p["sweep_time"] * 0.001 * SR))
+        f0 = mtof(self.hit_note + p["sweep"] * self.pe)
         nyq = SR * 0.45
         w = math.floor(p["waveform"] + 0.5)
         acc_b = p["bright"] * (1 - p["accent"] * 0.4 + p["accent"] * 0.4 * self.hit_vel)
         ta = clamp(p["inharm"] * 2, 0, 1)
         tb = clamp(p["inharm"] * 2 - 1, 0, 1)
 
-        bank = 0.0
+        nv = math.floor(p["voices"] + 0.5)
+        bank = asum = 0.0
         for i in range(6):
             ratio = mix(mix(BANK_H[i], BANK_M[i], ta), BANK_E[i], tb)
+            ratio = 1 + (ratio - 1) * p["spread"]
+            ratio *= 2 ** (p["detune"] * DETUNE[i] / 1200)
             inc = min(f0 * ratio / SR, 0.45)
             ph = self.ph[i]
-            bank += osc(ph, inc, w)
+            if i < nv:
+                amp = (i + 1) ** p["tilt"]
+                bank += osc(ph, inc, w, p["pw"]) * amp
+                asum += amp
             self.ph[i] = fract(ph + inc)
-        bank /= 6
+        bank /= asum
         fca = min(f0 * mix(2, 24, acc_b) * (0.4 + 0.6 * math.sqrt(env)), nyq)
         eng_a = 1.8 * svf(bank, fca, 1.5, self.st, 0, "bp") + 1.8 * svf(bank, fca, 0.7, self.st, 2, "hp")
 
-        rmod = mix(mix(2, 1.4142, ta), 3.7321, tb)
         inc_c = min(f0 / SR, 0.45)
-        inc_m = min(f0 * rmod / SR, 0.45)
+        inc_m = min(f0 * p["fm_ratio"] / SR, 0.45)
         pc, pm = self.ph[6], self.ph[7]
-        mods = osc(pm, inc_m, w)
-        idx = acc_b * 1.2 * env
-        car = osc(fract(pc + idx * mods + 1), inc_c, w)
-        ring = osc(pc, inc_c, w) * mods
+        mods = osc(fract(pm + p["fm_fb"] * 0.5 * self.fb_prev), inc_m, math.floor(p["mod_wave"] + 0.5), p["pw"])
+        self.fb_prev = mods
+        idx = p["fm_amt"] * 2 * env * (1 - p["accent"] * 0.4 + p["accent"] * 0.4 * self.hit_vel)
+        car = osc(fract(pc + idx * mods), inc_c, w, p["pw"])
+        rsig = osc(pc, inc_c, w, p["pw"]) * mods
         self.ph[6] = fract(pc + inc_c)
         self.ph[7] = fract(pm + inc_m)
-        eng_b = 0.7 * car + 0.5 * ring
+        eng_b = 1.2 * (car * (1 - p["ring"]) + rsig * p["ring"])
 
         ex = noise() * self.exc * self.exc * (0.4 + 0.6 * acc_b) * self.hit_vel
         q = mix(400, 12, p["damp"])
@@ -259,7 +276,7 @@ PRESETS = {
                     vel=[1, .5, .8, .5, 1, .4, .8, .6, 1, .5, .8, .5, 1, .6, .9, .7]),
     ),
     "02_fm_clank_saw": dict(
-        params=dict(morph=0.5, waveform=2, inharm=0.65, decay=0.35, bright=0.7, tune=48, drive=0.4),
+        params=dict(morph=0.5, waveform=2, inharm=0.65, decay=0.35, bright=0.7, tune=48, drive=0.4, fm_ratio=2.12, mod_wave=2, fm_amt=0.42),
         pattern=seq("1001 0010 0100 1010",
                     pitch=[0, 0, 0, 3, 0, 0, 7, 0, 0, 5, 0, 0, 0, 0, 10, 0]),
     ),
@@ -270,12 +287,22 @@ PRESETS = {
     ),
     "04_industrial_drive_tri": dict(
         params=dict(morph=0.3, waveform=3, inharm=0.8, decay=0.25, bright=0.9, drive=0.9,
-                    tune=40, noise_mix=0.4, live_vel=1, vel_range=0.6),
+                    tune=40, noise_mix=0.4, live_vel=1, vel_range=0.6, fm_ratio=2.8, mod_wave=3, fm_amt=0.54),
         pattern=seq("1111 1111 1111 1111"),
     ),
     "05_hypnotic_random_sine": dict(
         params=dict(morph=0.7, waveform=0, inharm=0.6, decay=0.3, damp=0.4, bright=0.6, tune=55,
-                    live_steps=1, density=0.7, live_pitch=1, pitch_range=5, scale_sel=4),
+                    live_steps=1, density=0.7, live_pitch=1, pitch_range=5, scale_sel=4, fm_ratio=1.88, mod_wave=0),
+        pattern=seq("1101 1011 0110 1101"),
+    ),
+    "07_osc_sweep_feedback_pulse": dict(
+        params=dict(morph=0.5, waveform=1, mod_wave=2, pw=0.2, fm_ratio=3.1, fm_amt=0.6, fm_fb=0.7, ring=0.6,
+                    sweep=36, sweep_time=40, retrig=1, decay=0.28, tune=38, drive=0.6),
+        pattern=seq("1001 0010 1001 0110", vel=[1, .6, .6, .7, .6, .6, .9, .6, 1, .6, .6, .8, .6, .9, .7, .6]),
+    ),
+    "08_osc_bank_voices_spread_detune": dict(
+        params=dict(morph=0.0, waveform=1, voices=3, spread=1.6, detune=25, tilt=0.6, pw=0.3, inharm=0.55,
+                    decay=0.45, bright=0.7, tune=58),
         pattern=seq("1101 1011 0110 1101"),
     ),
 }
@@ -295,7 +322,7 @@ def render_presets(out_dir, bars=2):
     # Waveform-Vergleich: gleicher Schlag, 4 Wellenformen nacheinander
     audio = []
     for w in range(4):
-        v = MetalPerc(morph=0.25, waveform=w, decay=0.4, tune=52)
+        v = MetalPerc(morph=0.25, waveform=w, mod_wave=w, decay=0.4, tune=52)
         v.trigger(1.0, 0)
         audio += v.render(0.6, use_seq=False)
     peak = write_wav(out_dir / "06_waveforms_sine_square_saw_tri.wav", audio, normalize_to=0.89)

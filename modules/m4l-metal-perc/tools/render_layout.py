@@ -13,6 +13,7 @@ def fmt(v, vo):
         n = int(round(v)); return ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'][n%12]+str(n//12-2)
     if u == 7: return f"{v:+.0f} st"
     if u == 4: return f"{v:.1f} dB"
+    if u == 2: return f"{v:.0f} ms"
     if t == 1 or u == 0: return f"{int(v)}"
     return f"{v:.2f}"
 for b in p['boxes']:

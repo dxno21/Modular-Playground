@@ -60,16 +60,32 @@ drei Klang-Engines, vier Wellenformen, einem 1-V/Oct-Quantizer und einem eingeba
 - **1 V/Oct:** Signal-Eingang 4. Laut Rack-Konvention gilt ±1.0 = ±5 V, also entspricht 0.2 einer Oktave.
   Der Wert wird beim Trigger gehalten (Sample & Hold), wie bei Drum-Modulen üblich.
 
+### Oszillatoren (OSC, Mitte rechts)
+| Regler | Wirkung |
+|---|---|
+| **Voices** | Anzahl aktiver Oszillatoren der Bank (1–6). Wenige klingen klarer und tonaler, viele dichter und metallischer |
+| **Spread** | Abstand der Frequenzverhältnisse: 0 = alle auf dem Grundton, 1 = normal, 2 = doppelt so weit auseinander |
+| **Detune** | Feste Verstimmung der Bank-Oszillatoren gegeneinander (0–50 Cent). Erzeugt Schwebungen |
+| **Tilt** | Pegel der oberen Partials: − dunkel (Grundton dominiert), + hell (obere Oszillatoren lauter) |
+| **PW** | Pulsbreite der Square-Welle (5–95 %). Schmale Pulse klingen nasal und dünn |
+| **FM Ratio** | Frequenzverhältnis Modulator/Träger (0.5–8), unabhängig von Inharm. Ganze Zahlen klingen harmonisch, krumme Werte metallisch |
+| **FM Amt** | FM-Index, also wie stark der Modulator den Träger verbiegt (folgt der Hüllkurve) |
+| **FM FB** | Feedback des Modulators auf sich selbst. Von rau bis Rauschen |
+| **Ring** | Mischung FM-Träger ↔ Ringmodulation |
+| **Sweep / Sw Time** | Pitch-Hüllkurve: Tonhöhen-Sprung beim Anschlag (−24 bis +48 Halbtöne), der in Sw Time (1–500 ms) zurückläuft. Wirkt auf alle Engines |
+| **Mod Wave** | Eigene Wellenform für den FM-Modulator |
+| **Phase** | *Free*: Oszillatoren laufen frei, jeder Schlag klingt leicht anders. *Reset*: Phasen starten bei jedem Schlag neu, für einen gleichbleibenden, harten Anschlag |
+
 ### Voice (rechts)
 | Regler | Wirkung |
 |---|---|
 | **Tune** | Grundton (MIDI-Note 24–96) |
-| **Wave** | Sine / Square / Saw / Triangle für alle Oszillatoren (Bank und FM). Square und Saw sind polyBLEP-bandbegrenzt |
+| **Wave** | Sine / Square / Saw / Triangle für die Bank und den FM-Träger (Modulator: *Mod Wave*). Square und Saw sind polyBLEP-bandbegrenzt |
 | **Morph** | 0 = **Bank** (6 Oszillatoren, 808-Cymbal-Prinzip) → 0.5 = **FM/Ring** → 1 = **Resonator** (4 Moden, Rauschimpuls) |
 | **Inharm** | 0 harmonisch → 0.5 808-Metall-Verhältnisse → 1 Membran/Glocke |
 | **Decay** | 10 ms bis 2.5 s |
 | **Damp** | Dämpfung der Resonator-Moden (nur Morph Richtung 1) |
-| **Bright** | Filteröffnung (Bank) bzw. FM-Index |
+| **Bright** | Filteröffnung der Bank und Helligkeit der Resonator-Anregung |
 | **Drive** | tanh-Sättigung, pegelkompensiert |
 | **Noise** | Hochpass-Rauschen, mit der Hüllkurve geformt |
 | **Accent** | Wie stark die Velocity Decay und Helligkeit beeinflusst |
@@ -107,12 +123,14 @@ Im Device sind in2 bis in5 noch nicht belegt. Die Anschlüsse sind für die spä
 | `04_industrial_drive_tri` | Bank→FM, Triangle, viel Drive und Noise, Live-Velocity |
 | `05_hypnotic_random_sine` | FM→Resonator, Sine, Live-Steps und Live-Pitch (Moll-Pentatonik) |
 | `06_waveforms_sine_square_saw_tri` | Derselbe Schlag nacheinander mit allen 4 Wellenformen |
+| `07_osc_sweep_feedback_pulse` | FM mit Pulse (PW 0.2), Saw-Modulator, viel Feedback, Pitch-Sweep +36, Phase Reset |
+| `08_osc_bank_voices_spread_detune` | Bank mit 3 Oszillatoren, Spread 1.6, Detune 25 Cent, Tilt hell, PW 0.3 |
 
 Die Hörproben sind normalisiert. Neu rendern mit `python3 reference/metal_perc_ref.py`.
 
 ## Bekannte Grenzen
 - **Host-Clock:** Der Sequencer zählt Beats ab dem Transport-Start. Wenn du mitten im Takt startest, beginnt
   das Pattern dort mit Step 1. Bei Bedarf hilft RESET.
-- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 80 Parameter brauchen auf
+- **Daisy-Port (oopsy):** Der DSP ist reines gen~ und damit portierbar. Die 93 Parameter brauchen auf
   Hardware aber ein eigenes Bedienkonzept.
 - Das Layout ist funktional und noch nicht gestaltet.
