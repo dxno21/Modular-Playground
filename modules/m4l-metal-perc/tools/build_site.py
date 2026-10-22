@@ -276,6 +276,10 @@ label { color: var(--dim); display: flex; gap: 6px; align-items: center; }
   background: linear-gradient(to top, #2ed3c4 0 70%, #ffd34d 70% 90%, #ff5c5c 90% 100%); background-size: 100% 100%; }
 .gh { position: absolute; left: 4px; right: 4px; height: 2px; background: #d4d7dd; margin-bottom: 14px; }
 .gv { position: absolute; bottom: -2px; left: -6px; right: -6px; text-align: center; font-size: 8.5px; color: #8a8f99; }
+.cpu { color: var(--dim); font-size: 12px; }
+.notice { color: var(--dim); font-size: 13px; margin: -4px 0 12px; }
+.notice.err { color: #ff6b6b; }
+#hit { touch-action: manipulation; }
 #status { color: var(--dim); font-size: 12px; min-height: 18px; margin-top: 6px; }
 .help { margin-top: 18px; color: var(--dim); font-size: 13px; max-width: 900px; }
 .help b { color: var(--text); }
@@ -291,14 +295,20 @@ kbd { background: #26282d; border-radius: 4px; padding: 0 5px; font-size: 12px; 
     <button id="play">▶ Play</button>
     <label>BPM <input id="bpm" type="number" min="40" max="300" value="130"></label>
     <label>Preset <select id="preset"><option value="">– wählen –</option></select></label>
+    <button id="hit">● Hit</button>
     <button id="midi">MIDI aktivieren</button>
+    <span id="cpu" class="cpu"></span>
   </div>
+  <div id="notice" class="notice">Zum Starten auf ▶ Play oder ● Hit tippen. iPhone: Lautlos-Schalter aus und Lautstärke hoch.</div>
   <div id="rack"></div>
   <div id="status">Regler ziehen (vertikal), <kbd>Shift</kbd> für fein, Doppelklick setzt zurück.</div>
   <div class="help">
     <p><b>Spielen:</b> <kbd>Leertaste</kbd> startet/stoppt den Sequencer (Clock <i>Host</i> folgt dem BPM-Feld).
        Die Tasten <kbd>A W S E D F T G Y H U J K</kbd> spielen die Voice chromatisch ab C3, wie MIDI-Noten.
        Mit „MIDI aktivieren“ spielt ein angeschlossenes Keyboard (Chrome/Edge).</p>
+    <p><b>Handy:</b> Auf dem iPhone den Lautlos-Schalter ausschalten. Auf Touch-Geräten startet der Player mit
+       Quality <i>1x</i>. Bei zu hoher CPU-Last reduziert er Quality automatisch. Regler mit dem Finger vertikal ziehen,
+       ● Hit spielt einen einzelnen Schlag.</p>
     <p><b>CPU:</b> Wenn es knackst, unter ANALOG → QUALITY auf <i>1x</i> stellen.</p>
   </div>
 </main>

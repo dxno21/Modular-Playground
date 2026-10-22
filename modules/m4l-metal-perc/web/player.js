@@ -16,6 +16,17 @@ function fmt(v, vo) {
   return v.toFixed(2);
 }
 
+// 0.25 s Stille als WAV: läuft als <audio> mit und stellt iOS auf Medien-Wiedergabe um
+function silentWavUrl() {
+  const n = 2000, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
+  const str = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVEfmt '); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true);
+  v.setUint16(32, 1, true); v.setUint16(34, 8, true); str(36, 'data'); v.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+}
+
 class Player {
   constructor(root, ui, presets) {
     this.root = root;
@@ -189,24 +200,81 @@ class Player {
     this.post({ type: 'transport', playing: this.playing, bpm: this.bpm });
   }
 
+  // Muss synchron im Klick/Tipp laufen: Mobile Browser geben Audio nur direkt in der Geste frei.
+  unlock() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) throw new Error('Dieser Browser unterstützt kein Web Audio.');
+      this.ctx = new AC({ latencyHint: 'playback' });
+      // iOS: Wiedergabe-Kategorie wählen, damit der Lautlos-Schalter Web Audio nicht stummschaltet
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* ältere Safari */ }
+      this.silent = new Audio(silentWavUrl());
+      this.silent.loop = true;
+      this.silent.setAttribute('playsinline', '');
+    }
+    if (this.ctx.state !== 'running') this.ctx.resume();
+    const buf = this.ctx.createBuffer(1, 1, this.ctx.sampleRate);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(this.ctx.destination);
+    src.start(0);
+    if (this.silent) this.silent.play().catch(() => {});
+  }
+
   async start() {
-    if (this.ctx) return;
-    this.ctx = new AudioContext({ latencyHint: 'playback' });
-    await this.ctx.audioWorklet.addModule('worklet.js');
-    this.node = new AudioWorkletNode(this.ctx, 'metal-perc', { outputChannelCount: [2] });
-    this.node.connect(this.ctx.destination);
-    for (const [k, v] of Object.entries(this.values)) this.post({ type: 'set', name: k, value: v });
-    this.post({ type: 'gain', value: Math.pow(10, this.getControl('out_gain') / 20) });
-    this.node.port.onmessage = (e) => {
-      const m = e.data;
-      if (m.step !== undefined && this.controls.step_led) this.controls.step_led.set(m.step, false);
-      if (this.controls.out_gain) this.controls.out_gain.meter(m.meter);
-    };
+    this.unlock();
+    if (this.node) return;
+    if (!this.loading) this.loading = this.load();
+    await this.loading;
+  }
+
+  async load() {
+    try {
+      if (!this.ctx.audioWorklet) throw new Error('AudioWorklet fehlt: neueren Browser verwenden (Safari ab 14.5, Chrome, Firefox) und die Seite über https öffnen.');
+      await this.ctx.audioWorklet.addModule('worklet.js');
+      this.node = new AudioWorkletNode(this.ctx, 'metal-perc', { outputChannelCount: [2] });
+      this.node.connect(this.ctx.destination);
+      // Auf Touch-Geräten mit 1x Oversampling starten, das spart CPU
+      if (window.matchMedia('(pointer: coarse)').matches && this.getControl('quality') > 0) this.setControl('quality', 0);
+      for (const [k, v] of Object.entries(this.values)) this.post({ type: 'set', name: k, value: v });
+      this.post({ type: 'gain', value: Math.pow(10, this.getControl('out_gain') / 20) });
+      this.post({ type: 'transport', playing: this.playing, bpm: this.bpm });
+      this.overloads = 0;
+      this.node.port.onmessage = (e) => {
+        const m = e.data;
+        if (m.step !== undefined && this.controls.step_led) this.controls.step_led.set(m.step, false);
+        if (this.controls.out_gain) this.controls.out_gain.meter(m.meter);
+        if (m.load !== undefined) this.watchLoad(m.load);
+      };
+      this.notice(`Audio läuft (${this.ctx.sampleRate} Hz).`);
+    } catch (err) {
+      this.notice(`Audio konnte nicht starten: ${err.message || err}`, true);
+      throw err;
+    }
+  }
+
+  // CPU-Last des Worklets: bei Überlast Oversampling automatisch reduzieren
+  watchLoad(load) {
+    const cpu = document.getElementById('cpu');
+    if (cpu) cpu.textContent = `CPU ${Math.round(load * 100)} %`;
+    this.overloads = load > 0.85 ? this.overloads + 1 : 0;
+    const q = this.getControl('quality');
+    if (this.overloads >= 3 && q > 0) {
+      this.setControl('quality', q - 1);
+      this.overloads = 0;
+      this.notice(`CPU-Last zu hoch: Quality automatisch auf ${['1x', '2x', '4x'][q - 1]} reduziert.`);
+    }
+  }
+
+  notice(text, isError = false) {
+    const n = document.getElementById('notice');
+    if (!n) return;
+    n.textContent = text;
+    n.className = isError ? 'notice err' : 'notice';
   }
 
   async toggle() {
     await this.start();
-    if (this.ctx.state === 'suspended') await this.ctx.resume();
     this.playing = !this.playing;
     this.post({ type: 'transport', playing: this.playing, bpm: this.bpm });
     document.getElementById('play').classList.toggle('on', this.playing);
@@ -215,7 +283,6 @@ class Player {
 
   async noteOn(note, vel) {
     await this.start();
-    if (this.ctx.state === 'suspended') await this.ctx.resume();
     this.setParam('midi_note', note);
     this.setParam('midi_vel', vel);
     this.setParam('midi_id', ++this.midiFlip);
@@ -438,9 +505,12 @@ async function main() {
   const sel = document.getElementById('preset');
   Object.keys(presets).forEach((n) => sel.add(new Option(n, n)));
   sel.addEventListener('change', () => { if (sel.value) player.applyPreset(sel.value); });
-  document.getElementById('play').addEventListener('click', () => player.toggle());
+  document.getElementById('play').addEventListener('click', () => player.toggle().catch(() => {}));
   document.getElementById('bpm').addEventListener('change', (e) => player.setBpm(+e.target.value));
   document.getElementById('midi').addEventListener('click', () => player.enableMidi());
+  const hit = document.getElementById('hit');
+  // click statt pointerdown: iOS gibt Audio nur bei click/touchend frei
+  hit.addEventListener('click', () => player.noteOn(60, 110).catch(() => {}));
   const keys = 'awsedftgyhujk';
   window.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.repeat) return;

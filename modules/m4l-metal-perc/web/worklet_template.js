@@ -27,6 +27,7 @@ class MetalPercProcessor extends AudioWorkletProcessor {
   }
 
   process(inputs, outputs) {
+    const t0 = Date.now();
     const out = outputs[0];
     const L = out[0];
     const R = out[1] || out[0];
@@ -45,9 +46,18 @@ class MetalPercProcessor extends AudioWorkletProcessor {
       if (a > peak) peak = a;
     }
     if (peak > this.meter) this.meter = peak;
-    if (++this.meterCount >= 8) {
+    // Rechenzeit gegenüber der verfügbaren Blockzeit (Date.now hat ms-Auflösung, daher über viele Blöcke gemittelt)
+    this.busy = (this.busy || 0) + (Date.now() - t0);
+    this.blocks = (this.blocks || 0) + 1;
+    let load;
+    if (this.blocks >= 344) {
+      load = this.busy / (this.blocks * L.length / sampleRate * 1000);
+      this.busy = 0;
+      this.blocks = 0;
+    }
+    if (++this.meterCount >= 8 || load !== undefined) {
       const step = Math.round(outs[2]);
-      this.port.postMessage({ step: step !== this.lastStep ? step : undefined, meter: this.meter });
+      this.port.postMessage({ step: step !== this.lastStep ? step : undefined, meter: this.meter, load });
       this.lastStep = step;
       this.meter = 0;
       this.meterCount = 0;
