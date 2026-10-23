@@ -111,6 +111,7 @@ code {{ background: #26282d; padding: 1px 6px; border-radius: 4px; font-size: 13
 .cta {{ display: inline-block; margin-top: 24px; padding: 12px 20px; border-radius: 8px; background: var(--accent);
   color: #111; font-weight: 700; text-decoration: none; }}
 .cta:hover {{ filter: brightness(1.1); }}
+.cta2 {{ background: transparent; color: var(--text); border: 1px solid var(--border); margin-left: 8px; }}
 footer {{ margin-top: 48px; color: var(--dim); font-size: 13px; }}
 footer a {{ color: var(--dim); }}
 @media (max-width: 600px) {{ .dl a {{ flex-direction: column; }} .dl span {{ text-align: left; }} }}
@@ -127,6 +128,7 @@ footer a {{ color: var(--dim); }}
 </header>
 
 <a class="cta" href="play/">▶ Live im Browser spielen</a>
+<a class="cta cta2" href="planer/">Hardware-Planer →</a>
 
 <div class="layout"><img src="layout.png" alt="Layout des Devices mit den Sektionen SEQ, RANDOM, OSC, VOICE, CIRCUIT, ANALOG und OUT"></div>
 <p class="note">Layout-Vorschau aus dem Patch gerendert. Die Hörproben stammen aus der Python-Referenz des DSP-Codes,

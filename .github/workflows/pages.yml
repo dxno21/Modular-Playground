@@ -1,4 +1,10 @@
-# Veröffentlicht die Preview-Seite von Metal Perc auf GitHub Pages.
+# Gemeinsame GitHub-Pages-Seite für beide Tools des Repos:
+#   /          Metal Perc (Übersicht, Hörproben, Downloads)   – von diesem Branch
+#   /play/     Metal Perc im Browser spielen                  – von diesem Branch
+#   /planer/   Hardware-Planer (Tool 2)                       – vom Branch claude/hardware-planer
+# Ein Repo hat nur EINE Pages-Seite. Deshalb baut dieser Workflow immer beide Teile zusammen.
+# Läuft zusätzlich direkt nach jedem Deploy des Hardware-Planers ("workflow_run"), damit dessen
+# Einzel-Deploy die gemeinsame Seite nicht dauerhaft überschreibt.
 # Einmalig nötig: Settings → Pages → Build and deployment → Source: "GitHub Actions".
 name: Pages
 
@@ -6,6 +12,9 @@ on:
   push:
     branches: [claude/eurorack-techno-modules-itxsmm, main]
     paths: ["modules/m4l-metal-perc/**", ".github/workflows/pages.yml"]
+  workflow_run:
+    workflows: ["Hardware-Planer auf GitHub Pages"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -15,17 +24,38 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: claude/eurorack-techno-modules-itxsmm
+          path: metal-perc
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/hardware-planer
+          path: planer
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python3 modules/m4l-metal-perc/tools/build_site.py _site
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: planer/app/package-lock.json
+      - name: Metal Perc bauen
+        run: python3 metal-perc/modules/m4l-metal-perc/tools/build_site.py _site
+      - name: Hardware-Planer bauen und testen
+        working-directory: planer/app
+        run: |
+          npm ci
+          npm test
+          npm run build
+      - name: Zusammenführen
+        run: cp -r planer/app/dist _site/planer
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
